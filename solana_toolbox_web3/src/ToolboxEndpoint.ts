@@ -65,10 +65,9 @@ export class ToolboxEndpoint {
 
   public static getClusterFromUrlOrMoniker(
     urlOrMoniker: string,
-  ): string | null {
-    return (
-      ToolboxEndpoint.urlOrMonikerToCluster.get(urlOrMoniker.toLowerCase()) ??
-      null
+  ): string | undefined {
+    return ToolboxEndpoint.urlOrMonikerToCluster.get(
+      urlOrMoniker.toLowerCase(),
     );
   }
 
@@ -82,8 +81,12 @@ export class ToolboxEndpoint {
 
   public async getAccount(
     address: PublicKey,
-  ): Promise<AccountInfo<Buffer> | null> {
-    return await this.connection.getAccountInfo(address);
+  ): Promise<AccountInfo<Buffer> | undefined> {
+    let account = await this.connection.getAccountInfo(address);
+    if (account === null) {
+      return undefined;
+    }
+    return account;
   }
 
   public async simulateTransaction(

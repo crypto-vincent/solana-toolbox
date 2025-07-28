@@ -88,15 +88,17 @@ it('run', () => {
   expect(
     idlProgram.guessAccount(Buffer.from([2, 9, 9, 9, 9, 9])),
   ).toStrictEqual(idlProgram.accounts.get('MyAccount2_x6'));
-  expect(idlProgram.guessAccount(Buffer.from([1, 2]))).toStrictEqual(null);
+  expect(idlProgram.guessAccount(Buffer.from([1, 2]))).toStrictEqual(undefined);
   expect(idlProgram.guessAccount(Buffer.from([1, 2, 3, 4]))).toStrictEqual(
-    null,
+    undefined,
   );
   expect(
     idlProgram.guessAccount(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8])),
-  ).toStrictEqual(null);
-  expect(idlProgram.guessAccount(Buffer.from([2, 2, 2]))).toStrictEqual(null);
+  ).toStrictEqual(undefined);
+  expect(idlProgram.guessAccount(Buffer.from([2, 2, 2]))).toStrictEqual(
+    undefined,
+  );
   expect(
     idlProgram.guessAccount(Buffer.from([2, 2, 2, 2, 2, 2, 2, 2])),
-  ).toStrictEqual(null);
+  ).toStrictEqual(undefined);
 });

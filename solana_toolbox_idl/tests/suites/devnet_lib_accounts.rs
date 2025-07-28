@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use serde_json::json;
 use serde_json::Value;
 use solana_sdk::pubkey;
+use solana_sdk::pubkey::Pubkey;
 use solana_toolbox_endpoint::ToolboxEndpoint;
 use solana_toolbox_idl::ToolboxIdlService;
-use solana_toolbox_idl::ToolboxIdlServiceAccountInfo;
 
 #[tokio::test]
 pub async fn run() {
@@ -26,8 +26,9 @@ pub async fn run() {
         pubkey!("8EodedXFv8DAJ6jGTg4DVXaBVJTVL3o4T2BWwTJTTJjw");
     let name_record_owner =
         pubkey!("8aU2gq8XgzNZr8z4noV87Sx8a3EV29gmi645qQERsaTD");
-    // Lookup our program
+    // Prepare the IDL service
     let mut idl_service = ToolboxIdlService::new();
+    // Check that we can resolve ATA with just the IDL
     let idl_program_ata = idl_service
         .get_or_resolve_program(
             &mut endpoint,
@@ -36,13 +37,10 @@ pub async fn run() {
         .await
         .unwrap()
         .unwrap();
-    let idl_instruction_create_ata =
-        idl_program_ata.instructions.get("create").unwrap();
-    // Check that we can resolve ATA with just the IDL
     let create_ata_instruction_addresses = idl_service
         .resolve_instruction_addresses(
             &mut endpoint,
-            idl_instruction_create_ata,
+            idl_program_ata.instructions.get("create").unwrap(),
             &ToolboxEndpoint::SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
             &json!(null),
             &HashMap::from_iter([
@@ -57,18 +55,20 @@ pub async fn run() {
         user_collateral,
     );
     // Check the state of a system account
-    let user_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &user)
-        .await
-        .unwrap();
-    assert_account_info(user_info, "system", "Wallet", json!(null));
-    // Check the state of the collateral mint
-    let collateral_mint_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &collateral_mint)
-        .await
-        .unwrap();
     assert_account_info(
-        collateral_mint_info,
+        &mut idl_service,
+        &mut endpoint,
+        &user,
+        "system",
+        "Wallet",
+        json!(null),
+    )
+    .await;
+    // Check the state of the collateral mint
+    assert_account_info(
+        &mut idl_service,
+        &mut endpoint,
+        &collateral_mint,
         "spl_token",
         "TokenMint",
         json!({
@@ -78,14 +78,13 @@ pub async fn run() {
             "is_initialized": true,
             "freeze_authority": null,
         }),
-    );
+    )
+    .await;
     // Check the state of the collateral ATA
-    let user_collateral_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &user_collateral)
-        .await
-        .unwrap();
     assert_account_info(
-        user_collateral_info,
+        &mut idl_service,
+        &mut endpoint,
+        &user_collateral,
         "spl_token",
         "TokenAccount",
         json!({
@@ -98,41 +97,38 @@ pub async fn run() {
             "delegated_amount": 0,
             "close_authority": null,
         }),
-    );
+    )
+    .await;
     // Check the state of a known program
-    let program_id_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &program_id)
-        .await
-        .unwrap();
     assert_account_info(
-        program_id_info,
+        &mut idl_service,
+        &mut endpoint,
+        &program_id,
         "bpf_loader_upgradeable",
         "Program",
         json!({
             "program_data": program_data.to_string()
         }),
-    );
+    )
+    .await;
     // Check the state of a known program's executable data
-    let program_data_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &program_data)
-        .await
-        .unwrap();
     assert_account_info(
-        program_data_info,
+        &mut idl_service,
+        &mut endpoint,
+        &program_data,
         "bpf_loader_upgradeable",
         "ProgramData",
         json!({
             "slot": 347133692,
             "upgrade_authority": mint_authority.to_string(),
         }),
-    );
+    )
+    .await;
     // Check the state of a known name record header
-    let name_record_header_info = idl_service
-        .get_and_infer_and_decode_account(&mut endpoint, &name_record_header)
-        .await
-        .unwrap();
     assert_account_info(
-        name_record_header_info,
+        &mut idl_service,
+        &mut endpoint,
+        &name_record_header,
         "spl_name_service",
         "NameRecordHeader",
         json!({
@@ -140,15 +136,22 @@ pub async fn run() {
             "owner": name_record_owner.to_string(),
             "parent_name": ToolboxEndpoint::SYSTEM_PROGRAM_ID.to_string(),
         }),
-    );
+    )
+    .await;
 }
 
-fn assert_account_info(
-    account_info: ToolboxIdlServiceAccountInfo,
+async fn assert_account_info(
+    idl_service: &mut ToolboxIdlService,
+    endpoint: &mut ToolboxEndpoint,
+    address: &Pubkey,
     program_name: &str,
     account_name: &str,
     account_state: Value,
 ) {
+    let account_info = idl_service
+        .get_and_infer_and_decode_account(endpoint, address)
+        .await
+        .unwrap();
     assert_eq!(
         account_info.program.metadata.name,
         Some(program_name.to_string())

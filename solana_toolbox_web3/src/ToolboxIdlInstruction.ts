@@ -64,8 +64,8 @@ export class ToolboxIdlInstruction {
   public static tryParse(
     idlInstructionName: string,
     idlInstruction: any,
-    typedefs: Map<string, ToolboxIdlTypedef>,
     accounts: Map<string, ToolboxIdlAccount>,
+    typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstruction {
     let docs = idlInstruction['docs'];
     let discriminator = Buffer.from(
@@ -80,8 +80,8 @@ export class ToolboxIdlInstruction {
       (idlInstructionAccount: any) => {
         return ToolboxIdlInstructionAccount.tryParse(
           idlInstructionAccount,
-          typedefs,
           accounts,
+          typedefs,
         );
       },
     );

@@ -29,7 +29,7 @@ it('run', () => {
     },
   });
   // Assert that all are equivalent
-  expect!(idlProgram1).toStrictEqual(idlProgram2);
+  expect(idlProgram1).toStrictEqual(idlProgram2);
   // Choose the account
   let idlAccount = idlProgram1.accounts.get('MyAccount')!;
   // Dummy state we'll encode/decode

@@ -73,8 +73,8 @@ it('run', () => {
   };
   // Check that we can use the manual IDL to encode/decode our account 2
   let accountData2 = idlAccount2.encode(accountState2);
-  expect!(
+  expect(
     Buffer.from([99, 43, 0, 0, 0, 0, 78, 44, 0, 0, 0, 2, 79]),
   ).toStrictEqual(accountData2);
-  expect!(accountState2).toStrictEqual(idlAccount2.decode(accountData2));
+  expect(accountState2).toStrictEqual(idlAccount2.decode(accountData2));
 });

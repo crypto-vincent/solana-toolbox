@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::LazyLock;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -8,50 +9,54 @@ use solana_toolbox_endpoint::ToolboxEndpoint;
 
 use crate::toolbox_idl_program::ToolboxIdlProgram;
 
-impl ToolboxIdlProgram {
-    pub fn from_lib(program_id: &Pubkey) -> Option<ToolboxIdlProgram> {
-        let mut known_programs = HashMap::new();
-        known_programs.insert(
+static KNOWN_IDLS: LazyLock<HashMap<Pubkey, &str>> = LazyLock::new(|| {
+    HashMap::from_iter([
+        (
             ToolboxEndpoint::SYSTEM_PROGRAM_ID,
             include_str!("lib/native_system.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::ADDRESS_LOOKUP_TABLE_PROGRAM_ID,
             include_str!("lib/native_address_lookup_table.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::COMPUTE_BUDGET_PROGRAM_ID,
             include_str!("lib/native_compute_budget.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::NATIVE_LOADER_PROGRAM_ID,
             include_str!("lib/native_loader.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::BPF_LOADER_2_PROGRAM_ID,
             include_str!("lib/native_bpf_loader_2.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::BPF_LOADER_UPGRADEABLE_PROGRAM_ID,
             include_str!("lib/native_bpf_loader_upgradeable.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::SPL_TOKEN_PROGRAM_ID,
             include_str!("lib/spl_token.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             ToolboxEndpoint::SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
             include_str!("lib/spl_associated_token.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             pubkey!("namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"),
             include_str!("lib/spl_name_service.json"),
-        );
-        known_programs.insert(
+        ),
+        (
             pubkey!("L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95"),
             include_str!("lib/misc_lighthouse.json"),
-        );
-        known_programs.get(program_id).map(|content| {
+        ),
+    ])
+});
+
+impl ToolboxIdlProgram {
+    pub fn from_lib(program_id: &Pubkey) -> Option<ToolboxIdlProgram> {
+        KNOWN_IDLS.get(program_id).map(|content| {
             ToolboxIdlProgram::try_parse_from_str(content)
                 .context(program_id.to_string())
                 .unwrap()

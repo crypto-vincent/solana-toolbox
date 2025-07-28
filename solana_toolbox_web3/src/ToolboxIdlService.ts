@@ -10,15 +10,15 @@ import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlInstruction } from './ToolboxIdlInstruction';
 
 export class ToolboxIdlService {
-  private cachedPrograms: Map<PublicKey, ToolboxIdlProgram | null>;
+  private cachedPrograms: Map<PublicKey, ToolboxIdlProgram | undefined>;
 
   constructor() {
-    this.cachedPrograms = new Map<PublicKey, ToolboxIdlProgram | null>();
+    this.cachedPrograms = new Map<PublicKey, ToolboxIdlProgram | undefined>();
   }
 
   public setProgram(
     programId: PublicKey,
-    idlProgram: ToolboxIdlProgram | null,
+    idlProgram: ToolboxIdlProgram | undefined,
   ) {
     this.cachedPrograms.set(programId, idlProgram);
   }
@@ -26,7 +26,7 @@ export class ToolboxIdlService {
   public async getOrResolveProgram(
     endpoint: ToolboxEndpoint,
     programId: PublicKey,
-  ): Promise<ToolboxIdlProgram | null> {
+  ): Promise<ToolboxIdlProgram | undefined> {
     let cachedProgram = this.cachedPrograms.get(programId);
     if (cachedProgram !== undefined) {
       return cachedProgram;
@@ -42,13 +42,16 @@ export class ToolboxIdlService {
   static async resolveProgram(
     endpoint: ToolboxEndpoint,
     programId: PublicKey,
-  ): Promise<ToolboxIdlProgram | null> {
-    // TODO - lib idls
+  ): Promise<ToolboxIdlProgram | undefined> {
+    let libProgram = ToolboxIdlProgram.fromLib(programId);
+    if (libProgram !== undefined) {
+      return libProgram;
+    }
     let account = await endpoint.getAccount(
       await ToolboxIdlProgram.findAnchorAddress(programId),
     );
-    if (account == null) {
-      return null;
+    if (account === undefined) {
+      return undefined;
     }
     return ToolboxIdlProgram.tryParseFromAccountData(account.data);
   }

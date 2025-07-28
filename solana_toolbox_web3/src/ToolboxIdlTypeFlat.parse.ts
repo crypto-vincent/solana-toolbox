@@ -40,6 +40,7 @@ export function parseObjectIsPossible(idlType: any): boolean {
   return false;
 }
 
+// TODO - should this be named tryParse ?
 export function parse(idlType: any): ToolboxIdlTypeFlat {
   if (ToolboxUtils.isObject(idlType)) {
     return parseObject(idlType);

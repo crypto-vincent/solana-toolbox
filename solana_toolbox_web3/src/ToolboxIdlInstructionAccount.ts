@@ -2,6 +2,12 @@ import { PublicKey } from '@solana/web3.js';
 import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import { ToolboxUtils } from './ToolboxUtils';
+import { ToolboxIdlInstructionAccountPdaBlob } from './ToolboxIdlInstructionAccountPdaBlob';
+
+export type ToolboxIdlInstructionAccountPda = {
+  seeds: ToolboxIdlInstructionAccountPdaBlob[];
+  program: ToolboxIdlInstructionAccountPdaBlob;
+};
 
 export class ToolboxIdlInstructionAccount {
   public readonly name: string;
@@ -10,7 +16,7 @@ export class ToolboxIdlInstructionAccount {
   public readonly signer: boolean;
   public readonly optional: boolean;
   public readonly address: PublicKey | undefined;
-  public readonly pda: any[] | undefined;
+  public readonly pda: ToolboxIdlInstructionAccountPda | undefined;
 
   constructor(value: {
     name: string;
@@ -19,7 +25,7 @@ export class ToolboxIdlInstructionAccount {
     signer: boolean;
     optional: boolean;
     address?: PublicKey;
-    pda?: any[]; // TODO - support finding of accounts with PDAs and address
+    pda?: ToolboxIdlInstructionAccountPda;
   }) {
     this.name = value.name;
     this.docs = value.docs;
@@ -32,8 +38,8 @@ export class ToolboxIdlInstructionAccount {
 
   public static tryParse(
     idlInstructionAccount: any,
-    typedefs: Map<string, ToolboxIdlTypedef>,
     accounts: Map<string, ToolboxIdlAccount>,
+    typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccount {
     ToolboxUtils.expectObject(idlInstructionAccount);
     let name = ToolboxUtils.convertToSnakeCase(

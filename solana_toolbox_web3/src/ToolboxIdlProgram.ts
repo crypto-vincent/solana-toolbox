@@ -7,6 +7,34 @@ import { ToolboxIdlError } from './ToolboxIdlError';
 import { inflate } from 'pako';
 import { ToolboxIdlEvent } from './ToolboxIdlEvent';
 
+// TODO - this should be move to a separate folder
+import libNativeAddressLookupTable from '../../solana_toolbox_idl/src/lib/native_address_lookup_table.json';
+import libNativeBpfLoader2 from '../../solana_toolbox_idl/src/lib/native_bpf_loader_2.json';
+import libNativeBpfLoaderUpgradeable from '../../solana_toolbox_idl/src/lib/native_bpf_loader_upgradeable.json';
+import libNativeComputeBudget from '../../solana_toolbox_idl/src/lib/native_compute_budget.json';
+import libNativeLoader from '../../solana_toolbox_idl/src/lib/native_loader.json';
+import libNativeSystem from '../../solana_toolbox_idl/src/lib/native_system.json';
+import libSplToken from '../../solana_toolbox_idl/src/lib/spl_token.json';
+import libSplNameService from '../../solana_toolbox_idl/src/lib/spl_name_service.json';
+import libSplAssociatedToken from '../../solana_toolbox_idl/src/lib/spl_associated_token.json';
+import libMiscLighthouse from '../../solana_toolbox_idl/src/lib/misc_lighthouse.json';
+
+let knownIdls = new Map<string, any>([
+  ['11111111111111111111111111111111', libNativeSystem],
+  ['AddressLookupTab1e1111111111111111111111111', libNativeAddressLookupTable],
+  ['ComputeBudget111111111111111111111111111111', libNativeComputeBudget],
+  ['NativeLoader1111111111111111111111111111111', libNativeLoader],
+  ['BPFLoader2111111111111111111111111111111111', libNativeBpfLoader2],
+  [
+    'BPFLoaderUpgradeab1e11111111111111111111111',
+    libNativeBpfLoaderUpgradeable,
+  ],
+  ['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', libSplToken],
+  ['ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', libSplAssociatedToken],
+  ['namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX', libSplNameService],
+  ['L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95', libMiscLighthouse],
+]);
+
 export type ToolboxIdlProgramMetadata = {
   name?: string;
   docs?: any;
@@ -60,6 +88,14 @@ export class ToolboxIdlProgram {
     return await PublicKey.createWithSeed(base, 'anchor:idl', programId);
   }
 
+  public static fromLib(programId: PublicKey): ToolboxIdlProgram | undefined {
+    let knownIdl = knownIdls.get(programId.toBase58());
+    if (knownIdl === undefined) {
+      return undefined;
+    }
+    return ToolboxIdlProgram.tryParse(knownIdl);
+  }
+
   public static tryParseFromAccountData(
     accountData: Buffer,
   ): ToolboxIdlProgram {
@@ -104,8 +140,8 @@ export class ToolboxIdlProgram {
       idlRoot,
       'instructions',
       true,
-      typedefs,
       accounts,
+      typedefs,
       ToolboxIdlInstruction.tryParse,
     );
     let events = ToolboxIdlProgram.tryParseScopedNamedValues(
@@ -188,44 +224,44 @@ export class ToolboxIdlProgram {
     return values;
   }
 
-  public guessAccount(accountData: Buffer): ToolboxIdlAccount | null {
+  public guessAccount(accountData: Buffer): ToolboxIdlAccount | undefined {
     for (let account of this.accounts.values()) {
       try {
         account.check(accountData);
         return account;
       } catch {}
     }
-    return null;
+    return undefined;
   }
 
   public guessInstruction(
     instructionData: Buffer,
-  ): ToolboxIdlInstruction | null {
+  ): ToolboxIdlInstruction | undefined {
     for (let instruction of this.instructions.values()) {
       try {
         instruction.checkPayload(instructionData);
         return instruction;
       } catch {}
     }
-    return null;
+    return undefined;
   }
 
-  public guessEvent(eventData: Buffer): ToolboxIdlEvent | null {
+  public guessEvent(eventData: Buffer): ToolboxIdlEvent | undefined {
     for (let event of this.events.values()) {
       try {
         event.check(eventData);
         return event;
       } catch {}
     }
-    return null;
+    return undefined;
   }
 
-  public guessError(errorCode: number): ToolboxIdlError | null {
+  public guessError(errorCode: number): ToolboxIdlError | undefined {
     for (let error of this.errors.values()) {
       if (error.code === errorCode) {
         return error;
       }
     }
-    return null;
+    return undefined;
   }
 }

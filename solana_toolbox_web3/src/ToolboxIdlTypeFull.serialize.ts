@@ -119,7 +119,7 @@ let serializeVisitor = {
     if (ToolboxUtils.isNumber(value)) {
       for (let variant of self.variants) {
         if (variant.code == value) {
-          return serializeEnumVariant(variant, null);
+          return serializeEnumVariant(variant, undefined);
         }
       }
       throw new Error(`Could not find enum variant with code: ${value}`);
@@ -127,7 +127,7 @@ let serializeVisitor = {
     if (ToolboxUtils.isString(value)) {
       for (let variant of self.variants) {
         if (variant.name == value) {
-          return serializeEnumVariant(variant, null);
+          return serializeEnumVariant(variant, undefined);
         }
       }
       throw new Error(`Could not find enum variant with name: ${value}`);

@@ -5,7 +5,7 @@ import {
 } from '@solana/web3.js';
 
 export class ToolboxEndpointExecution {
-  public readonly processedTime: Date | null;
+  public readonly processedTime: Date | null; // TODO - should this be undefined instead of null?
   public readonly slot: number;
   public readonly payer: PublicKey;
   public readonly instructions: TransactionInstruction[];
