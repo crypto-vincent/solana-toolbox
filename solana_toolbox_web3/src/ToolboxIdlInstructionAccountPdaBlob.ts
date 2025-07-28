@@ -21,12 +21,13 @@ export type ToolboxIdlInstructionAccountPdaBlobConst = {
 
 export type ToolboxIdlInstructionAccountPdaBlobArg = {
   path: string;
-  typeFlat: ToolboxIdlTypeFlat;
-  typeFull: ToolboxIdlTypeFlat;
+  //typeFlat: ToolboxIdlTypeFlat;
+  //typeFull: ToolboxIdlTypeFlat;
 };
 
 export type ToolboxIdlInstructionAccountPdaBlobAccount = {
   path: string;
+  // TODO - finish implementation for tihs
 };
 
 export type ToolboxIdlInstructionAccountPdaBlobContent =
@@ -105,7 +106,7 @@ export class ToolboxIdlInstructionAccountPdaBlob {
           idlInstructionAccountPdaBlob['path'],
         );
         if (idlInstructionAccountPdaBlob['kind'] === 'arg') {
-          return this.arg({ path });
+          return this.tryParseArgPath(path, argsTypeFlatFields);
         }
         return this.account({ path });
       }
@@ -144,5 +145,8 @@ export class ToolboxIdlInstructionAccountPdaBlob {
   static tryParseArgPath(
     idlInstructionAccountPdaBlobPath: string,
     argsTypeFlatFields: ToolboxIdlTypeFlatFields,
-  ): ToolboxIdlInstructionAccountPdaBlob {}
+  ): ToolboxIdlInstructionAccountPdaBlob {
+    // TODO - finish parsing implementation parsing
+    return this.arg({ path: idlInstructionAccountPdaBlobPath });
+  }
 }
