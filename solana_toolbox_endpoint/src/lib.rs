@@ -41,7 +41,6 @@ pub use toolbox_endpoint_execution::ToolboxEndpointExecution;
 pub use toolbox_endpoint_execution::ToolboxEndpointExecutionStep;
 pub use toolbox_endpoint_execution::ToolboxEndpointExecutionStepCall;
 pub use toolbox_endpoint_factory_program_test::ToolboxEndpointProgramTestBuiltinProgram;
-pub use toolbox_endpoint_factory_program_test::ToolboxEndpointProgramTestPreloadedProgram;
 pub use toolbox_endpoint_logger::ToolboxEndpointLogger;
 pub use toolbox_endpoint_logger_history::ToolboxEndpointLoggerHistory;
 pub use toolbox_endpoint_logger_printer::ToolboxEndpointLoggerPrinter;

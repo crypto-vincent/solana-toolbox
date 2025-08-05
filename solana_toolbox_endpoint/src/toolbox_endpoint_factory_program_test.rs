@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+
 use solana_program_runtime::invoke_context::BuiltinFunctionWithContext;
 use solana_program_test::ProgramTest;
+use solana_sdk::account::Account;
 use solana_sdk::pubkey::Pubkey;
 
 use crate::toolbox_endpoint::ToolboxEndpoint;
 use crate::toolbox_endpoint_proxy::ToolboxEndpointProxy;
 use crate::toolbox_endpoint_proxy_program_test_context::ToolboxEndpointProxyProgramTestContext;
 
+// TODO - simplify this, we should just need a HashMap<Pubkey, function> or something like that
 pub struct ToolboxEndpointProgramTestBuiltinProgram {
     pub id: Pubkey,
     pub name: &'static str,
@@ -39,16 +43,12 @@ macro_rules! toolbox_endpoint_program_test_builtin_program_anchor {
     };
 }
 
-pub struct ToolboxEndpointProgramTestPreloadedProgram {
-    pub id: Pubkey,
-    pub path: &'static str,
-}
-
 impl ToolboxEndpoint {
     pub async fn new_program_test() -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_builtin_and_preloaded_programs(
+        ToolboxEndpoint::new_program_test_with_setup(
             &[],
-            &[],
+            HashMap::default(),
+            HashMap::default(),
         )
         .await
     }
@@ -56,27 +56,29 @@ impl ToolboxEndpoint {
     pub async fn new_program_test_with_builtin_programs(
         builtin_programs: &[ToolboxEndpointProgramTestBuiltinProgram],
     ) -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_builtin_and_preloaded_programs(
+        ToolboxEndpoint::new_program_test_with_setup(
             builtin_programs,
-            &[],
+            HashMap::default(),
+            HashMap::default(),
         )
         .await
     }
 
     pub async fn new_program_test_with_preloaded_programs(
-        preloaded_programs: &[ToolboxEndpointProgramTestPreloadedProgram],
+        preloaded_programs: HashMap<Pubkey, &'static str>,
     ) -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_builtin_and_preloaded_programs(
+        ToolboxEndpoint::new_program_test_with_setup(
             &[],
             preloaded_programs,
+            HashMap::default(),
         )
         .await
     }
 
-    // TODO - support injecting custom accounts too
-    pub async fn new_program_test_with_builtin_and_preloaded_programs(
+    pub async fn new_program_test_with_setup(
         builtin_programs: &[ToolboxEndpointProgramTestBuiltinProgram],
-        preloaded_programs: &[ToolboxEndpointProgramTestPreloadedProgram],
+        preloaded_programs: HashMap<Pubkey, &'static str>,
+        preloaded_accounts: HashMap<Pubkey, Account>,
     ) -> ToolboxEndpoint {
         let mut program_test = ProgramTest::default();
         for builtin_program in builtin_programs {
@@ -87,12 +89,18 @@ impl ToolboxEndpoint {
             );
         }
         program_test.prefer_bpf(true);
-        for preloaded_program in preloaded_programs {
+        for (preloaded_program_id, preloaded_program_path) in preloaded_programs
+        {
             program_test.add_program(
-                preloaded_program.path,
-                preloaded_program.id,
+                preloaded_program_path,
+                preloaded_program_id,
                 None,
             );
+        }
+        for (preloaded_account_address, preloaded_account) in preloaded_accounts
+        {
+            program_test
+                .add_account(preloaded_account_address, preloaded_account);
         }
         let mut proxy_program_test_context =
             ToolboxEndpointProxyProgramTestContext::new(

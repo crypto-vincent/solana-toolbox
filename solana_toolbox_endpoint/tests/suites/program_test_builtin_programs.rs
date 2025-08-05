@@ -11,7 +11,7 @@ use solana_toolbox_endpoint::ToolboxEndpoint;
 #[tokio::test]
 pub async fn run() {
     // Define dummy builtin program #1
-    let builtin1_program_id = Keypair::new();
+    let builtin1_program_id = Keypair::new().pubkey();
     fn builtin1_program_entry(
         _program_id: &Pubkey,
         _accounts: &[AccountInfo],
@@ -20,7 +20,7 @@ pub async fn run() {
         Ok(())
     }
     // Define dummy builtin program #2
-    let builtin2_program_id = Keypair::new();
+    let builtin2_program_id = Keypair::new().pubkey();
     fn builtin2_program_entry<'info>(
         _program_id: &Pubkey,
         _accounts: &'info [AccountInfo<'info>],
@@ -33,12 +33,12 @@ pub async fn run() {
         ToolboxEndpoint::new_program_test_with_builtin_programs(&[
             toolbox_endpoint_program_test_builtin_program!(
                 "builtin1",
-                builtin1_program_id.pubkey(),
+                builtin1_program_id,
                 builtin1_program_entry
             ),
             toolbox_endpoint_program_test_builtin_program_anchor!(
                 "builtin2",
-                builtin2_program_id.pubkey(),
+                builtin2_program_id,
                 builtin2_program_entry
             ),
         ])
@@ -54,7 +54,7 @@ pub async fn run() {
         .process_instruction(
             &payer,
             Instruction {
-                program_id: builtin1_program_id.pubkey(),
+                program_id: builtin1_program_id,
                 accounts: vec![],
                 data: vec![],
             },
@@ -66,7 +66,7 @@ pub async fn run() {
         .process_instruction(
             &payer,
             Instruction {
-                program_id: builtin2_program_id.pubkey(),
+                program_id: builtin2_program_id,
                 accounts: vec![],
                 data: vec![],
             },
