@@ -46,6 +46,7 @@ struct TokenMetaplexMetadataUpdateArgsSimplified {
 }
 
 impl ToolboxEndpoint {
+    // TODO - should this be separated in utility crates instead ?
     pub const SPL_TOKEN_METAPLEX_METADATA_PROGRAM_ID: Pubkey =
         pubkey!("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 

@@ -64,23 +64,26 @@ pub struct ToolboxCliArgs {
     idls: Vec<String>,
     #[arg(
         display_order = 6,
-        long = "minify",
-        alias = "compact",
-        help = "Output minified JSON"
+        short = 'p',
+        long = "pretty",
+        help = "Output pretty JSON"
     )]
-    compact: bool,
+    pretty: bool,
     #[command(subcommand)]
     command: ToolboxCliCommand,
 }
 
 impl ToolboxCliArgs {
     pub async fn process(&self) -> Result<()> {
-        let mut solana_cli_config = Config::load(
-            self.config
-                .as_ref()
-                .or(CONFIG_FILE.as_ref())
-                .ok_or_else(|| anyhow!("Could not find solana config file"))?,
-        )?;
+        let mut solana_cli_config = match self.config {
+            Some(ref config_file) => Config::load(&config_file)?,
+            None => match *CONFIG_FILE {
+                Some(ref config_file) => {
+                    Config::load(&config_file).ok().unwrap_or(Config::default())
+                },
+                None => Config::default(),
+            },
+        };
         if let Some(commitment) = &self.commitment {
             solana_cli_config.commitment = commitment.to_string();
         }
@@ -98,10 +101,10 @@ impl ToolboxCliArgs {
             self.idls.clone(),
         );
         let json = self.command.process(&context).await?;
-        if self.compact {
-            println!("{}", serde_json::to_string(&json)?);
-        } else {
+        if self.pretty {
             println!("{}", serde_json::to_string_pretty(&json)?);
+        } else {
+            println!("{}", serde_json::to_string(&json)?);
         }
         Ok(())
     }

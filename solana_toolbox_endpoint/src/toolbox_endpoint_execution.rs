@@ -8,6 +8,8 @@ use solana_sdk::transaction::TransactionError;
 
 use crate::toolbox_endpoint::ToolboxEndpoint;
 
+// TODO - probably no need to support both executing and simulating with the same struct ?
+// TODO - there should be maybe some utility for printing here instead of using the logger wrapper thingy ?
 #[derive(Debug, Clone, PartialEq)]
 pub struct ToolboxEndpointExecution {
     pub processed_time: Option<SystemTime>,
