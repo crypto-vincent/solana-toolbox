@@ -66,7 +66,7 @@ pub async fn run() {
     let case7 = idl_account
         .encode(&json!({
             "bytes": {"value": ["Coordinator", "Join", "Run"], "type": ["string"]},
-            "vec_u8_1": {"value": ["Coordinator", "Join", "Run"], "type": ["string", 3]},
+            "vec_u8_1": {"value": ["Coordinator", "Join", [82, 117, 110]], "type": ["bytes", 3]},
             "vec_u8_2": {"value": ["Coordinator", "Join", "Run"], "type": {"vec": "string"}, "prefixed": false},
         }))
         .unwrap();

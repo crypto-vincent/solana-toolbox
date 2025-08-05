@@ -189,6 +189,9 @@ pub(crate) fn idl_value_as_bool_or_else(value: &Value) -> Result<bool> {
 }
 
 pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
+    if let Some(value_str) = value.as_str() {
+        return Ok(value_str.as_bytes().to_vec());
+    }
     if let Some(value_array) = value.as_array() {
         let mut bytes = vec![];
         for item in value_array {
@@ -235,7 +238,9 @@ pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
         }
         // TODO - support 0xff padding ?
     }
-    Err(anyhow!("Could not read bytes, expected an array/object"))
+    Err(anyhow!(
+        "Could not read bytes, expected an string/array/object"
+    ))
 }
 
 pub(crate) fn idl_slice_from_bytes(
