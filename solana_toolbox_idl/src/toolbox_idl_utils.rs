@@ -13,6 +13,7 @@ use solana_sdk::hash::Hasher;
 use solana_toolbox_endpoint::ToolboxEndpoint;
 
 use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
+use crate::ToolboxIdlTypeFlat;
 
 pub(crate) fn idl_object_get_key_as_array<'a>(
     object: &'a Map<String, Value>,
@@ -211,8 +212,28 @@ pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
         if let Some(data) = idl_object_get_key_as_u64(value_object, "zeroes") {
             return Ok(vec![0; usize::try_from(data)?]);
         }
+        if let Some(value) = value_object.get("value") {
+            let type_flat = ToolboxIdlTypeFlat::try_parse(
+                value_object.get("type").context("Unspecified Type")?,
+            )
+            .context("Parse Type")?;
+            let type_full = type_flat
+                .try_hydrate(&HashMap::new(), &HashMap::new())
+                .context("Hydrate Type")?;
+            let mut data = vec![];
+            type_full
+                .try_serialize(
+                    value,
+                    &mut data,
+                    value_object
+                        .get("prefixed")
+                        .and_then(|v| v.as_bool())
+                        .unwrap_or(false),
+                )
+                .context("Serialize Value")?;
+            return Ok(data);
+        }
         // TODO - support 0xff padding ?
-        // TODO - support type/value pairs ?
     }
     Err(anyhow!("Could not read bytes, expected an array/object"))
 }

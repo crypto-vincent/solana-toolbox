@@ -63,6 +63,13 @@ pub async fn run() {
             "vec_u8_2": {"base64": "\"Q29vcmRpbmF0b3JKb2luUnVu\""},
         }))
         .unwrap();
+    let case7 = idl_account
+        .encode(&json!({
+            "bytes": {"value": ["Coordinator", "Join", "Run"], "type": ["string"]},
+            "vec_u8_1": {"value": ["Coordinator", "Join", "Run"], "type": ["string", 3]},
+            "vec_u8_2": {"value": ["Coordinator", "Join", "Run"], "type": {"vec": "string"}, "prefixed": false},
+        }))
+        .unwrap();
     // Check that we got the correct results
     let mut expected = vec![];
     expected.extend_from_slice(&idl_account.discriminator);
@@ -78,4 +85,5 @@ pub async fn run() {
     assert_eq!(case4, expected);
     assert_eq!(case5, expected);
     assert_eq!(case6, expected);
+    assert_eq!(case7, expected);
 }
