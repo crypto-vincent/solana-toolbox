@@ -85,6 +85,7 @@ export class ToolboxIdlService {
       program: idlProgram,
       account: idlAccount,
       state: accountState,
+      space: account.data.length,
     };
   }
 

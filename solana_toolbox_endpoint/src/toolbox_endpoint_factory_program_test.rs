@@ -45,7 +45,7 @@ macro_rules! toolbox_endpoint_program_test_builtin_program_anchor {
 
 impl ToolboxEndpoint {
     pub async fn new_program_test() -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_setup(
+        ToolboxEndpoint::new_program_test_with_config(
             &[],
             HashMap::default(),
             HashMap::default(),
@@ -56,7 +56,7 @@ impl ToolboxEndpoint {
     pub async fn new_program_test_with_builtin_programs(
         builtin_programs: &[ToolboxEndpointProgramTestBuiltinProgram],
     ) -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_setup(
+        ToolboxEndpoint::new_program_test_with_config(
             builtin_programs,
             HashMap::default(),
             HashMap::default(),
@@ -64,11 +64,10 @@ impl ToolboxEndpoint {
         .await
     }
 
-    // TODO - With preloaded programs and account util
     pub async fn new_program_test_with_preloaded_programs(
         preloaded_programs: HashMap<Pubkey, &'static str>,
     ) -> ToolboxEndpoint {
-        ToolboxEndpoint::new_program_test_with_setup(
+        ToolboxEndpoint::new_program_test_with_config(
             &[],
             preloaded_programs,
             HashMap::default(),
@@ -76,7 +75,19 @@ impl ToolboxEndpoint {
         .await
     }
 
-    pub async fn new_program_test_with_setup(
+    pub async fn new_program_test_with_preloaded_programs_and_accounts(
+        preloaded_programs: HashMap<Pubkey, &'static str>,
+        preloaded_accounts: HashMap<Pubkey, Account>,
+    ) -> ToolboxEndpoint {
+        ToolboxEndpoint::new_program_test_with_config(
+            &[],
+            preloaded_programs,
+            preloaded_accounts,
+        )
+        .await
+    }
+
+    pub async fn new_program_test_with_config(
         builtin_programs: &[ToolboxEndpointProgramTestBuiltinProgram],
         preloaded_programs: HashMap<Pubkey, &'static str>,
         preloaded_accounts: HashMap<Pubkey, Account>,

@@ -29,6 +29,7 @@ impl ToolboxCliCommandAccountArgs {
                 &account_info.account,
             ),
             "state": account_info.state,
+            "space": account_info.space,
             "explorer_url": context.compute_explorer_address_url(&address),
         }))
     }

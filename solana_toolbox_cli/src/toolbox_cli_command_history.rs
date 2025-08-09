@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::Args;
 use serde_json::json;
+use serde_json::Map;
 use serde_json::Value;
 
 use crate::toolbox_cli_context::ToolboxCliContext;
@@ -15,20 +16,29 @@ pub struct ToolboxCliCommandHistoryArgs {
     address: String,
     #[arg(
         value_name = "COUNT",
-        help = "How many signature we'll read for before stopping"
+        help = "How many transactions should be read at most",
+        default_value = "10"
     )]
-    limit: usize,
-    #[arg(value_name = "SIGNATURE")]
-    start_before_signature: Option<String>,
-    #[arg(value_name = "SIGNATURE")]
-    rewind_until_signature: Option<String>,
+    count: usize,
     #[arg(
-        display_order = 11,
-        long = "name",
-        value_name = "INSTRUCTION_NAME",
-        help = "Expect matching parsed IDL instruction name"
+        long,
+        value_name = "OFFSET",
+        help = "Pagination offset",
+        default_value = "0"
     )]
-    name: Option<String>,
+    offset: usize,
+    #[arg(
+        long,
+        value_name = "SIGNATURE",
+        help = "Read transactions that happened earlier than this one"
+    )]
+    start_before: Option<String>,
+    #[arg(
+        long,
+        value_name = "SIGNATURE",
+        help = "Keep reading transactions until reaching this signature"
+    )]
+    rewind_until: Option<String>,
 }
 
 impl ToolboxCliCommandHistoryArgs {
@@ -37,23 +47,27 @@ impl ToolboxCliCommandHistoryArgs {
         let mut idl_service = context.create_service().await?;
         let address = context.parse_key(&self.address)?.address();
         let start_before = self
-            .start_before_signature
+            .start_before
             .as_ref()
             .map(|signature| context.parse_signature(signature))
             .transpose()?;
         let rewind_until = self
-            .rewind_until_signature
+            .rewind_until
             .as_ref()
             .map(|signature| context.parse_signature(signature))
             .transpose()?;
         let signatures = endpoint
-            .search_signatures(&address, self.limit, start_before, rewind_until)
+            .search_signatures(
+                &address,
+                self.offset + self.count,
+                start_before,
+                rewind_until,
+            )
             .await?;
         let mut json_history = vec![];
-        for signature in signatures {
+        for signature in signatures.iter().skip(self.offset) {
             let mut json_instructions = vec![];
             let execution = endpoint.get_execution(&signature).await?;
-            let mut filtered_out = self.name.is_some();
             for instruction in execution.instructions {
                 match idl_service
                     .infer_and_decode_instruction(&mut endpoint, &instruction)
@@ -65,14 +79,15 @@ impl ToolboxCliCommandHistoryArgs {
                                 &instruction_info.program,
                                 &instruction_info.instruction,
                             );
-                        if let Some(name) = &self.name {
-                            if instruction_name.contains(name) {
-                                filtered_out = false;
-                            }
-                        }
                         json_instructions.push(json!({
                             "program_id": instruction.program_id.to_string(),
                             "name": instruction_name,
+                            "addresses": Map::from_iter(
+                                instruction_info
+                                    .addresses
+                                    .iter()
+                                    .map(|(name, address)| (name.to_string(), json!(address.to_string())))
+                            ),
                             "payload": instruction_info.payload,
                         }))
                     },
@@ -84,13 +99,11 @@ impl ToolboxCliCommandHistoryArgs {
                     },
                 };
             }
-            if !filtered_out {
-                json_history.push(json!({
-                    "signature": signature.to_string(),
-                    "instructions": json_instructions,
-                    "explorer_url": context.compute_explorer_signature_url(&signature),
-                }));
-            }
+            json_history.push(json!({
+                "signature": signature.to_string(),
+                "instructions": json_instructions,
+                "explorer_url": context.compute_explorer_signature_url(&signature),
+            }));
         }
         Ok(json!(json_history))
     }

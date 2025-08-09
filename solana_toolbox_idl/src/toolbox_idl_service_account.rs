@@ -17,6 +17,7 @@ pub struct ToolboxIdlServiceAccountInfo {
     pub program: Arc<ToolboxIdlProgram>,
     pub account: Arc<ToolboxIdlAccount>,
     pub state: Value,
+    pub space: usize,
 }
 
 impl ToolboxIdlService {
@@ -54,6 +55,7 @@ impl ToolboxIdlService {
             program: idl_program,
             account: idl_account,
             state: account_state,
+            space: account.data.len(),
         })
     }
 }

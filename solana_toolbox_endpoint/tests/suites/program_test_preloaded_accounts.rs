@@ -12,7 +12,7 @@ pub async fn run() {
     let preloaded_account_lamports = 1_000_000_000;
     let preloaded_account_data = Keypair::new().to_bytes();
     // Initialize the endpoint
-    let mut endpoint = ToolboxEndpoint::new_program_test_with_setup(
+    let mut endpoint = ToolboxEndpoint::new_program_test_with_config(
         &[],
         HashMap::default(),
         HashMap::from_iter(vec![(
