@@ -15,6 +15,7 @@ pub struct ToolboxCliCommandHistoryArgs {
     )]
     address: String,
     #[arg(
+        long,
         value_name = "COUNT",
         help = "How many transactions should be read at most",
         default_value = "10"
@@ -101,6 +102,8 @@ impl ToolboxCliCommandHistoryArgs {
             }
             json_history.push(json!({
                 "signature": signature.to_string(),
+                "slot": execution.slot,
+                "success": execution.error.is_none(),
                 "instructions": json_instructions,
                 "explorer_url": context.compute_explorer_signature_url(&signature),
             }));

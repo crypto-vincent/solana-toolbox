@@ -57,6 +57,8 @@ impl ToolboxCliCommandExecutionArgs {
             }));
         }
         Ok(json!({
+            // TODO - include execution time
+            "slot": execution.slot,
             "payer": execution.payer.to_string(),
             "instructions": json_instructions,
             "logs": execution.logs, // TODO (MEDIUM) - parse events from logs (39VGeYvhykSQnAFyqARriRrU1DLjGj1jLstRoDShxK4EG5SNQtPM6NQM8dLBwt5kbn7poRn3cJj4xFPL1uKABz3h)
