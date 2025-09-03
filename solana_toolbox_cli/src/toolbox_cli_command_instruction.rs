@@ -132,7 +132,7 @@ impl ToolboxCliCommandInstructionArgs {
 
         let mut instruction_signers = vec![];
         for signer in &self.signers {
-            instruction_signers.push(context.load_keypair(signer));
+            instruction_signers.push(context.load_keypair(signer)?);
         }
 
         let (explained_payload, explained_addresses) =
@@ -212,7 +212,7 @@ impl ToolboxCliCommandInstructionArgs {
                         self.compute_price,
                     );
                 match ToolboxEndpoint::compile_transaction(
-                    &context.get_keypair(),
+                    &context.get_keypair()?,
                     &instructions,
                     &signers,
                     endpoint.get_latest_blockhash().await?,

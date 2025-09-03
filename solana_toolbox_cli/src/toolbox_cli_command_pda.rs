@@ -81,7 +81,8 @@ impl ToolboxCliCommandPdaArgs {
                         "base16": ToolboxEndpoint::encode_base16(&seed_bytes),
                         "base58": ToolboxEndpoint::encode_base58(&seed_bytes),
                         "base64": ToolboxEndpoint::encode_base64(&seed_bytes),
-                        "utf8_lossy": String::from_utf8_lossy(&seed_bytes)
+                        "utf8_lossy": String::from_utf8_lossy(&seed_bytes),
+                        "raw": seed_bytes,
                     }
                 }));
                 seeds_bytes.push(seed_bytes);

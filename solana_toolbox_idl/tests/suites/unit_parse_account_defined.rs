@@ -77,5 +77,5 @@ pub async fn run() {
             },
         }
         .into()
-    )
+    );
 }

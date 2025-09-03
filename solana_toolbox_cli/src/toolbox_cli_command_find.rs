@@ -9,7 +9,6 @@ use solana_toolbox_idl::ToolboxIdlTypePrefix;
 use solana_toolbox_idl::ToolboxIdlTypePrimitive;
 
 use crate::toolbox_cli_context::ToolboxCliContext;
-use crate::toolbox_cli_json::cli_json_value_fit;
 
 #[derive(Debug, Clone, Args)]
 #[command(about = "Search addresses of accounts of given program")]
@@ -51,19 +50,19 @@ pub struct ToolboxCliCommandFindArgs {
     #[arg(
         display_order = 15,
         long = "state-fit",
-        alias = "states-fits",
+        alias = "state-fits",
         value_name = "JSON_VALUE",
         help = "Expect account state to fit this value (to be a superset of it)"
     )]
-    states_fits: Vec<String>,
+    state_fits: Vec<String>,
     #[arg(
         display_order = 16,
         long = "state-path",
-        alias = "states-pathses",
+        alias = "state-paths",
         value_name = "JSON_PATH",
         help = "Expect account state to contain a value at this path"
     )]
-    states_paths: Vec<String>,
+    state_paths: Vec<String>,
 }
 
 impl ToolboxCliCommandFindArgs {
@@ -126,19 +125,19 @@ impl ToolboxCliCommandFindArgs {
                 }),
             };
             let mut ignored = false;
-            for state_fit in &self.states_fits {
-                if !cli_json_value_fit(
+            for state_fit in &self.state_fits {
+                if !Self::json_value_fit(
                     &account_state,
                     &context.parse_hjson(state_fit)?,
                 ) {
                     ignored = true;
                 }
             }
-            let account_state = if self.states_paths.is_empty() {
+            let account_state = if self.state_paths.is_empty() {
                 account_state
             } else {
                 let mut account_state_filtered = json!({});
-                for state_path in &self.states_paths {
+                for state_path in &self.state_paths {
                     let path = ToolboxIdlPath::try_parse(state_path)?;
                     account_state_filtered =
                         match path.try_get_json_value(&account_state) {
@@ -164,5 +163,68 @@ impl ToolboxCliCommandFindArgs {
             }
         }
         Ok(json!(json_accounts))
+    }
+
+    fn json_value_fit(superset_value: &Value, subset_value: &Value) -> bool {
+        match subset_value {
+            Value::Null => {
+                if let Some(()) = superset_value.as_null() {
+                    return true;
+                }
+                false
+            },
+            Value::Bool(subset_bool) => {
+                if let Some(superset_bool) = superset_value.as_bool() {
+                    return &superset_bool == subset_bool;
+                }
+                false
+            },
+            Value::Number(subset_number) => {
+                if let Some(superset_number) = superset_value.as_number() {
+                    return superset_number == subset_number;
+                }
+                false
+            },
+            Value::String(subset_string) => {
+                if let Some(superset_string) = superset_value.as_str() {
+                    return superset_string == subset_string;
+                }
+                false
+            },
+            Value::Array(subset_array) => {
+                if let Some(superset_array) = superset_value.as_array() {
+                    if superset_array.len() < subset_array.len() {
+                        return false;
+                    }
+                    for (index, subset_item) in subset_array.iter().enumerate()
+                    {
+                        let superset_item = &superset_array[index];
+                        if !Self::json_value_fit(superset_item, subset_item) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                false
+            },
+            Value::Object(subset_object) => {
+                if let Some(superset_object) = superset_value.as_object() {
+                    for (key, subset_field) in subset_object {
+                        if let Some(superset_field) = superset_object.get(key) {
+                            if !Self::json_value_fit(
+                                superset_field,
+                                subset_field,
+                            ) {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                false
+            },
+        }
     }
 }

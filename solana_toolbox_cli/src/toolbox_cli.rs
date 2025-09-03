@@ -63,11 +63,11 @@ pub struct ToolboxCliArgs {
     idls: Vec<String>,
     #[arg(
         display_order = 6,
-        short = 'p',
-        long = "pretty",
-        help = "Output pretty JSON"
+        long = "compact",
+        alias = "minify",
+        help = "Output compact JSON"
     )]
-    pretty: bool,
+    compact: bool,
     #[command(subcommand)]
     command: ToolboxCliCommand,
 }
@@ -98,10 +98,10 @@ impl ToolboxCliArgs {
             self.idls.clone(),
         );
         let json = self.command.process(&context).await?;
-        if self.pretty {
-            println!("{}", serde_json::to_string_pretty(&json)?);
-        } else {
+        if self.compact {
             println!("{}", serde_json::to_string(&json)?);
+        } else {
+            println!("{}", serde_json::to_string_pretty(&json)?);
         }
         Ok(())
     }

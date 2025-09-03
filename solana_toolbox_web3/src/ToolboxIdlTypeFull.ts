@@ -264,6 +264,10 @@ export class ToolboxIdlTypeFullFields {
     return new ToolboxIdlTypeFullFields('unnamed', []);
   }
 
+  public isEmpty(): boolean {
+    return this.content.length === 0;
+  }
+
   public traverse<P1, P2, P3, T>(
     visitor: {
       named: (

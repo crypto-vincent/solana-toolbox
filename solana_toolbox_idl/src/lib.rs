@@ -41,6 +41,7 @@ mod toolbox_idl_type_full_bytemuck_c;
 mod toolbox_idl_type_full_bytemuck_rust;
 mod toolbox_idl_type_full_deserialize;
 mod toolbox_idl_type_full_explained;
+mod toolbox_idl_type_full_schema;
 mod toolbox_idl_type_full_serialize;
 mod toolbox_idl_type_prefix;
 mod toolbox_idl_type_primitive;

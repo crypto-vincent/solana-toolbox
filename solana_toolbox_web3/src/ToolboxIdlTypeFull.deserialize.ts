@@ -143,13 +143,13 @@ let deserializeVisitor = {
     let dataVariantOffset = dataOffset + dataSize;
     for (let variant of self.variants) {
       if (variant.code === (dataPrefix & enumMask)) {
+        if (variant.fields.isEmpty()) {
+          return [dataSize, variant.name];
+        }
         let [dataVariantSize, dataVariant] = ToolboxUtils.withContext(() => {
           return deserializeFields(variant.fields, data, dataVariantOffset);
         }, `Deserialize: Enum Variant: ${variant.name} (offset: ${dataVariantOffset})`);
         dataSize += dataVariantSize;
-        if (dataVariant === null) {
-          return [dataSize, variant.name];
-        }
         return [dataSize, { [variant.name]: dataVariant }];
       }
     }
@@ -194,6 +194,9 @@ export function deserializeFields(
   data: Buffer,
   dataOffset: number,
 ): [number, any] {
+  if (fields.isEmpty()) {
+    return [0, null];
+  }
   return fields.traverse(deserializeFieldsVisitor, data, dataOffset, undefined);
 }
 
@@ -203,9 +206,6 @@ let deserializeFieldsVisitor = {
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {
-    if (self.length <= 0) {
-      return [0, null];
-    }
     let dataSize = 0;
     let dataFields: Record<string, any> = {};
     for (let field of self) {
@@ -223,9 +223,6 @@ let deserializeFieldsVisitor = {
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {
-    if (self.length <= 0) {
-      return [0, null];
-    }
     let dataSize = 0;
     let dataFields = [];
     for (let field of self) {

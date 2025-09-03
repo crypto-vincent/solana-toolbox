@@ -32,5 +32,5 @@ pub async fn run() {
             msg: None,
         }
         .into()
-    )
+    );
 }

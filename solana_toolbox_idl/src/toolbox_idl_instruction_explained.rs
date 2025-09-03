@@ -60,7 +60,8 @@ impl ToolboxIdlInstructionAccountPdaBlob {
                             "base16": ToolboxEndpoint::encode_base16(&data),
                             "base58": ToolboxEndpoint::encode_base58(&data),
                             "base64": ToolboxEndpoint::encode_base64(&data),
-                            "utf8_lossy": String::from_utf8_lossy(&data)
+                            "utf8_lossy": String::from_utf8_lossy(&data),
+                            "raw": data,
                         }
                     }),
                     Err(error) => json!({

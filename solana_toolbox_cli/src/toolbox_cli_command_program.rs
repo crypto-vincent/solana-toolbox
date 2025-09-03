@@ -1,6 +1,10 @@
+use std::collections::HashMap;
+
+use anyhow::Context;
 use anyhow::Result;
 use clap::Args;
 use clap::Subcommand;
+use clap::ValueEnum;
 use serde_json::json;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
@@ -29,6 +33,7 @@ impl ToolboxCliCommandProgramArgs {
 pub enum ToolboxCliCommandProgramCommand {
     Summary(ToolboxCliCommandProgramCommandSummaryArgs),
     Export(ToolboxCliCommandProgramCommandExportArgs),
+    Schema(ToolboxCliCommandProgramCommandSchemaArgs),
 }
 
 impl ToolboxCliCommandProgramCommand {
@@ -42,6 +47,9 @@ impl ToolboxCliCommandProgramCommand {
                 args.process(context, program_id).await
             },
             ToolboxCliCommandProgramCommand::Export(args) => {
+                args.process(context, program_id).await
+            },
+            ToolboxCliCommandProgramCommand::Schema(args) => {
                 args.process(context, program_id).await
             },
         }
@@ -69,8 +77,8 @@ impl ToolboxCliCommandProgramCommandSummaryArgs {
             json_accounts_names.push(json!(idl_account_name));
         }
         let mut json_instructions_names = vec![];
-        for idl_account_name in idl_program.instructions.keys() {
-            json_instructions_names.push(json!(idl_account_name));
+        for idl_instruction_name in idl_program.instructions.keys() {
+            json_instructions_names.push(json!(idl_instruction_name));
         }
         let mut json_pdas = vec![];
         for idl_instruction in idl_program.instructions.values() {
@@ -122,5 +130,67 @@ impl ToolboxCliCommandProgramCommandExportArgs {
             _ => ToolboxIdlFormat::human(),
         };
         Ok(idl_program.export(&format))
+    }
+}
+
+#[derive(Debug, Clone, Args)]
+#[command(about = "Generate a JSON schema")]
+pub struct ToolboxCliCommandProgramCommandSchemaArgs {
+    #[arg()]
+    kind: ToolboxCliCommandProgramCommandSchemaKind,
+    #[arg()]
+    name: String,
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum ToolboxCliCommandProgramCommandSchemaKind {
+    AccountContent,
+    InstructionArgs,
+    EventInfo,
+}
+
+impl ToolboxCliCommandProgramCommandSchemaArgs {
+    pub async fn process(
+        &self,
+        context: &ToolboxCliContext,
+        program_id: Pubkey,
+    ) -> Result<Value> {
+        let mut endpoint = context.create_endpoint().await?;
+        let mut idl_service = context.create_service().await?;
+        let idl_program = idl_service
+            .get_or_resolve_program(&mut endpoint, &program_id)
+            .await?
+            .unwrap_or_default();
+        let schema = match self.kind {
+            ToolboxCliCommandProgramCommandSchemaKind::AccountContent => {
+                Self::get_by_name(&idl_program.accounts, &self.name)?
+                    .content_type_full
+                    .schema(Some(self.name.clone()))
+            },
+            ToolboxCliCommandProgramCommandSchemaKind::InstructionArgs => {
+                Self::get_by_name(&idl_program.instructions, &self.name)?
+                    .args_type_full_fields
+                    .schema(Some(self.name.clone()))
+            },
+            ToolboxCliCommandProgramCommandSchemaKind::EventInfo => {
+                Self::get_by_name(&idl_program.events, &self.name)?
+                    .info_type_full
+                    .schema(Some(self.name.clone()))
+            },
+        };
+        Ok(schema)
+    }
+
+    fn get_by_name<'a, T>(
+        map: &'a HashMap<String, T>,
+        name: &str,
+    ) -> Result<&'a T> {
+        map.get(name).with_context(|| {
+            format!(
+                "Unknown: {} (known: {})",
+                name,
+                map.keys().cloned().collect::<Vec<_>>().join(", ")
+            )
+        })
     }
 }

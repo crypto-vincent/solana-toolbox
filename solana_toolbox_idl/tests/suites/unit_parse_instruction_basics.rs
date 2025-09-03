@@ -160,5 +160,5 @@ pub async fn run() {
             return_type_full: ToolboxIdlTypePrimitive::I8.into(),
         }
         .into()
-    )
+    );
 }

@@ -89,10 +89,10 @@ impl ToolboxCliContext {
             || key.eq_ignore_ascii_case("wallet")
             || key.eq_ignore_ascii_case("config")
         {
-            return Ok(ToolboxCliKey::Keypair(self.get_keypair()));
+            return Ok(ToolboxCliKey::Keypair(self.get_keypair()?));
         }
         if exists(key)? {
-            return Ok(ToolboxCliKey::Keypair(self.load_keypair(key)));
+            return Ok(ToolboxCliKey::Keypair(self.load_keypair(key)?));
         }
         if let Ok(keypair) =
             ToolboxEndpoint::sanitize_and_decode_keypair_base58(key)
@@ -117,12 +117,14 @@ impl ToolboxCliContext {
         Ok(serde_hjson::from_str::<Value>(value)?)
     }
 
-    pub fn get_keypair(&self) -> Keypair {
+    pub fn get_keypair(&self) -> Result<Keypair> {
         self.load_keypair(&self.keypair_path)
     }
 
-    pub fn load_keypair(&self, path: &str) -> Keypair {
-        read_keypair_file(path).unwrap()
+    pub fn load_keypair(&self, path: &str) -> Result<Keypair> {
+        read_keypair_file(path).map_err(|error| {
+            anyhow!("Failed to read keypair file {}: {}", path, error)
+        })
     }
 
     pub fn compute_error_json(&self, error: Error) -> Value {

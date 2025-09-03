@@ -293,6 +293,9 @@ impl ToolboxIdlTypeFull {
         data: &[u8],
         data_offset: usize,
     ) -> Result<(usize, Value)> {
+        if enum_variant.fields.is_empty() {
+            return Ok((0, json!(enum_variant.name)));
+        }
         let (data_fields_size, data_fields) = enum_variant
             .fields
             .try_deserialize(data, data_offset)
@@ -302,9 +305,6 @@ impl ToolboxIdlTypeFull {
                     enum_variant.name, data_offset
                 )
             })?;
-        if data_fields.is_null() {
-            return Ok((data_fields_size, json!(enum_variant.name)));
-        }
         Ok((
             data_fields_size,
             json!({

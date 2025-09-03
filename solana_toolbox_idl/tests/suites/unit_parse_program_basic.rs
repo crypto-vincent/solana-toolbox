@@ -200,5 +200,26 @@ pub async fn run() {
             msg: Some("My error message".to_string())
         }
         .into()
-    )
+    );
+    // Check that we can properly generate JSON schemas
+    // TODO - have dedicated tests for this
+    // TODO - handle different schema versions
+    /*
+    assert_eq!(
+        idl_program1
+            .accounts
+            .get("MyAccount")
+            .unwrap()
+            .content_type_full
+            .schema(None),
+        json!({
+            "type": "object",
+            "properties": {
+                "field1": { "type": "number", "description": "u64" },
+                "field2": { "type": "number", "description": "u32" }
+            },
+            "required": ["field1", "field2"]
+        })
+    );
+    */
 }
