@@ -18,7 +18,7 @@ impl ToolboxIdlTypeFull {
                 json!({
                     "anyOf": [
                         content.schema(None),
-                        {"type": "null"},
+                        { "type": "null" },
                     ]
                 })
             },
@@ -98,15 +98,25 @@ impl ToolboxIdlTypeFull {
                 ToolboxIdlTypePrimitive::U8
                 | ToolboxIdlTypePrimitive::U16
                 | ToolboxIdlTypePrimitive::U32
-                | ToolboxIdlTypePrimitive::U64
-                | ToolboxIdlTypePrimitive::U128
                 | ToolboxIdlTypePrimitive::I8
                 | ToolboxIdlTypePrimitive::I16
-                | ToolboxIdlTypePrimitive::I32
+                | ToolboxIdlTypePrimitive::I32 => {
+                    json!({
+                        "description": primitive.as_str(),
+                        "type": "integer",
+                    })
+                },
+                ToolboxIdlTypePrimitive::U64
+                | ToolboxIdlTypePrimitive::U128
                 | ToolboxIdlTypePrimitive::I64
-                | ToolboxIdlTypePrimitive::I128
-                | ToolboxIdlTypePrimitive::F32
-                | ToolboxIdlTypePrimitive::F64 => {
+                | ToolboxIdlTypePrimitive::I128 => {
+                    json!({
+                        "description": primitive.as_str(),
+                        "type": "integer",
+                        "tsType": "bigint",
+                    })
+                },
+                ToolboxIdlTypePrimitive::F32 | ToolboxIdlTypePrimitive::F64 => {
                     json!({
                         "description": primitive.as_str(),
                         "type": "number",
