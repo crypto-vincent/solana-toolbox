@@ -9,7 +9,7 @@ use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_type_primitive::ToolboxIdlTypePrimitive;
 
 impl ToolboxIdlTypeFull {
-    pub fn schema(&self, comment: Option<String>) -> Value {
+    pub fn schema(&self, description: Option<String>) -> Value {
         match self {
             ToolboxIdlTypeFull::Typedef { content, name, .. } => {
                 content.schema(Some(name.clone()))
@@ -37,7 +37,9 @@ impl ToolboxIdlTypeFull {
                 })
             },
             ToolboxIdlTypeFull::String { .. } => json!({ "type": "string" }),
-            ToolboxIdlTypeFull::Struct { fields, .. } => fields.schema(comment),
+            ToolboxIdlTypeFull::Struct { fields, .. } => {
+                fields.schema(description)
+            },
             ToolboxIdlTypeFull::Enum { variants, .. } => {
                 let mut json_variants_strings = vec![];
                 let mut json_variants_objects = vec![];
@@ -45,7 +47,6 @@ impl ToolboxIdlTypeFull {
                     if variant.fields.is_empty() {
                         json_variants_strings.push(variant.name.to_string());
                         json_variants_objects.push(json!({
-                            "type": "string",
                             "enum": [variant.name],
                         }));
                     } else {
@@ -61,11 +62,12 @@ impl ToolboxIdlTypeFull {
                 }
                 if json_variants_strings.len() == variants.len() {
                     let mut json_object = Map::new();
-                    if let Some(comment) = comment {
-                        json_object
-                            .insert("description".to_string(), json!(comment));
+                    if let Some(description) = description {
+                        json_object.insert(
+                            "description".to_string(),
+                            json!(description),
+                        );
                     }
-                    json_object.insert("type".to_string(), json!("string"));
                     json_object.insert(
                         "enum".to_string(),
                         json!(json_variants_strings),
@@ -73,9 +75,11 @@ impl ToolboxIdlTypeFull {
                     json!(json_object)
                 } else {
                     let mut json_object = Map::new();
-                    if let Some(comment) = comment {
-                        json_object
-                            .insert("description".to_string(), json!(comment));
+                    if let Some(description) = description {
+                        json_object.insert(
+                            "description".to_string(),
+                            json!(description),
+                        );
                     }
                     json_object.insert(
                         "anyOf".to_string(),
@@ -85,7 +89,7 @@ impl ToolboxIdlTypeFull {
                 }
             },
             ToolboxIdlTypeFull::Padded { content, .. } => {
-                content.schema(comment)
+                content.schema(description)
             },
             ToolboxIdlTypeFull::Const { literal } => {
                 json!(literal) // TODO - this makes no sense
@@ -123,11 +127,12 @@ impl ToolboxIdlTypeFull {
 }
 
 impl ToolboxIdlTypeFullFields {
-    pub fn schema(&self, comment: Option<String>) -> Value {
+    pub fn schema(&self, description: Option<String>) -> Value {
         if self.is_empty() {
             let mut json_object = Map::new();
-            if let Some(comment) = comment {
-                json_object.insert("description".to_string(), json!(comment));
+            if let Some(description) = description {
+                json_object
+                    .insert("description".to_string(), json!(description));
             }
             json_object.insert("type".to_string(), json!("null"));
             return json!(json_object);
@@ -142,9 +147,9 @@ impl ToolboxIdlTypeFullFields {
                     );
                 }
                 let mut json_object = Map::new();
-                if let Some(comment) = comment {
+                if let Some(description) = description {
                     json_object
-                        .insert("description".to_string(), json!(comment));
+                        .insert("description".to_string(), json!(description));
                 }
                 json_object.insert("type".to_string(), json!("object"));
                 json_object
@@ -163,9 +168,9 @@ impl ToolboxIdlTypeFullFields {
                     json_fields.push(field.content.schema(None));
                 }
                 let mut json_object = Map::new();
-                if let Some(comment) = comment {
+                if let Some(description) = description {
                     json_object
-                        .insert("description".to_string(), json!(comment));
+                        .insert("description".to_string(), json!(description));
                 }
                 json_object.insert("type".to_string(), json!("array"));
                 json_object.insert("items".to_string(), json!(json_fields));

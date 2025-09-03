@@ -5882,7 +5882,7 @@ dependencies = [
 
 [[package]]
 name = "solana_toolbox_cli"
-version = "0.4.4"
+version = "0.4.5"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -5899,9 +5899,9 @@ dependencies = [
 
 [[package]]
 name = "solana_toolbox_endpoint"
-version = "0.4.4-solana-2.1.4"
+version = "0.4.5-solana-2.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62189aeb27e98382284aef10048e8c67356f143bccf4e3b20d03ad4a72fa4c11"
+checksum = "53a4965a823c5af21a300046ff8ef6aa1dd32f6ea38c27ecd9ccf8953462dfca"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5924,7 +5924,9 @@ dependencies = [
 
 [[package]]
 name = "solana_toolbox_idl"
-version = "0.4.4-solana-2.1.4"
+version = "0.4.5-solana-2.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3969499e8ed8279e2d6bed1eb654c138cc389161cf6f7818c06377456c56850"
 dependencies = [
  "anyhow",
  "convert_case",
