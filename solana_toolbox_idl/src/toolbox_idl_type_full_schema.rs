@@ -41,6 +41,9 @@ impl ToolboxIdlTypeFull {
                 fields.schema(description)
             },
             ToolboxIdlTypeFull::Enum { variants, .. } => {
+                if variants.is_empty() {
+                    return json!({ "type": "null" });
+                }
                 let mut json_variants_strings = vec![];
                 let mut json_variants_objects = vec![];
                 for variant in variants {

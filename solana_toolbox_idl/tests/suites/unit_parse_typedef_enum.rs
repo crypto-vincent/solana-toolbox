@@ -4,6 +4,8 @@ use solana_toolbox_idl::ToolboxIdlTypeFlat;
 use solana_toolbox_idl::ToolboxIdlTypePrefix;
 use solana_toolbox_idl::ToolboxIdlTypedef;
 
+pub enum Dudu {}
+
 #[tokio::test]
 pub async fn run() {
     // Create IDLs using different shortened formats

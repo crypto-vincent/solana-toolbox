@@ -113,6 +113,9 @@ impl ToolboxIdlTypeFull {
         prefix: ToolboxIdlTypePrefix,
         variants: Vec<ToolboxIdlTypeFullEnumVariant>,
     ) -> Result<(usize, usize, ToolboxIdlTypeFull)> {
+        if variants.is_empty() {
+            return Ok((1, 0, ToolboxIdlTypeFull::Enum { prefix, variants }));
+        }
         let mut alignment = max(4, prefix.to_size());
         let mut size = 0;
         let mut variants_c = vec![];

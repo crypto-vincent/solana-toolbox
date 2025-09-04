@@ -33,7 +33,7 @@ pub struct ToolboxIdlProgram {
 impl ToolboxIdlProgram {
     pub fn guess_account(
         &self,
-        account_data: &[u8],
+        account_data: &[u8], // TODO - this could check using an Account ?
     ) -> Option<Arc<ToolboxIdlAccount>> {
         for account in self.accounts.values() {
             if account.check(account_data).is_ok() {
@@ -45,7 +45,7 @@ impl ToolboxIdlProgram {
 
     pub fn guess_instruction(
         &self,
-        instruction_data: &[u8],
+        instruction_data: &[u8], // TODO - this could take an Instruction directly ?
     ) -> Option<Arc<ToolboxIdlInstruction>> {
         for instruction in self.instructions.values() {
             if instruction.check_payload(instruction_data).is_ok() {

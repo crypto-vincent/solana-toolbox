@@ -22,6 +22,7 @@ pub async fn run() {
                 "fields": [
                     { "name": "name", "type": "string" },
                     { "name": "struct", "type": "MyStruct" },
+                    { "name": "never", "variants": [] },
                     { "name": "array", "type": ["u16", 3] },
                     { "name": "vec", "type": ["i16"] },
                 ]
@@ -48,6 +49,7 @@ pub async fn run() {
             "my_enum": "Hello1",
             "byte": 77,
         },
+        "never": null,
         "array": [99, 98, 97],
         "vec": [-55, 56, 57],
     });

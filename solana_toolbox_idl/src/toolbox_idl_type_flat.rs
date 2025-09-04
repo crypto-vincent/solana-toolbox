@@ -53,7 +53,7 @@ pub struct ToolboxIdlTypeFlatEnumVariant {
     pub name: String,
     pub code: u64,
     pub docs: Option<Value>,
-    pub fields: ToolboxIdlTypeFlatFields,
+    pub fields: ToolboxIdlTypeFlatFields, // TODO - why is that not just "content" regular type
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -48,6 +48,7 @@ pub mod unit_parse_typedef_struct_generics;
 pub mod unit_path_json_get;
 pub mod unit_path_json_set;
 pub mod unit_path_type_get;
+pub mod unit_schema_account;
 pub mod unit_transform_account_bytemuck;
 pub mod unit_transform_account_enums_fields;
 pub mod unit_transform_account_nested;

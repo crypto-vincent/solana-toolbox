@@ -5925,8 +5925,6 @@ dependencies = [
 [[package]]
 name = "solana_toolbox_idl"
 version = "0.4.5-solana-2.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3969499e8ed8279e2d6bed1eb654c138cc389161cf6f7818c06377456c56850"
 dependencies = [
  "anyhow",
  "convert_case",

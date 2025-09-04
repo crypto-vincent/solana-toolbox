@@ -254,6 +254,9 @@ impl ToolboxIdlTypeFull {
         data: &[u8],
         data_offset: usize,
     ) -> Result<(usize, Value)> {
+        if enum_variants.is_empty() {
+            return Ok((0, json!(null)));
+        }
         let mut enum_mask = 0;
         for enum_variant in enum_variants {
             enum_mask |= enum_variant.code;

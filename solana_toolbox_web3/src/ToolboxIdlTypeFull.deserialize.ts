@@ -131,6 +131,9 @@ let deserializeVisitor = {
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {
+    if (self.variants.length == 0) {
+      return [0, null];
+    }
     let enumMask = 0;
     for (let variant of self.variants) {
       enumMask |= variant.code;

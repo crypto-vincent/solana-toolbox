@@ -113,6 +113,13 @@ let bytemuckCVisitor = {
     };
   },
   enum: (self: ToolboxIdlTypeFullEnum): ToolboxIdlTypeFullPod => {
+    if (self.variants.length == 0) {
+      return {
+        alignment: 1,
+        size: 0,
+        value: ToolboxIdlTypeFull.enum(self),
+      };
+    }
     let alignment = Math.max(4, self.prefix.size);
     let size = 0;
     let variantsReprC = [];
@@ -214,6 +221,13 @@ let bytemuckRustVisitor = {
     };
   },
   enum: (self: ToolboxIdlTypeFullEnum): ToolboxIdlTypeFullPod => {
+    if (self.variants.length == 0) {
+      return {
+        alignment: 1,
+        size: 0,
+        value: ToolboxIdlTypeFull.enum(self),
+      };
+    }
     let alignment = self.prefix.size;
     let size = self.prefix.size;
     let variantsReprRust = [];

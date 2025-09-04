@@ -195,6 +195,14 @@ impl ToolboxIdlTypeFull {
         data: &mut Vec<u8>,
         prefixed: bool,
     ) -> Result<()> {
+        if enum_variants.is_empty() {
+            if !value.is_null() {
+                return Err(anyhow!(
+                    "Expected value to be null for empty enum"
+                ));
+            }
+            return Ok(());
+        }
         if let Some(value_number) = value.as_u64() {
             for enum_variant in enum_variants {
                 if enum_variant.code == value_number {

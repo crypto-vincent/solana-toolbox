@@ -20,6 +20,7 @@ it('run', () => {
         fields: [
           { name: 'name', type: 'string' },
           { name: 'struct', type: 'MyStruct' },
+          { name: 'never', variants: [] },
           { name: 'array', type: ['u16', 3] },
           { name: 'vec', type: ['i16'] },
         ],
@@ -45,6 +46,7 @@ it('run', () => {
       my_enum: 'Hello1',
       byte: 77,
     },
+    never: null,
     array: [99, 98, 97],
     vec: [-55, 56, 57],
   };

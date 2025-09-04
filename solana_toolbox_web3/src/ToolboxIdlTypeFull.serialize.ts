@@ -107,6 +107,12 @@ let serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
+    if (self.variants.length == 0) {
+      if (value !== null) {
+        throw new Error('Expected value to be null for empty enum');
+      }
+      return;
+    }
     function serializeEnumVariant(
       variant: ToolboxIdlTypeFullEnumVariant,
       value: any,
