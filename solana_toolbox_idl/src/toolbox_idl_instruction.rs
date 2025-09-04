@@ -19,7 +19,7 @@ pub struct ToolboxIdlInstruction {
     pub discriminator: Vec<u8>,
     pub accounts: Vec<ToolboxIdlInstructionAccount>,
     pub args_type_flat_fields: ToolboxIdlTypeFlatFields,
-    pub args_type_full_fields: ToolboxIdlTypeFullFields, // TODO - this could be a regular type non-fields ?
+    pub args_type_full_fields: ToolboxIdlTypeFullFields,
     pub return_type_flat: ToolboxIdlTypeFlat,
     pub return_type_full: ToolboxIdlTypeFull,
 }

@@ -24,7 +24,6 @@ impl ToolboxIdlTypeFull {
         &self,
         data: &[u8],
         data_offset: usize,
-        // TODO (FAR) - support deserializing bytes into custom stuff like base64 ?
     ) -> Result<(usize, Value)> {
         match self {
             ToolboxIdlTypeFull::Typedef { name, content, .. } => {
@@ -310,9 +309,7 @@ impl ToolboxIdlTypeFull {
             })?;
         Ok((
             data_fields_size,
-            json!({
-                enum_variant.name.to_string(): data_fields
-            }),
+            json!({ enum_variant.name.to_string(): data_fields }),
         ))
     }
 
