@@ -24,8 +24,8 @@ impl Default for ToolboxIdlAccount {
             space: None,
             blobs: vec![],
             discriminator: vec![],
-            content_type_flat: ToolboxIdlTypeFlat::nothing(),
-            content_type_full: ToolboxIdlTypeFull::nothing(),
+            content_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            content_type_full: ToolboxIdlTypeFull::struct_nothing(),
         }
     }
 }

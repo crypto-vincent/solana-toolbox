@@ -81,25 +81,25 @@ pub async fn run() {
                         name: "77".to_string(),
                         code: 77,
                         docs: None,
-                        fields: ToolboxIdlTypeFlatFields::nothing()
+                        fields: ToolboxIdlTypeFlatFields::Nothing
                     },
                     ToolboxIdlTypeFlatEnumVariant {
                         name: "Case1".to_string(),
                         code: 1,
                         docs: None,
-                        fields: ToolboxIdlTypeFlatFields::nothing()
+                        fields: ToolboxIdlTypeFlatFields::Nothing
                     },
                     ToolboxIdlTypeFlatEnumVariant {
                         name: "Case2".to_string(),
                         code: 42,
                         docs: None,
-                        fields: ToolboxIdlTypeFlatFields::nothing()
+                        fields: ToolboxIdlTypeFlatFields::Nothing
                     },
                     ToolboxIdlTypeFlatEnumVariant {
                         name: "Case3".to_string(),
                         code: 3,
                         docs: None,
-                        fields: ToolboxIdlTypeFlatFields::nothing()
+                        fields: ToolboxIdlTypeFlatFields::Nothing
                     },
                 ]
             }

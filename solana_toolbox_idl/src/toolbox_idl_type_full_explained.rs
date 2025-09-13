@@ -23,7 +23,7 @@ impl ToolboxIdlTypeFull {
             ToolboxIdlTypeFull::Enum { variants, .. } => {
                 let mut json_variants = vec![];
                 for variant in variants {
-                    json_variants.push(if variant.fields.is_empty() {
+                    json_variants.push(if variant.fields == ToolboxIdlTypeFullFields::Nothing {
                         json!(variant.name)
                     } else {
                         json!({ variant.name.to_string(): variant.fields.explained()})
@@ -32,9 +32,6 @@ impl ToolboxIdlTypeFull {
                 json!({ "variants": json_variants })
             },
             ToolboxIdlTypeFull::Padded { content, .. } => content.explained(),
-            ToolboxIdlTypeFull::Const { literal } => {
-                json!(literal) // TODO - this makes no sense
-            },
             ToolboxIdlTypeFull::Primitive { primitive } => {
                 json!(primitive.as_str())
             },
@@ -45,6 +42,7 @@ impl ToolboxIdlTypeFull {
 impl ToolboxIdlTypeFullFields {
     pub fn explained(&self) -> Value {
         match self {
+            ToolboxIdlTypeFullFields::Nothing => json!(null),
             ToolboxIdlTypeFullFields::Named(fields) => {
                 let mut json_fields = Map::new();
                 for field in fields {

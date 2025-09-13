@@ -10,7 +10,7 @@ import { ToolboxUtils } from './ToolboxUtils';
 
 export function parseObjectIsPossible(idlType: any): boolean {
   if (
-    idlType.hasOwnProperty('type') ||
+    idlType.hasOwnProperty('type') || // TODO - can this be optimized ?
     idlType.hasOwnProperty('defined') ||
     idlType.hasOwnProperty('generic') ||
     idlType.hasOwnProperty('option') ||

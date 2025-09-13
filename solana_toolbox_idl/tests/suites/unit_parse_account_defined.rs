@@ -3,7 +3,6 @@ use solana_toolbox_idl::ToolboxIdlAccount;
 use solana_toolbox_idl::ToolboxIdlProgram;
 use solana_toolbox_idl::ToolboxIdlTypeFlat;
 use solana_toolbox_idl::ToolboxIdlTypeFull;
-use solana_toolbox_idl::ToolboxIdlTypeFullFields;
 
 #[tokio::test]
 pub async fn run() {
@@ -71,9 +70,7 @@ pub async fn run() {
             content_type_full: ToolboxIdlTypeFull::Typedef {
                 name: "MyAccount".to_string(),
                 repr: None,
-                content: Box::new(ToolboxIdlTypeFull::Struct {
-                    fields: ToolboxIdlTypeFullFields::nothing()
-                })
+                content: Box::new(ToolboxIdlTypeFull::struct_nothing())
             },
         }
         .into()

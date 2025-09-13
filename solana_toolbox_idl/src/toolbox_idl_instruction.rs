@@ -31,10 +31,10 @@ impl Default for ToolboxIdlInstruction {
             docs: None,
             discriminator: vec![],
             accounts: vec![],
-            args_type_flat_fields: ToolboxIdlTypeFlatFields::nothing(),
-            args_type_full_fields: ToolboxIdlTypeFullFields::nothing(),
-            return_type_flat: ToolboxIdlTypeFlat::nothing(),
-            return_type_full: ToolboxIdlTypeFull::nothing(),
+            args_type_flat_fields: ToolboxIdlTypeFlatFields::Nothing,
+            args_type_full_fields: ToolboxIdlTypeFullFields::Nothing,
+            return_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            return_type_full: ToolboxIdlTypeFull::struct_nothing(),
         }
     }
 }

@@ -36,12 +36,15 @@ pub enum ToolboxIdlTypeFull {
         after: usize,
         content: Box<ToolboxIdlTypeFull>,
     },
-    Const {
-        literal: u64, // TODO - this should not be needed
-    },
     Primitive {
         primitive: ToolboxIdlTypePrimitive,
     },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ToolboxIdlTypeFullOrConstLiteral {
+    ToolboxIdlTypeFull(ToolboxIdlTypeFull),
+    ConstLiteral(u64),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -53,6 +56,7 @@ pub struct ToolboxIdlTypeFullEnumVariant {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ToolboxIdlTypeFullFields {
+    Nothing,
     Named(Vec<ToolboxIdlTypeFullFieldNamed>),
     Unnamed(Vec<ToolboxIdlTypeFullFieldUnnamed>),
 }
@@ -76,12 +80,6 @@ impl From<ToolboxIdlTypePrimitive> for ToolboxIdlTypeFull {
 }
 
 impl ToolboxIdlTypeFull {
-    pub fn nothing() -> ToolboxIdlTypeFull {
-        ToolboxIdlTypeFull::Struct {
-            fields: ToolboxIdlTypeFullFields::nothing(),
-        }
-    }
-
     pub fn is_vec32_u8(&self) -> bool {
         match self {
             ToolboxIdlTypeFull::Vec { prefix, items, .. } => {
@@ -108,23 +106,9 @@ impl ToolboxIdlTypeFull {
         }
     }
 
-    pub fn as_const_literal(&self) -> Option<&u64> {
-        match self {
-            ToolboxIdlTypeFull::Const { literal } => Some(literal),
-            _ => None,
-        }
-    }
-}
-
-impl ToolboxIdlTypeFullFields {
-    pub fn nothing() -> ToolboxIdlTypeFullFields {
-        ToolboxIdlTypeFullFields::Unnamed(vec![])
-    }
-
-    pub fn is_empty(&self) -> bool {
-        match self {
-            ToolboxIdlTypeFullFields::Named(fields) => fields.is_empty(),
-            ToolboxIdlTypeFullFields::Unnamed(fields) => fields.is_empty(),
+    pub fn struct_nothing() -> ToolboxIdlTypeFull {
+        ToolboxIdlTypeFull::Struct {
+            fields: ToolboxIdlTypeFullFields::Nothing,
         }
     }
 }

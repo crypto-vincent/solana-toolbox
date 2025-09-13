@@ -165,7 +165,7 @@ impl ToolboxIdlTypeFlatEnumVariant {
         if format.can_shortcut_enum_variant_to_string_if_no_fields
             && self.docs.is_none()
             && self.code == index_code
-            && self.fields.is_empty()
+            && self.fields == ToolboxIdlTypeFlatFields::Nothing
         {
             return json!(self.name);
         }
@@ -177,7 +177,7 @@ impl ToolboxIdlTypeFlatEnumVariant {
         if self.code != index_code {
             json_variant.insert("code".to_string(), json!(self.code));
         }
-        if !self.fields.is_empty() {
+        if self.fields != ToolboxIdlTypeFlatFields::Nothing {
             json_variant
                 .insert("fields".to_string(), self.fields.export(format));
         }
@@ -188,6 +188,7 @@ impl ToolboxIdlTypeFlatEnumVariant {
 impl ToolboxIdlTypeFlatFields {
     pub fn export(&self, format: &ToolboxIdlFormat) -> Value {
         match self {
+            ToolboxIdlTypeFlatFields::Nothing => json!([]),
             ToolboxIdlTypeFlatFields::Named(fields) => {
                 let mut json_fields = vec![];
                 for field in fields {

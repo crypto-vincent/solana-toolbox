@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Phantom – No deps</title>
+    <style>
+      body { font-family: system-ui; max-width: 720px; margin: 2rem auto; }
+      button { padding: .6rem 1rem; margin-right: .5rem; }
+      pre { background: #f6f6f6; padding: 1rem; border-radius: .5rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Phantom – Vanilla JS</h1>
+    <div>
+      <button id="connect">Connect</button>
+      <button id="disconnect">Disconnect</button>
+      <button id="signMessage">Sign Message</button>
+    </div>
+    <pre id="log"></pre>
+
+    <script>
+      function log(...args) {
+        const el = document.getElementById('log');
+        el.textContent += args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n';
+      }
+
+      // 1) Get the Phantom provider (no libs)
+      function getProvider() {
+        const anyWindow = window;
+        if ('phantom' in anyWindow) {
+          const provider = anyWindow.phantom?.solana;
+          if (provider?.isPhantom) return provider;
+        }
+        return null;
+      }
+
+      const provider = getProvider();
+      if (!provider) {
+        log('Phantom not found. Install the extension or open in Phantom in-app browser.');
+      } else {
+        // 2) Set up event listeners
+        provider.on('connect', (pubkey) => log('Connected:', pubkey.toString()));
+        provider.on('disconnect', () => log('Disconnected'));
+        provider.on('accountChanged', (pubkey) => {
+          if (pubkey) log('Account changed:', pubkey.toString());
+          else log('Account no longer connected.');
+        });
+
+        // Optional: silent auto-connect if the user already approved before
+        provider.connect({ onlyIfTrusted: true }).catch(() => {});
+      }
+
+      // 3) Connect / Disconnect
+      document.getElementById('connect').onclick = async () => {
+        try {
+            console.log("provider:", provider);
+          const dudu = provider.connect(); // pops Phantom UI
+          console.log("dudu:", dudu);
+          const resp = await dudu;
+          console.log("resp:", resp);
+          log('Public key:', resp.publicKey.toString());
+        } catch (e) {
+          log('Connect rejected or failed:', e?.message || e);
+        }
+      };
+
+      document.getElementById('disconnect').onclick = async () => {
+        try {
+          await provider.disconnect();
+          log('Disconnected.');
+        } catch (e) {
+          log('Disconnect failed:', e?.message || e);
+        }
+      };
+
+      // 4) Sign a message (no libs)
+      document.getElementById('signMessage').onclick = async () => {
+        try {
+          const message = 'Hello from my dApp ' + new Date().toISOString();
+          const encoded = new TextEncoder().encode(message);
+          // Phantom asks the user to approve
+          const signed = await provider.signMessage(encoded, 'utf8');
+          // signed = { signature: Uint8Array, publicKey: PublicKey }
+          // You can verify on your backend using tweetnacl + the publicKey bytes.
+          log('Signed message:', { message, signature_base64: btoa(String.fromCharCode(...signed.signature)) });
+        } catch (e) {
+          log('signMessage failed:', e?.message || e);
+        }
+      };
+    </script>
+  </body>
+</html>

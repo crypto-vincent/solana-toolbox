@@ -1,7 +1,6 @@
 use serde_json::json;
 use solana_toolbox_idl::ToolboxIdlProgram;
 use solana_toolbox_idl::ToolboxIdlTypeFlat;
-use solana_toolbox_idl::ToolboxIdlTypeFlatFields;
 use solana_toolbox_idl::ToolboxIdlTypedef;
 
 #[tokio::test]
@@ -58,9 +57,7 @@ pub async fn run() {
             serialization: None,
             repr: None,
             generics: vec![],
-            type_flat: ToolboxIdlTypeFlat::Struct {
-                fields: ToolboxIdlTypeFlatFields::nothing()
-            }
+            type_flat: ToolboxIdlTypeFlat::struct_nothing()
         }
         .into()
     );

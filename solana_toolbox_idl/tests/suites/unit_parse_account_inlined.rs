@@ -2,9 +2,7 @@ use serde_json::json;
 use solana_toolbox_idl::ToolboxIdlAccount;
 use solana_toolbox_idl::ToolboxIdlProgram;
 use solana_toolbox_idl::ToolboxIdlTypeFlat;
-use solana_toolbox_idl::ToolboxIdlTypeFlatFields;
 use solana_toolbox_idl::ToolboxIdlTypeFull;
-use solana_toolbox_idl::ToolboxIdlTypeFullFields;
 
 #[tokio::test]
 pub async fn run() {
@@ -96,12 +94,8 @@ pub async fn run() {
             space: None,
             blobs: vec![],
             discriminator: vec![246, 28, 6, 87, 251, 45, 50, 42],
-            content_type_flat: ToolboxIdlTypeFlat::Struct {
-                fields: ToolboxIdlTypeFlatFields::nothing()
-            },
-            content_type_full: ToolboxIdlTypeFull::Struct {
-                fields: ToolboxIdlTypeFullFields::nothing()
-            },
+            content_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            content_type_full: ToolboxIdlTypeFull::struct_nothing(),
         }
         .into()
     );

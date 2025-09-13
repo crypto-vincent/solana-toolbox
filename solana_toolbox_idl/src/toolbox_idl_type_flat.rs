@@ -53,11 +53,12 @@ pub struct ToolboxIdlTypeFlatEnumVariant {
     pub name: String,
     pub code: u64,
     pub docs: Option<Value>,
-    pub fields: ToolboxIdlTypeFlatFields, // TODO - why is that not just "content" regular type
+    pub fields: ToolboxIdlTypeFlatFields,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ToolboxIdlTypeFlatFields {
+    Nothing,
     Named(Vec<ToolboxIdlTypeFlatFieldNamed>),
     Unnamed(Vec<ToolboxIdlTypeFlatFieldUnnamed>),
 }
@@ -82,22 +83,9 @@ impl From<ToolboxIdlTypePrimitive> for ToolboxIdlTypeFlat {
 }
 
 impl ToolboxIdlTypeFlat {
-    pub fn nothing() -> ToolboxIdlTypeFlat {
+    pub fn struct_nothing() -> ToolboxIdlTypeFlat {
         ToolboxIdlTypeFlat::Struct {
-            fields: ToolboxIdlTypeFlatFields::nothing(),
-        }
-    }
-}
-
-impl ToolboxIdlTypeFlatFields {
-    pub fn nothing() -> ToolboxIdlTypeFlatFields {
-        ToolboxIdlTypeFlatFields::Unnamed(vec![])
-    }
-
-    pub fn is_empty(&self) -> bool {
-        match self {
-            ToolboxIdlTypeFlatFields::Named(fields) => fields.is_empty(),
-            ToolboxIdlTypeFlatFields::Unnamed(fields) => fields.is_empty(),
+            fields: ToolboxIdlTypeFlatFields::Nothing,
         }
     }
 }

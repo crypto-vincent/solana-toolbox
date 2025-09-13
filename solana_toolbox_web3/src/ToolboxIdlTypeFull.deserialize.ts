@@ -2,7 +2,6 @@ import { PublicKey } from '@solana/web3.js';
 import {
   ToolboxIdlTypeFull,
   ToolboxIdlTypeFullArray,
-  ToolboxIdlTypeFullConst,
   ToolboxIdlTypeFullEnum,
   ToolboxIdlTypeFullFieldNamed,
   ToolboxIdlTypeFullFields,
@@ -175,13 +174,6 @@ let deserializeVisitor = {
     dataSize += Math.max(dataContentSize, self.minSize);
     dataSize += self.after;
     return [dataSize, dataContent];
-  },
-  const: (
-    _self: ToolboxIdlTypeFullConst,
-    _data: Buffer,
-    _dataOffset: number,
-  ): [number, any] => {
-    throw new Error('Cannot deserialize a const type');
   },
   primitive: (
     self: ToolboxIdlTypePrimitive,

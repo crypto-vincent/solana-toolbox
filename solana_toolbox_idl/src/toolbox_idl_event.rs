@@ -20,8 +20,8 @@ impl Default for ToolboxIdlEvent {
             name: "Unknown".to_string(),
             docs: None,
             discriminator: vec![],
-            info_type_flat: ToolboxIdlTypeFlat::nothing(),
-            info_type_full: ToolboxIdlTypeFull::nothing(),
+            info_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            info_type_full: ToolboxIdlTypeFull::struct_nothing(),
         }
     }
 }

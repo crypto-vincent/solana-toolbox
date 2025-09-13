@@ -10,7 +10,6 @@ enum ToolboxIdlTypeFullDiscriminant {
   Struct = 'struct',
   Enum = 'enum',
   Padded = 'padded',
-  Const = 'const',
   Primitive = 'primitive',
 }
 
@@ -23,7 +22,6 @@ type ToolboxIdlTypeFullContent =
   | ToolboxIdlTypeFullStruct
   | ToolboxIdlTypeFullEnum
   | ToolboxIdlTypeFullPadded
-  | ToolboxIdlTypeFullConst
   | ToolboxIdlTypePrimitive;
 
 export type ToolboxIdlTypeFullTypedef = {
@@ -71,10 +69,6 @@ export type ToolboxIdlTypeFullPadded = {
   minSize: number;
   after: number;
   content: ToolboxIdlTypeFull;
-};
-
-export type ToolboxIdlTypeFullConst = {
-  literal: number;
 };
 
 export type ToolboxIdlTypeFullFieldNamed = {
@@ -132,10 +126,6 @@ export class ToolboxIdlTypeFull {
 
   public static padded(value: ToolboxIdlTypeFullPadded): ToolboxIdlTypeFull {
     return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Padded, value);
-  }
-
-  public static const(value: ToolboxIdlTypeFullConst): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Const, value);
   }
 
   public static primitive(value: ToolboxIdlTypePrimitive): ToolboxIdlTypeFull {
@@ -201,12 +191,6 @@ export class ToolboxIdlTypeFull {
         param2: P2,
         param3: P3,
       ) => T;
-      const: (
-        value: ToolboxIdlTypeFullConst,
-        param1: P1,
-        param2: P2,
-        param3: P3,
-      ) => T;
       primitive: (
         value: ToolboxIdlTypePrimitive,
         param1: P1,
@@ -224,13 +208,6 @@ export class ToolboxIdlTypeFull {
       param2,
       param3,
     );
-  }
-
-  public asConstLiteral(): number | undefined {
-    if (this.discriminant == ToolboxIdlTypeFullDiscriminant.Const) {
-      return (this.content as ToolboxIdlTypeFullConst).literal;
-    }
-    return undefined;
   }
 }
 

@@ -8,6 +8,7 @@ use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPda;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPdaBlob;
 
 impl ToolboxIdlInstruction {
+    // TODO - this should go into the CLI probably directly
     pub fn explained(&self) -> (Value, Map<String, Value>) {
         let json_payload = self.args_type_full_fields.explained();
         let mut json_addresses = Map::new();

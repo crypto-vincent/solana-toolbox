@@ -47,11 +47,6 @@ impl ToolboxIdlTypeFull {
                     "Bytemuck: Repr(C): Padded is not supported"
                 ));
             },
-            ToolboxIdlTypeFull::Const { .. } => {
-                return Err(anyhow!(
-                    "Bytemuck: Repr(C): Const is not supported"
-                ));
-            },
             ToolboxIdlTypeFull::Primitive { primitive } => (
                 primitive.alignment(),
                 primitive.size(),
@@ -157,6 +152,9 @@ impl ToolboxIdlTypeFullFields {
         self,
     ) -> Result<(usize, usize, ToolboxIdlTypeFullFields)> {
         match self {
+            ToolboxIdlTypeFullFields::Nothing => {
+                Ok((1, 0, ToolboxIdlTypeFullFields::Nothing))
+            },
             ToolboxIdlTypeFullFields::Named(fields) => {
                 let mut fields_infos = vec![];
                 for field in fields {

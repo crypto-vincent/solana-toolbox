@@ -27,7 +27,7 @@ impl ToolboxIdlInstruction {
             "args".to_string(),
             self.args_type_flat_fields.export(format),
         );
-        if self.return_type_flat != ToolboxIdlTypeFlat::nothing() {
+        if self.return_type_flat != ToolboxIdlTypeFlat::struct_nothing() {
             json_object.insert(
                 "returns".to_string(),
                 self.return_type_flat.export(format),

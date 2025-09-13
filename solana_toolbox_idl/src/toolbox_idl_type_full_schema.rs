@@ -47,7 +47,7 @@ impl ToolboxIdlTypeFull {
                 let mut json_variants_strings = vec![];
                 let mut json_variants_objects = vec![];
                 for variant in variants {
-                    if variant.fields.is_empty() {
+                    if variant.fields == ToolboxIdlTypeFullFields::Nothing {
                         json_variants_strings.push(variant.name.to_string());
                         json_variants_objects.push(json!({
                             "enum": [variant.name],
@@ -94,9 +94,6 @@ impl ToolboxIdlTypeFull {
             ToolboxIdlTypeFull::Padded { content, .. } => {
                 content.schema(description)
             },
-            ToolboxIdlTypeFull::Const { literal } => {
-                json!(literal) // TODO - this makes no sense
-            },
             ToolboxIdlTypeFull::Primitive { primitive } => match primitive {
                 ToolboxIdlTypePrimitive::U8
                 | ToolboxIdlTypePrimitive::U16
@@ -141,16 +138,16 @@ impl ToolboxIdlTypeFull {
 
 impl ToolboxIdlTypeFullFields {
     pub fn schema(&self, description: Option<String>) -> Value {
-        if self.is_empty() {
-            let mut json_object = Map::new();
-            if let Some(description) = description {
-                json_object
-                    .insert("description".to_string(), json!(description));
-            }
-            json_object.insert("type".to_string(), json!("null"));
-            return json!(json_object);
-        }
         match self {
+            ToolboxIdlTypeFullFields::Nothing => {
+                let mut json_object = Map::new();
+                if let Some(description) = description {
+                    json_object
+                        .insert("description".to_string(), json!(description));
+                }
+                json_object.insert("type".to_string(), json!("null"));
+                json!(json_object)
+            },
             ToolboxIdlTypeFullFields::Named(fields) => {
                 let mut json_properties = Map::new();
                 for field in fields {

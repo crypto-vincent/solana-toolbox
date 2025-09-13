@@ -77,9 +77,6 @@ impl ToolboxIdlTypeFull {
             } => ToolboxIdlTypeFull::try_serialize_padded(
                 before, min_size, after, content, value, data, prefixed,
             ),
-            ToolboxIdlTypeFull::Const { literal } => {
-                Err(anyhow!("Can't use a const literal directly: {}", literal))
-            },
             ToolboxIdlTypeFull::Primitive { primitive } => {
                 primitive.try_serialize(value, data)
             },
@@ -302,10 +299,8 @@ impl ToolboxIdlTypeFullFields {
         data: &mut Vec<u8>,
         prefixed: bool,
     ) -> Result<()> {
-        if self.is_empty() {
-            return Ok(());
-        }
         match self {
+            ToolboxIdlTypeFullFields::Nothing => {},
             ToolboxIdlTypeFullFields::Named(fields) => {
                 let value = idl_value_as_object_or_else(value)?;
                 for field in fields {

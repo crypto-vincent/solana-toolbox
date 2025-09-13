@@ -130,6 +130,9 @@ impl ToolboxIdlPath {
             });
         };
         match type_flat_fields {
+            ToolboxIdlTypeFlatFields::Nothing => {
+                Err(anyhow!("Type has no fields: {}", self.value()))
+            },
             ToolboxIdlTypeFlatFields::Named(fields) => {
                 let key = current.value();
                 for field in fields {

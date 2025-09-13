@@ -263,7 +263,10 @@ export class ToolboxEndpoint {
     let orderedSignatures = [];
     let retries = 0;
     while (true) {
-      let batchSize = Math.min(1000, retries == 0 ? 10 : 1000);
+      let batchSize = Math.min(
+        1000,
+        rewindUntil ? (retries == 0 ? 10 : 1000) : limit,
+      );
       retries++;
       let signatures = await this.connection.getSignaturesForAddress(
         address,

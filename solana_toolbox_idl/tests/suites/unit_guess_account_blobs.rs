@@ -59,8 +59,8 @@ pub async fn run() {
             space: None,
             blobs: vec![(1, vec![2, 3])],
             discriminator: vec![1],
-            content_type_flat: ToolboxIdlTypeFlat::nothing(),
-            content_type_full: ToolboxIdlTypeFull::nothing()
+            content_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            content_type_full: ToolboxIdlTypeFull::struct_nothing()
         }
         .into()
     );
@@ -72,8 +72,8 @@ pub async fn run() {
             space: None,
             blobs: vec![(5, vec![6])],
             discriminator: vec![1],
-            content_type_flat: ToolboxIdlTypeFlat::nothing(),
-            content_type_full: ToolboxIdlTypeFull::nothing()
+            content_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            content_type_full: ToolboxIdlTypeFull::struct_nothing()
         }
         .into()
     );
@@ -92,7 +92,7 @@ pub async fn run() {
             content_type_full: ToolboxIdlTypeFull::Typedef {
                 name: "MyAccount2_x6".to_string(),
                 repr: None,
-                content: Box::new(ToolboxIdlTypeFull::nothing())
+                content: Box::new(ToolboxIdlTypeFull::struct_nothing())
             }
         }
         .into()

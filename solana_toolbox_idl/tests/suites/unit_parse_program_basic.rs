@@ -147,8 +147,8 @@ pub async fn run() {
                     content: ToolboxIdlTypePrimitive::I64.into()
                 },
             ]),
-            return_type_flat: ToolboxIdlTypeFlat::nothing(),
-            return_type_full: ToolboxIdlTypeFull::nothing()
+            return_type_flat: ToolboxIdlTypeFlat::struct_nothing(),
+            return_type_full: ToolboxIdlTypeFull::struct_nothing()
         }
         .into()
     );

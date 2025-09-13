@@ -36,7 +36,6 @@ impl ToolboxIdlAccount {
             idl_account,
         )
         .context("Parse Discriminator")?;
-
         let content_type_flat = ToolboxIdlAccount::try_parse_content_type_flat(
             idl_account_name,
             idl_account,

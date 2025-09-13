@@ -34,13 +34,13 @@ export function decompileTransactionInstructions(
     readonlyAddresses.add(loadedReadonlyAddress);
   }
   let usedAddresses = [];
-  usedAddresses.push(staticAddresses);
-  usedAddresses.push(loadedWritableAddresses);
-  usedAddresses.push(loadedReadonlyAddresses);
+  usedAddresses.push(...staticAddresses);
+  usedAddresses.push(...loadedWritableAddresses);
+  usedAddresses.push(...loadedReadonlyAddresses);
   let instructions = [];
   for (let compiledInstruction of compiledInstructions) {
     let instructionProgramId =
-      staticAddresses[compiledInstruction.programIdIndex];
+      usedAddresses[compiledInstruction.programIdIndex];
     if (instructionProgramId === undefined) {
       throw new Error(
         `Invalid program ID index: ${compiledInstruction.programIdIndex}`,
@@ -48,7 +48,7 @@ export function decompileTransactionInstructions(
     }
     let instructionAccounts = [];
     for (let accountIndex of compiledInstruction.accountsIndexes) {
-      let accountAddress = staticAddresses[accountIndex];
+      let accountAddress = usedAddresses[accountIndex];
       if (accountAddress === undefined) {
         throw new Error(`Invalid account index: ${accountIndex}`);
       }

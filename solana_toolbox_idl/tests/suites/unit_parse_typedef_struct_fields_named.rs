@@ -138,16 +138,12 @@ pub async fn run() {
                     ToolboxIdlTypeFlatFieldNamed {
                         name: "struct1".to_string(),
                         docs: None,
-                        content: ToolboxIdlTypeFlat::Struct {
-                            fields: ToolboxIdlTypeFlatFields::nothing()
-                        }
+                        content: ToolboxIdlTypeFlat::struct_nothing()
                     },
                     ToolboxIdlTypeFlatFieldNamed {
                         name: "struct2".to_string(),
                         docs: None,
-                        content: ToolboxIdlTypeFlat::Struct {
-                            fields: ToolboxIdlTypeFlatFields::nothing()
-                        }
+                        content: ToolboxIdlTypeFlat::struct_nothing()
                     },
                     ToolboxIdlTypeFlatFieldNamed {
                         name: "enum1".to_string(),

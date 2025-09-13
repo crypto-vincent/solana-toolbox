@@ -125,9 +125,7 @@ pub async fn run() {
                     },
                     ToolboxIdlTypeFlatFieldUnnamed {
                         docs: None,
-                        content: ToolboxIdlTypeFlat::Struct {
-                            fields: ToolboxIdlTypeFlatFields::nothing()
-                        }
+                        content: ToolboxIdlTypeFlat::struct_nothing()
                     },
                     ToolboxIdlTypeFlatFieldUnnamed {
                         docs: None,
@@ -183,9 +181,7 @@ pub async fn run() {
                     },
                     ToolboxIdlTypeFlatFieldUnnamed {
                         docs: Some(json!(["Hello"])),
-                        content: ToolboxIdlTypeFlat::Struct {
-                            fields: ToolboxIdlTypeFlatFields::nothing()
-                        }
+                        content: ToolboxIdlTypeFlat::struct_nothing()
                     },
                 ]),
             }

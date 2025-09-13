@@ -2,7 +2,6 @@ import { PublicKey } from '@solana/web3.js';
 import {
   ToolboxIdlTypeFull,
   ToolboxIdlTypeFullArray,
-  ToolboxIdlTypeFullConst,
   ToolboxIdlTypeFullEnum,
   ToolboxIdlTypeFullEnumVariant,
   ToolboxIdlTypeFullFieldNamed,
@@ -171,14 +170,6 @@ let serializeVisitor = {
     if (self.after) {
       data.push(Buffer.alloc(self.after));
     }
-  },
-  const: (
-    _self: ToolboxIdlTypeFullConst,
-    _value: any,
-    _data: Buffer[],
-    _prefixed: boolean,
-  ) => {
-    throw new Error('Cannot serialize a const type');
   },
   primitive: (
     self: ToolboxIdlTypePrimitive,

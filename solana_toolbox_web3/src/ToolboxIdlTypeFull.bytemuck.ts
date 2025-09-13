@@ -1,7 +1,6 @@
 import {
   ToolboxIdlTypeFull,
   ToolboxIdlTypeFullArray,
-  ToolboxIdlTypeFullConst,
   ToolboxIdlTypeFullEnum,
   ToolboxIdlTypeFullFieldNamed,
   ToolboxIdlTypeFullFields,
@@ -153,9 +152,6 @@ let bytemuckCVisitor = {
   padded: (_self: ToolboxIdlTypeFullPadded): ToolboxIdlTypeFullPod => {
     throw new Error('Bytemuck: Repr(C): Padded is not supported');
   },
-  const: (_self: ToolboxIdlTypeFullConst): ToolboxIdlTypeFullPod => {
-    throw new Error('Bytemuck: Repr(C): Const is not supported');
-  },
   primitive: (self: ToolboxIdlTypePrimitive): ToolboxIdlTypeFullPod => {
     return {
       alignment: self.alignment,
@@ -260,9 +256,6 @@ let bytemuckRustVisitor = {
   },
   padded: (_self: ToolboxIdlTypeFullPadded): ToolboxIdlTypeFullPod => {
     throw new Error('Bytemuck: Repr(Rust): Padded is not supported');
-  },
-  const: (_self: ToolboxIdlTypeFullConst): ToolboxIdlTypeFullPod => {
-    throw new Error('Bytemuck: Repr(Rust): Const is not supported');
   },
   primitive: (self: ToolboxIdlTypePrimitive): ToolboxIdlTypeFullPod => {
     return {

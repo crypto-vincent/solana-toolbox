@@ -133,10 +133,6 @@ impl ToolboxIdlTypeFull {
                     before, min_size, after, data_offset
                 )
             }),
-            ToolboxIdlTypeFull::Const { literal } => Err(anyhow!(
-                "Deserialize Const: Can't use a const literal directly: {}",
-                literal
-            )),
             ToolboxIdlTypeFull::Primitive { primitive } => primitive
                 .try_deserialize(data, data_offset)
                 .with_context(|| {
@@ -295,7 +291,7 @@ impl ToolboxIdlTypeFull {
         data: &[u8],
         data_offset: usize,
     ) -> Result<(usize, Value)> {
-        if enum_variant.fields.is_empty() {
+        if enum_variant.fields == ToolboxIdlTypeFullFields::Nothing {
             return Ok((0, json!(enum_variant.name)));
         }
         let (data_fields_size, data_fields) = enum_variant
@@ -343,10 +339,8 @@ impl ToolboxIdlTypeFullFields {
         data: &[u8],
         data_offset: usize,
     ) -> Result<(usize, Value)> {
-        if self.is_empty() {
-            return Ok((0, json!(null)));
-        }
         Ok(match self {
+            ToolboxIdlTypeFullFields::Nothing => (0, json!(null)),
             ToolboxIdlTypeFullFields::Named(fields) => {
                 let mut data_size = 0;
                 let mut data_fields = Map::new();
