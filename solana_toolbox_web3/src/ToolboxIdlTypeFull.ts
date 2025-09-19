@@ -1,29 +1,6 @@
 import { ToolboxIdlTypePrefix } from './ToolboxIdlTypePrefix';
 import { ToolboxIdlTypePrimitive } from './ToolboxIdlTypePrimitive';
 
-enum ToolboxIdlTypeFullDiscriminant {
-  Typedef = 'typedef',
-  Option = 'option',
-  Vec = 'vec',
-  Array = 'array',
-  String = 'string',
-  Struct = 'struct',
-  Enum = 'enum',
-  Padded = 'padded',
-  Primitive = 'primitive',
-}
-
-type ToolboxIdlTypeFullContent =
-  | ToolboxIdlTypeFullTypedef
-  | ToolboxIdlTypeFullOption
-  | ToolboxIdlTypeFullVec
-  | ToolboxIdlTypeFullArray
-  | ToolboxIdlTypeFullString
-  | ToolboxIdlTypeFullStruct
-  | ToolboxIdlTypeFullEnum
-  | ToolboxIdlTypeFullPadded
-  | ToolboxIdlTypePrimitive;
-
 export type ToolboxIdlTypeFullTypedef = {
   name: string;
   repr: string | undefined;
@@ -81,9 +58,30 @@ export type ToolboxIdlTypeFullFieldUnnamed = {
   content: ToolboxIdlTypeFull;
 };
 
+type ToolboxIdlTypeFullDiscriminant =
+  | 'typedef'
+  | 'option'
+  | 'vec'
+  | 'array'
+  | 'string'
+  | 'struct'
+  | 'enum'
+  | 'padded'
+  | 'primitive';
+type ToolboxIdlTypeFullContent =
+  | ToolboxIdlTypeFullTypedef
+  | ToolboxIdlTypeFullOption
+  | ToolboxIdlTypeFullVec
+  | ToolboxIdlTypeFullArray
+  | ToolboxIdlTypeFullString
+  | ToolboxIdlTypeFullStruct
+  | ToolboxIdlTypeFullEnum
+  | ToolboxIdlTypeFullPadded
+  | ToolboxIdlTypePrimitive;
+
 export class ToolboxIdlTypeFull {
-  private discriminant: ToolboxIdlTypeFullDiscriminant;
-  private content: ToolboxIdlTypeFullContent;
+  private readonly discriminant: ToolboxIdlTypeFullDiscriminant;
+  private readonly content: ToolboxIdlTypeFullContent;
 
   private constructor(
     discriminant: ToolboxIdlTypeFullDiscriminant,
@@ -94,49 +92,43 @@ export class ToolboxIdlTypeFull {
   }
 
   public static typedef(value: ToolboxIdlTypeFullTypedef): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(
-      ToolboxIdlTypeFullDiscriminant.Typedef,
-      value,
-    );
+    return new ToolboxIdlTypeFull('typedef', value);
   }
 
   public static option(value: ToolboxIdlTypeFullOption): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Option, value);
+    return new ToolboxIdlTypeFull('option', value);
   }
 
   public static vec(value: ToolboxIdlTypeFullVec): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Vec, value);
+    return new ToolboxIdlTypeFull('vec', value);
   }
 
   public static array(value: ToolboxIdlTypeFullArray): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Array, value);
+    return new ToolboxIdlTypeFull('array', value);
   }
 
   public static string(value: ToolboxIdlTypeFullString): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.String, value);
+    return new ToolboxIdlTypeFull('string', value);
   }
 
   public static struct(value: ToolboxIdlTypeFullStruct): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Struct, value);
+    return new ToolboxIdlTypeFull('struct', value);
   }
 
   public static enum(value: ToolboxIdlTypeFullEnum): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Enum, value);
+    return new ToolboxIdlTypeFull('enum', value);
   }
 
   public static padded(value: ToolboxIdlTypeFullPadded): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Padded, value);
+    return new ToolboxIdlTypeFull('padded', value);
   }
 
   public static primitive(value: ToolboxIdlTypePrimitive): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(
-      ToolboxIdlTypeFullDiscriminant.Primitive,
-      value,
-    );
+    return new ToolboxIdlTypeFull('primitive', value);
   }
 
-  public static nothing(): ToolboxIdlTypeFull {
-    return new ToolboxIdlTypeFull(ToolboxIdlTypeFullDiscriminant.Struct, {
+  public static structNothing(): ToolboxIdlTypeFull {
+    return new ToolboxIdlTypeFull('struct', {
       fields: ToolboxIdlTypeFullFields.nothing(),
     });
   }
@@ -211,42 +203,47 @@ export class ToolboxIdlTypeFull {
   }
 }
 
+type ToolboxIdlTypeFullFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
+type ToolboxIdlTypeFullFieldsContent =
+  | never[]
+  | ToolboxIdlTypeFullFieldNamed[]
+  | ToolboxIdlTypeFullFieldUnnamed[];
+
 export class ToolboxIdlTypeFullFields {
-  private discriminant: 'named' | 'unnamed';
-  private content:
-    | ToolboxIdlTypeFullFieldNamed[]
-    | ToolboxIdlTypeFullFieldUnnamed[];
+  private readonly discriminant: ToolboxIdlTypeFullFieldsDiscriminant;
+  private readonly content: ToolboxIdlTypeFullFieldsContent;
 
   private constructor(
-    discriminant: 'named' | 'unnamed',
-    content: ToolboxIdlTypeFullFieldNamed[] | ToolboxIdlTypeFullFieldUnnamed[],
+    discriminant: ToolboxIdlTypeFullFieldsDiscriminant,
+    content: ToolboxIdlTypeFullFieldsContent,
   ) {
     this.discriminant = discriminant;
     this.content = content;
   }
 
+  public static nothing(): ToolboxIdlTypeFullFields {
+    return new ToolboxIdlTypeFullFields('nothing', []);
+  }
+
   public static named(
-    content: ToolboxIdlTypeFullFieldNamed[],
+    value: ToolboxIdlTypeFullFieldNamed[],
   ): ToolboxIdlTypeFullFields {
-    return new ToolboxIdlTypeFullFields('named', content);
+    return new ToolboxIdlTypeFullFields('named', value);
   }
 
   public static unnamed(
-    content: ToolboxIdlTypeFullFieldUnnamed[],
+    value: ToolboxIdlTypeFullFieldUnnamed[],
   ): ToolboxIdlTypeFullFields {
-    return new ToolboxIdlTypeFullFields('unnamed', content);
+    return new ToolboxIdlTypeFullFields('unnamed', value);
   }
 
-  public static nothing(): ToolboxIdlTypeFullFields {
-    return new ToolboxIdlTypeFullFields('unnamed', []);
-  }
-
-  public isEmpty(): boolean {
-    return this.content.length === 0;
+  public isNothing(): boolean {
+    return this.discriminant === 'nothing';
   }
 
   public traverse<P1, P2, P3, T>(
     visitor: {
+      nothing: (value: never[], param1: P1, param2: P2, param3: P3) => T;
       named: (
         value: ToolboxIdlTypeFullFieldNamed[],
         param1: P1,

@@ -69,10 +69,9 @@ impl ToolboxIdlProgram {
         let accounts =
             ToolboxIdlProgram::try_parse_accounts(idl_root, &typedefs)
                 .context("Parse Accounts")?;
-        let instructions = ToolboxIdlProgram::try_parse_instructions(
-            idl_root, &accounts, &typedefs,
-        )
-        .context("Parse Instructions")?;
+        let instructions =
+            ToolboxIdlProgram::try_parse_instructions(idl_root, &typedefs)
+                .context("Parse Instructions")?;
         let events = ToolboxIdlProgram::try_parse_events(idl_root, &typedefs)
             .context("Parse Events")?;
         let errors = ToolboxIdlProgram::try_parse_errors(idl_root)
@@ -176,7 +175,6 @@ impl ToolboxIdlProgram {
 
     fn try_parse_instructions(
         idl_root: &Map<String, Value>,
-        accounts: &HashMap<String, Arc<ToolboxIdlAccount>>,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<HashMap<String, Arc<ToolboxIdlInstruction>>> {
         let mut instructions = HashMap::new();
@@ -193,7 +191,6 @@ impl ToolboxIdlProgram {
                 ToolboxIdlInstruction::try_parse(
                     &idl_instruction_name,
                     idl_instruction,
-                    accounts,
                     typedefs,
                 )
                 .with_context(|| {

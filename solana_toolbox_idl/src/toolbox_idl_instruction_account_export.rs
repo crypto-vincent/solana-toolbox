@@ -80,59 +80,50 @@ impl ToolboxIdlInstructionAccountPdaBlob {
                 value,
                 type_flat,
                 type_full,
-                ..
             } => {
-                let mut json_const = Map::new();
-                if !format.can_skip_instruction_account_pda_kind_key {
-                    json_const.insert("kind".to_string(), json!("const"));
-                }
-                if !format.can_skip_instruction_account_pda_type_key
-                    || !(type_full.is_vec32_u8() || type_full.is_string32())
+                if format.can_skip_instruction_account_pda_object_wrap
+                    && (type_full.is_vec32_u8() || type_full.is_string32())
                 {
-                    json_const
-                        .insert("type".to_string(), type_flat.export(format));
-                }
-                if json_const.is_empty() {
                     return json!(value);
                 }
-                json_const.insert("value".to_string(), json!(value));
-                json!(json_const)
+                json!({
+                    "kind": "const",
+                    "type": type_flat.export(format),
+                    "value": value,
+                })
             },
-            ToolboxIdlInstructionAccountPdaBlob::Arg {
-                path,
-                type_flat,
-                ..
-            } => {
-                let mut json_arg = Map::new();
-                json_arg.insert("kind".to_string(), json!("arg"));
-                if !format.can_skip_instruction_account_pda_type_key {
-                    json_arg.insert(
-                        "type".to_string(),
-                        json!(type_flat.export(format)),
-                    );
+            ToolboxIdlInstructionAccountPdaBlob::Arg { path, typing } => {
+                let mut json_pda_blob_arg = Map::new();
+                json_pda_blob_arg.insert("kind".to_string(), json!("arg"));
+                json_pda_blob_arg
+                    .insert("path".to_string(), json!(path.value()));
+                if let Some(typing) = typing {
+                    json_pda_blob_arg
+                        .insert("type".to_string(), typing.0.export(format));
                 }
-                json_arg.insert("path".to_string(), json!(path.value()));
-                json!(json_arg)
+                json!(json_pda_blob_arg)
             },
             ToolboxIdlInstructionAccountPdaBlob::Account {
-                path,
                 account,
-                type_flat,
-                ..
+                path,
+                typing,
             } => {
-                let mut json_account = Map::new();
-                if !format.can_skip_instruction_account_pda_kind_key {
-                    json_account.insert("kind".to_string(), json!("account"));
-                }
-                if !format.can_skip_instruction_account_pda_type_key {
-                    json_account
-                        .insert("type".to_string(), type_flat.export(format));
-                }
+                let mut json_pda_blob_account = Map::new();
                 if let Some(account) = account {
-                    json_account.insert("account".to_string(), json!(account));
+                    json_pda_blob_account
+                        .insert("account".to_string(), json!(account));
                 }
-                json_account.insert("path".to_string(), json!(path.value()));
-                json!(json_account)
+                if !format.can_skip_instruction_account_pda_account_kind {
+                    json_pda_blob_account
+                        .insert("kind".to_string(), json!("account"));
+                }
+                json_pda_blob_account
+                    .insert("path".to_string(), json!(path.value()));
+                if let Some(typing) = typing {
+                    json_pda_blob_account
+                        .insert("type".to_string(), typing.0.export(format));
+                }
+                json!(json_pda_blob_account)
             },
         }
     }

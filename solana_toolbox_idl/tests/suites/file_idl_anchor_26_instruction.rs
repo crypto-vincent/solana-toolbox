@@ -35,18 +35,18 @@ pub async fn run() {
         ("system_program".to_string(), Pubkey::new_unique()),
     ]);
     // Find missing instruction accounts
-    let instruction_addresses = idl_instruction
-        .find_addresses_with_accounts_states(
-            &program_id,
-            &instruction_payload,
-            &instruction_addresses,
-            &HashMap::from_iter([(
-                "borrower_info".to_string(),
-                json!({
-                    "num_of_deals": 42,
-                }),
-            )]),
-        );
+    let instruction_addresses = idl_instruction.find_addresses_with_accounts(
+        &program_id,
+        &instruction_payload,
+        &instruction_addresses,
+        &HashMap::from_iter([(
+            "borrower_info".to_string(),
+            json!({
+                "num_of_deals": 42,
+            }),
+        )]),
+        &HashMap::new(),
+    );
     // Check that we can encode it and then decode it
     assert_eq!(
         idl_instruction

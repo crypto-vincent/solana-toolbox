@@ -70,8 +70,8 @@ export class ToolboxIdlTypePrimitive {
     alignment: 1,
   });
 
-  public static readonly primitiveByName = (() => {
-    let primitives = [
+  public static readonly primitivesByName = (() => {
+    const primitives = [
       ToolboxIdlTypePrimitive.U8,
       ToolboxIdlTypePrimitive.U16,
       ToolboxIdlTypePrimitive.U32,
@@ -87,16 +87,16 @@ export class ToolboxIdlTypePrimitive {
       ToolboxIdlTypePrimitive.Bool,
       ToolboxIdlTypePrimitive.Pubkey,
     ];
-    let primitivesByName = new Map<string, ToolboxIdlTypePrimitive>();
-    for (let primitive of primitives) {
+    const primitivesByName = new Map<string, ToolboxIdlTypePrimitive>();
+    for (const primitive of primitives) {
       primitivesByName.set(primitive.name, primitive);
     }
     return primitivesByName;
   })();
 
-  public name: string;
-  public size: number;
-  public alignment: number;
+  public readonly name: string;
+  public readonly size: number;
+  public readonly alignment: number;
 
   private constructor(value: {
     name: string;

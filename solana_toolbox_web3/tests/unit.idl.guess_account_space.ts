@@ -36,8 +36,8 @@ it('run', () => {
       space: 3,
       blobs: [],
       discriminator: Buffer.from([1]),
-      contentTypeFlat: ToolboxIdlTypeFlat.nothing(),
-      contentTypeFull: ToolboxIdlTypeFull.nothing(),
+      contentTypeFlat: ToolboxIdlTypeFlat.structNothing(),
+      contentTypeFull: ToolboxIdlTypeFull.structNothing(),
     }),
   );
   expect(idlProgram.accounts.get('MyAccount1_x6')).toStrictEqual(
@@ -47,8 +47,8 @@ it('run', () => {
       space: 6,
       blobs: [],
       discriminator: Buffer.from([1]),
-      contentTypeFlat: ToolboxIdlTypeFlat.nothing(),
-      contentTypeFull: ToolboxIdlTypeFull.nothing(),
+      contentTypeFlat: ToolboxIdlTypeFlat.structNothing(),
+      contentTypeFull: ToolboxIdlTypeFull.structNothing(),
     }),
   );
   expect(idlProgram.accounts.get('MyAccount2_x6')).toStrictEqual(
@@ -65,7 +65,7 @@ it('run', () => {
       contentTypeFull: ToolboxIdlTypeFull.typedef({
         name: 'MyAccount2_x6',
         repr: undefined,
-        content: ToolboxIdlTypeFull.nothing(),
+        content: ToolboxIdlTypeFull.structNothing(),
       }),
     }),
   );

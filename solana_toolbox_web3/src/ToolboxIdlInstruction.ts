@@ -3,7 +3,6 @@ import {
   PublicKey,
   TransactionInstruction,
 } from '@solana/web3.js';
-import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlInstructionAccount } from './ToolboxIdlInstructionAccount';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import {
@@ -28,8 +27,8 @@ export class ToolboxIdlInstruction {
     accounts: [],
     argsTypeFlatFields: ToolboxIdlTypeFlatFields.nothing(),
     argsTypeFullFields: ToolboxIdlTypeFullFields.nothing(),
-    returnTypeFlat: ToolboxIdlTypeFlat.nothing(),
-    returnTypeFull: ToolboxIdlTypeFull.nothing(),
+    returnTypeFlat: ToolboxIdlTypeFlat.structNothing(),
+    returnTypeFull: ToolboxIdlTypeFull.structNothing(),
   });
 
   public readonly name: string;
@@ -64,7 +63,6 @@ export class ToolboxIdlInstruction {
   public static tryParse(
     idlInstructionName: string,
     idlInstruction: any,
-    accounts: Map<string, ToolboxIdlAccount>,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstruction {
     let docs = idlInstruction['docs'];
@@ -80,7 +78,6 @@ export class ToolboxIdlInstruction {
       (idlInstructionAccount: any) => {
         return ToolboxIdlInstructionAccount.tryParse(
           idlInstructionAccount,
-          accounts,
           typedefs,
         );
       },
@@ -194,7 +191,7 @@ export class ToolboxIdlInstruction {
       }
       instructionAddresses.set(
         account.name,
-        instructionMetas[instructionMetaIndex].pubkey,
+        instructionMetas[instructionMetaIndex]!.pubkey,
       );
       instructionMetaIndex++;
     }

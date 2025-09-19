@@ -123,16 +123,12 @@ it('run', () => {
           {
             name: 'struct1',
             docs: undefined,
-            content: ToolboxIdlTypeFlat.struct({
-              fields: ToolboxIdlTypeFlatFields.nothing(),
-            }),
+            content: ToolboxIdlTypeFlat.structNothing(),
           },
           {
             name: 'struct2',
             docs: undefined,
-            content: ToolboxIdlTypeFlat.struct({
-              fields: ToolboxIdlTypeFlatFields.nothing(),
-            }),
+            content: ToolboxIdlTypeFlat.structNothing(),
           },
           {
             name: 'enum1',

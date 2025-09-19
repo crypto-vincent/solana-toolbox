@@ -8,8 +8,8 @@ pub struct ToolboxIdlPath {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ToolboxIdlPathPart {
     Empty,
+    Index(usize),
     Key(String),
-    Code(u64),
 }
 
 impl ToolboxIdlPath {
@@ -18,10 +18,10 @@ impl ToolboxIdlPath {
         for part in value.split(".") {
             if part.is_empty() {
                 parts.push(ToolboxIdlPathPart::Empty)
-            } else if part.contains(|c: char| !c.is_ascii_digit()) {
-                parts.push(ToolboxIdlPathPart::Key(part.to_string()))
+            } else if part.chars().all(|c| c.is_ascii_digit()) {
+                parts.push(ToolboxIdlPathPart::Index(part.parse()?))
             } else {
-                parts.push(ToolboxIdlPathPart::Code(part.parse()?))
+                parts.push(ToolboxIdlPathPart::Key(part.to_string()))
             }
         }
         if parts[0] == ToolboxIdlPathPart::Empty {
@@ -71,15 +71,15 @@ impl ToolboxIdlPathPart {
         match self {
             ToolboxIdlPathPart::Empty => None,
             ToolboxIdlPathPart::Key(key) => Some(key),
-            ToolboxIdlPathPart::Code(_) => None,
+            ToolboxIdlPathPart::Index(_) => None,
         }
     }
 
-    pub fn code(&self) -> Option<u64> {
+    pub fn index(&self) -> Option<usize> {
         match self {
             ToolboxIdlPathPart::Empty => None,
             ToolboxIdlPathPart::Key(_) => None,
-            ToolboxIdlPathPart::Code(index) => Some(*index),
+            ToolboxIdlPathPart::Index(index) => Some(*index),
         }
     }
 
@@ -87,7 +87,7 @@ impl ToolboxIdlPathPart {
         match self {
             ToolboxIdlPathPart::Empty => "".to_string(),
             ToolboxIdlPathPart::Key(key) => key.to_string(),
-            ToolboxIdlPathPart::Code(index) => index.to_string(),
+            ToolboxIdlPathPart::Index(index) => index.to_string(),
         }
     }
 }

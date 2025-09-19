@@ -104,7 +104,7 @@ function parseObject(idlTypeObject: Record<string, any>): ToolboxIdlTypeFlat {
     return parseVec(ToolboxIdlTypePrefix.U128, idlTypeObject['vec128']);
   }
   if (idlTypeObject.hasOwnProperty('array')) {
-    return parseArray(idlTypeObject['array']);
+    return parseArray(idlTypeObject['array']); // TODO - expect array and parse struct too ?
   }
   if (idlTypeObject.hasOwnProperty('fields')) {
     return parseStruct(idlTypeObject['fields']);
@@ -180,7 +180,7 @@ function parseString(idlTypeString: string): ToolboxIdlTypeFlat {
   if (idlTypeString === 'string128') {
     return ToolboxIdlTypeFlat.string({ prefix: ToolboxIdlTypePrefix.U128 });
   }
-  let primitive = ToolboxIdlTypePrimitive.primitiveByName.get(idlTypeString);
+  let primitive = ToolboxIdlTypePrimitive.primitivesByName.get(idlTypeString);
   return primitive
     ? ToolboxIdlTypeFlat.primitive(primitive)
     : ToolboxIdlTypeFlat.defined({
@@ -337,10 +337,14 @@ function parseConst(idlConstValue: any): ToolboxIdlTypeFlat {
 }
 
 export function parseFields(idlFields: any): ToolboxIdlTypeFlatFields {
-  if (idlFields === undefined) {
+  // TODO - cleanup this sort of things ? maybe stricter type instead of "any" ?
+  if (idlFields === undefined || idlFields === null) {
     return ToolboxIdlTypeFlatFields.nothing();
   }
   ToolboxUtils.expectArray(idlFields);
+  if (idlFields.length === 0) {
+    return ToolboxIdlTypeFlatFields.nothing();
+  }
   let named = false;
   let fieldsInfos: ToolboxIdlTypeFlatFieldNamed[] = [];
   for (let i = 0; i < idlFields.length; i++) {

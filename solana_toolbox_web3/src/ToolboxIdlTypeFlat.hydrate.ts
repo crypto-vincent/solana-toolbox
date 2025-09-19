@@ -73,7 +73,7 @@ let hydrateOrConstLiteralVisitor = {
       ToolboxIdlTypeFull | number
     >();
     for (let i = 0; i < typedef.generics.length; i++) {
-      innerGenericsBySymbol.set(typedef.generics[i], genericsFull[i]);
+      innerGenericsBySymbol.set(typedef.generics[i]!, genericsFull[i]!);
     }
     const typeFull = hydrate(typedef.typeFlat, innerGenericsBySymbol, typedefs);
     const typeTypedef = {
@@ -210,6 +210,13 @@ export function hydrateFields(
 }
 
 let hydrateFieldsVisitor = {
+  nothing: (
+    _self: never[],
+    _genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
+    _typedefs: Map<string, ToolboxIdlTypedef>,
+  ): ToolboxIdlTypeFullFields => {
+    return ToolboxIdlTypeFullFields.nothing();
+  },
   named: (
     self: ToolboxIdlTypeFlatFieldNamed[],
     genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,

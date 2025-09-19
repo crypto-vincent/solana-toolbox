@@ -1,12 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
-import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import { ToolboxUtils } from './ToolboxUtils';
 import { ToolboxIdlInstructionAccountPdaBlob } from './ToolboxIdlInstructionAccountPdaBlob';
 
 export type ToolboxIdlInstructionAccountPda = {
   seeds: ToolboxIdlInstructionAccountPdaBlob[];
-  program: ToolboxIdlInstructionAccountPdaBlob;
+  program: ToolboxIdlInstructionAccountPdaBlob | undefined;
 };
 
 export class ToolboxIdlInstructionAccount {
@@ -24,8 +23,8 @@ export class ToolboxIdlInstructionAccount {
     writable: boolean;
     signer: boolean;
     optional: boolean;
-    address?: PublicKey;
-    pda?: ToolboxIdlInstructionAccountPda;
+    address: PublicKey | undefined;
+    pda: ToolboxIdlInstructionAccountPda | undefined;
   }) {
     this.name = value.name;
     this.docs = value.docs;
@@ -38,7 +37,6 @@ export class ToolboxIdlInstructionAccount {
 
   public static tryParse(
     idlInstructionAccount: any,
-    accounts: Map<string, ToolboxIdlAccount>,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccount {
     ToolboxUtils.expectObject(idlInstructionAccount);
@@ -67,6 +65,26 @@ export class ToolboxIdlInstructionAccount {
         ToolboxUtils.expectString(idlInstructionAccount['address']),
       );
     }
+    let pda = undefined;
+    if (idlInstructionAccount['pda']) {
+      let idlPda = idlInstructionAccount['pda'];
+      ToolboxUtils.expectObject(idlPda);
+      let idlSeeds = ToolboxUtils.expectArray(idlPda['seeds'] ?? []);
+      let seeds = idlSeeds.map((idlSeed: any) =>
+        ToolboxIdlInstructionAccountPdaBlob.tryParse(idlSeed, typedefs),
+      );
+      let program = undefined;
+      if (idlPda['program']) {
+        program = ToolboxIdlInstructionAccountPdaBlob.tryParse(
+          idlPda['program'],
+          typedefs,
+        );
+      }
+      pda = {
+        seeds,
+        program,
+      };
+    }
     return new ToolboxIdlInstructionAccount({
       name,
       docs,
@@ -74,6 +92,7 @@ export class ToolboxIdlInstructionAccount {
       signer,
       optional,
       address,
+      pda,
     });
   }
 }

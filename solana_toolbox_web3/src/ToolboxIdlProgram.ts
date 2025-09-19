@@ -36,12 +36,12 @@ let knownIdls = new Map<string, any>([
 ]);
 
 export type ToolboxIdlProgramMetadata = {
-  name?: string;
-  docs?: any;
-  description?: string;
-  address?: PublicKey;
-  version?: string;
-  spec?: string;
+  name: string | undefined;
+  docs: any | undefined;
+  description: string | undefined;
+  address: PublicKey | undefined;
+  version: string | undefined;
+  spec: string | undefined;
 };
 
 export class ToolboxIdlProgram {
@@ -50,7 +50,14 @@ export class ToolboxIdlProgram {
   ]);
 
   public static readonly Unknown = new ToolboxIdlProgram({
-    metadata: {},
+    metadata: {
+      name: undefined,
+      docs: undefined,
+      description: undefined,
+      address: undefined,
+      version: undefined,
+      spec: undefined,
+    },
     typedefs: new Map(),
     accounts: new Map(),
     instructions: new Map(),
@@ -140,8 +147,8 @@ export class ToolboxIdlProgram {
       idlRoot,
       'instructions',
       true,
-      accounts,
       typedefs,
+      undefined,
       ToolboxIdlInstruction.tryParse,
     );
     let events = ToolboxIdlProgram.tryParseScopedNamedValues(
@@ -172,7 +179,14 @@ export class ToolboxIdlProgram {
 
   static tryParseMetadata(idlMetadata: any): ToolboxIdlProgramMetadata {
     if (!idlMetadata) {
-      return {};
+      return {
+        name: undefined,
+        docs: undefined,
+        description: undefined,
+        address: undefined,
+        version: undefined,
+        spec: undefined,
+      };
     }
     let rawName = idlMetadata['name'];
     let rawDocs = idlMetadata['docs'];

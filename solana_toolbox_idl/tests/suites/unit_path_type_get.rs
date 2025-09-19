@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use serde_json::json;
 use solana_toolbox_idl::ToolboxIdlPath;
 use solana_toolbox_idl::ToolboxIdlProgram;
@@ -107,14 +105,12 @@ fn assert_get(
     assert_eq!(
         ToolboxIdlPath::try_parse(path)
             .unwrap()
-            .try_get_type_flat(
+            .try_get_type_full(
                 &idl_program
                     .accounts
                     .get("MyAccount")
                     .unwrap()
-                    .content_type_flat,
-                &HashMap::new(),
-                &idl_program.typedefs
+                    .content_type_full,
             )
             .unwrap(),
         expected.into()

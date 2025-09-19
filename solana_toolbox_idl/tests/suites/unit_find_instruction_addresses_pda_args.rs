@@ -25,6 +25,8 @@ pub async fn run() {
                                 { "kind": "arg", "path": "string" },
                                 { "kind": "arg", "path": "inner.u8" },
                                 { "kind": "arg", "path": "inner.u16" },
+                                { "kind": "arg", "path": "inner.u16", "type": "u8" },
+                                { "kind": "arg", "path": "inner.u16", "type": "u32" },
                             ]
                         }
                     },
@@ -61,6 +63,8 @@ pub async fn run() {
         b"hello",
         &111u8.to_le_bytes(),
         &222u16.to_le_bytes(),
+        &222u8.to_le_bytes(),
+        &222u32.to_le_bytes(),
     ];
     let dummy_pda =
         Pubkey::find_program_address(dummy_seeds, &dummy_program_id).0;

@@ -1,33 +1,6 @@
 import { ToolboxIdlTypePrefix } from './ToolboxIdlTypePrefix';
 import { ToolboxIdlTypePrimitive } from './ToolboxIdlTypePrimitive';
 
-enum ToolboxIdlTypeFlatDiscriminant {
-  Defined = 'defined',
-  Generic = 'generic',
-  Option = 'option',
-  Vec = 'vec',
-  Array = 'array',
-  String = 'string',
-  Struct = 'struct',
-  Enum = 'enum',
-  Padded = 'padded',
-  Const = 'const',
-  Primitive = 'primitive',
-}
-
-type ToolboxIdlTypeFlatContent =
-  | ToolboxIdlTypeFlatDefined
-  | ToolboxIdlTypeFlatGeneric
-  | ToolboxIdlTypeFlatOption
-  | ToolboxIdlTypeFlatVec
-  | ToolboxIdlTypeFlatArray
-  | ToolboxIdlTypeFlatString
-  | ToolboxIdlTypeFlatStruct
-  | ToolboxIdlTypeFlatEnum
-  | ToolboxIdlTypeFlatPadded
-  | ToolboxIdlTypeFlatConst
-  | ToolboxIdlTypePrimitive;
-
 export type ToolboxIdlTypeFlatDefined = {
   name: string;
   generics: ToolboxIdlTypeFlat[];
@@ -94,6 +67,31 @@ export type ToolboxIdlTypeFlatFieldUnnamed = {
   content: ToolboxIdlTypeFlat;
 };
 
+type ToolboxIdlTypeFlatDiscriminant =
+  | 'defined'
+  | 'generic'
+  | 'option'
+  | 'vec'
+  | 'array'
+  | 'string'
+  | 'struct'
+  | 'enum'
+  | 'padded'
+  | 'const'
+  | 'primitive';
+type ToolboxIdlTypeFlatContent =
+  | ToolboxIdlTypeFlatDefined
+  | ToolboxIdlTypeFlatGeneric
+  | ToolboxIdlTypeFlatOption
+  | ToolboxIdlTypeFlatVec
+  | ToolboxIdlTypeFlatArray
+  | ToolboxIdlTypeFlatString
+  | ToolboxIdlTypeFlatStruct
+  | ToolboxIdlTypeFlatEnum
+  | ToolboxIdlTypeFlatPadded
+  | ToolboxIdlTypeFlatConst
+  | ToolboxIdlTypePrimitive;
+
 export class ToolboxIdlTypeFlat {
   private discriminant: ToolboxIdlTypeFlatDiscriminant;
   private content: ToolboxIdlTypeFlatContent;
@@ -107,60 +105,51 @@ export class ToolboxIdlTypeFlat {
   }
 
   public static defined(value: ToolboxIdlTypeFlatDefined): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(
-      ToolboxIdlTypeFlatDiscriminant.Defined,
-      value,
-    );
+    return new ToolboxIdlTypeFlat('defined', value);
   }
 
   public static generic(value: ToolboxIdlTypeFlatGeneric): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(
-      ToolboxIdlTypeFlatDiscriminant.Generic,
-      value,
-    );
+    return new ToolboxIdlTypeFlat('generic', value);
   }
 
   public static option(value: ToolboxIdlTypeFlatOption): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Option, value);
+    return new ToolboxIdlTypeFlat('option', value);
   }
 
   public static vec(value: ToolboxIdlTypeFlatVec): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Vec, value);
+    return new ToolboxIdlTypeFlat('vec', value);
   }
 
   public static array(value: ToolboxIdlTypeFlatArray): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Array, value);
+    return new ToolboxIdlTypeFlat('array', value);
   }
 
   public static string(value: ToolboxIdlTypeFlatString): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.String, value);
+    return new ToolboxIdlTypeFlat('string', value);
   }
 
   public static struct(value: ToolboxIdlTypeFlatStruct): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Struct, value);
+    return new ToolboxIdlTypeFlat('struct', value);
   }
 
   public static enum(value: ToolboxIdlTypeFlatEnum): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Enum, value);
+    return new ToolboxIdlTypeFlat('enum', value);
   }
 
   public static padded(value: ToolboxIdlTypeFlatPadded): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Padded, value);
+    return new ToolboxIdlTypeFlat('padded', value);
   }
 
   public static const(value: ToolboxIdlTypeFlatConst): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Const, value);
+    return new ToolboxIdlTypeFlat('const', value);
   }
 
   public static primitive(value: ToolboxIdlTypePrimitive): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(
-      ToolboxIdlTypeFlatDiscriminant.Primitive,
-      value,
-    );
+    return new ToolboxIdlTypeFlat('primitive', value);
   }
 
-  public static nothing(): ToolboxIdlTypeFlat {
-    return new ToolboxIdlTypeFlat(ToolboxIdlTypeFlatDiscriminant.Struct, {
+  public static structNothing(): ToolboxIdlTypeFlat {
+    return new ToolboxIdlTypeFlat('struct', {
       fields: ToolboxIdlTypeFlatFields.nothing(),
     });
   }
@@ -186,38 +175,47 @@ export class ToolboxIdlTypeFlat {
   }
 }
 
+type ToolboxIdlTypeFlatFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
+type ToolboxIdlTypeFlatFieldsContent =
+  | never[]
+  | ToolboxIdlTypeFlatFieldNamed[]
+  | ToolboxIdlTypeFlatFieldUnnamed[];
+
 export class ToolboxIdlTypeFlatFields {
-  private discriminant: 'named' | 'unnamed';
-  private content:
-    | ToolboxIdlTypeFlatFieldNamed[]
-    | ToolboxIdlTypeFlatFieldUnnamed[];
+  private readonly discriminant: ToolboxIdlTypeFlatFieldsDiscriminant;
+  private readonly content: ToolboxIdlTypeFlatFieldsContent;
 
   private constructor(
-    discriminant: 'named' | 'unnamed',
-    content: ToolboxIdlTypeFlatFieldNamed[] | ToolboxIdlTypeFlatFieldUnnamed[],
+    discriminant: ToolboxIdlTypeFlatFieldsDiscriminant,
+    content: ToolboxIdlTypeFlatFieldsContent,
   ) {
     this.discriminant = discriminant;
     this.content = content;
   }
 
+  public static nothing(): ToolboxIdlTypeFlatFields {
+    return new ToolboxIdlTypeFlatFields('nothing', []);
+  }
+
   public static named(
-    content: ToolboxIdlTypeFlatFieldNamed[],
+    value: ToolboxIdlTypeFlatFieldNamed[],
   ): ToolboxIdlTypeFlatFields {
-    return new ToolboxIdlTypeFlatFields('named', content);
+    return new ToolboxIdlTypeFlatFields('named', value);
   }
 
   public static unnamed(
-    content: ToolboxIdlTypeFlatFieldUnnamed[],
+    value: ToolboxIdlTypeFlatFieldUnnamed[],
   ): ToolboxIdlTypeFlatFields {
-    return new ToolboxIdlTypeFlatFields('unnamed', content);
+    return new ToolboxIdlTypeFlatFields('unnamed', value);
   }
 
-  public static nothing(): ToolboxIdlTypeFlatFields {
-    return new ToolboxIdlTypeFlatFields('unnamed', []);
+  public isNothing(): boolean {
+    return this.discriminant === 'nothing';
   }
 
   public traverse<P1, P2, T>(
     visitor: {
+      nothing: (value: never[], param1: P1, param2: P2) => T;
       named: (
         value: ToolboxIdlTypeFlatFieldNamed[],
         param1: P1,

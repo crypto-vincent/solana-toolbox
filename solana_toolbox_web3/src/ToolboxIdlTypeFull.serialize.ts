@@ -61,6 +61,7 @@ let serializeVisitor = {
     if (prefixed) {
       serializePrefix(self.prefix, array.length, data);
     }
+    // TODO - handle special case of "bytes" fancy serializer
     for (let item of array) {
       serialize(self.items, item, data, prefixed);
     }
@@ -191,6 +192,14 @@ export function serializeFields(
 }
 
 let serializeFieldsVisitor = {
+  nothing: (
+    _self: never[],
+    _value: any,
+    _data: Buffer[],
+    _prefixed: boolean,
+  ) => {
+    return;
+  },
   named: (
     self: ToolboxIdlTypeFullFieldNamed[],
     value: any,

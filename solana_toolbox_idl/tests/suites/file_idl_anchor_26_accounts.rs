@@ -126,7 +126,7 @@ pub async fn run() {
         .instructions
         .get("open_deal")
         .unwrap()
-        .find_addresses_with_accounts_states(
+        .find_addresses_with_accounts(
             &program_id,
             &json!({ "global_market_seed": global_market_seed.to_string() }),
             &HashMap::from([
@@ -140,6 +140,7 @@ pub async fn run() {
                     "borrower": borrower.to_string()
                 }),
             )]),
+            &HashMap::new(),
         );
     // Check the outcomes
     assert_eq!(

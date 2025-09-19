@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fs::read_to_string;
+use std::sync::Arc;
 
 use serde_json::json;
 use solana_sdk::pubkey::Pubkey;
@@ -77,7 +78,7 @@ pub async fn run() {
         .instructions
         .get("campaign_extract")
         .unwrap()
-        .find_addresses_with_accounts_states(
+        .find_addresses_with_accounts(
             &program_id,
             &json!({ "params": { "index": campaign_index } }),
             &HashMap::from([
@@ -92,7 +93,22 @@ pub async fn run() {
                     "collateral_mint": collateral_mint.to_string()
                 }),
             )]),
+            &HashMap::from_iter([(
+                "campaign".to_string(),
+                Arc::new(
+                    idl_program
+                        .accounts
+                        .get("Campaign")
+                        .unwrap()
+                        .content_type_full
+                        .clone(),
+                ),
+            )]),
         );
+    eprintln!(
+        "campaign_extract_addresses: {:#?}",
+        campaign_extract_addresses
+    );
     // Check outcome
     assert_eq!(
         campaign_collateral,
@@ -121,7 +137,7 @@ pub async fn run() {
         .instructions
         .get("pledge_deposit")
         .unwrap()
-        .find_addresses_with_accounts_states(
+        .find_addresses_with_accounts(
             &program_id,
             &json!({}),
             &HashMap::from([
@@ -135,6 +151,18 @@ pub async fn run() {
                 json!({
                     "collateral_mint": collateral_mint.to_string()
                 }),
+            )]),
+            &HashMap::from_iter([(
+                "campaign".to_string(),
+                Arc::new(
+                    // TODO - make this nicer
+                    idl_program
+                        .accounts
+                        .get("Campaign")
+                        .unwrap()
+                        .content_type_full
+                        .clone(),
+                ),
             )]),
         );
     // Check outcome

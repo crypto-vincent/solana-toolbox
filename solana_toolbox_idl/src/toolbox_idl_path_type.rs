@@ -1,154 +1,109 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-
 use anyhow::anyhow;
 use anyhow::Context;
 use anyhow::Result;
 
 use crate::toolbox_idl_path::ToolboxIdlPath;
 use crate::toolbox_idl_path::ToolboxIdlPathPart;
-use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
-use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlatFields;
-use crate::toolbox_idl_typedef::ToolboxIdlTypedef;
-use crate::toolbox_idl_utils::idl_map_get_key_or_else;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 
 impl ToolboxIdlPath {
-    pub fn try_get_type_flat(
+    pub fn try_get_type_full(
         &self,
-        type_flat: &ToolboxIdlTypeFlat,
-        generics_by_symbol: &HashMap<String, &ToolboxIdlTypeFlat>,
-        typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
-    ) -> Result<ToolboxIdlTypeFlat> {
+        type_full: &ToolboxIdlTypeFull,
+    ) -> Result<ToolboxIdlTypeFull> {
         let Some((current, next)) = self.split_first() else {
-            return Ok(type_flat.clone());
+            return Ok(type_full.clone());
         };
-        match type_flat {
-            ToolboxIdlTypeFlat::Defined { name, generics } => {
-                let typedef = idl_map_get_key_or_else(typedefs, name)
-                    .context("Defined type")?;
-                if generics.len() < typedef.generics.len() {
+        match type_full {
+            ToolboxIdlTypeFull::Typedef { content, .. } => {
+                self.try_get_type_full(content)
+            },
+            ToolboxIdlTypeFull::Option { content, .. } => {
+                self.try_get_type_full(content)
+            },
+            ToolboxIdlTypeFull::Vec { items, .. } => {
+                if let ToolboxIdlPathPart::Key(key) = current {
                     return Err(anyhow!(
-                        "Insufficient number of generic parameter for {}: expected: {}, found: {}",
-                        typedef.name,
-                        typedef.generics.len(),
-                        generics.len()
+                        "Vec cannot be accessed by key: {}",
+                        key
                     ));
                 }
-                let mut generics_by_symbol = HashMap::new();
-                for (generic_name, generic_type) in
-                    typedef.generics.iter().zip(generics)
-                {
-                    generics_by_symbol
-                        .insert(generic_name.to_string(), generic_type);
-                }
-                self.try_get_type_flat(
-                    &typedef.type_flat,
-                    &generics_by_symbol,
-                    typedefs,
-                )
+                next.try_get_type_full(items)
             },
-            ToolboxIdlTypeFlat::Generic { symbol } => {
-                // TODO - doesnt work if its a gneric of a generic ?
-                let generic =
-                    idl_map_get_key_or_else(generics_by_symbol, symbol)
-                        .with_context(|| format!("Generic: {}", symbol))?;
-                self.try_get_type_flat(generic, generics_by_symbol, typedefs)
-            },
-            ToolboxIdlTypeFlat::Option { content, .. } => {
-                self.try_get_type_flat(content, generics_by_symbol, typedefs)
-            },
-            ToolboxIdlTypeFlat::Vec { items, .. } => {
+            ToolboxIdlTypeFull::Array { items, .. } => {
                 if let ToolboxIdlPathPart::Key(key) = current {
-                    return Err(anyhow!("Invalid Vec Index: {}", key));
+                    return Err(anyhow!(
+                        "Array cannot be accessed by key: {}",
+                        key
+                    ));
                 }
-                next.try_get_type_flat(items, generics_by_symbol, typedefs)
+                next.try_get_type_full(items)
             },
-            ToolboxIdlTypeFlat::Array { items, .. } => {
-                if let ToolboxIdlPathPart::Key(key) = current {
-                    return Err(anyhow!("Invalid Array Index: {}", key));
-                }
-                next.try_get_type_flat(items, generics_by_symbol, typedefs)
-            },
-            ToolboxIdlTypeFlat::String { .. } => Err(anyhow!(
+            ToolboxIdlTypeFull::String { .. } => Err(anyhow!(
                 "Type string does not contain path: {}",
                 self.value()
             )),
-            ToolboxIdlTypeFlat::Struct { fields } => self
-                .try_get_type_flat_fields(fields, generics_by_symbol, typedefs),
-            ToolboxIdlTypeFlat::Enum { variants, .. } => match current {
+            ToolboxIdlTypeFull::Struct { fields } => {
+                self.try_get_type_full_fields(fields)
+            },
+            ToolboxIdlTypeFull::Enum { variants, .. } => match current {
                 ToolboxIdlPathPart::Empty => {
                     Err(anyhow!("Invalid Enum Variant: Empty String"))
+                },
+                ToolboxIdlPathPart::Index(index) => {
+                    for variant in variants {
+                        if variant.code == u64::try_from(index)? {
+                            return next
+                                .try_get_type_full_fields(&variant.fields);
+                        }
+                    }
+                    Err(anyhow!("Could not find enum variant: {}", index))
                 },
                 ToolboxIdlPathPart::Key(key) => {
                     for variant in variants {
                         if variant.name == key {
-                            return next.try_get_type_flat_fields(
-                                &variant.fields,
-                                generics_by_symbol,
-                                typedefs,
-                            );
+                            return next
+                                .try_get_type_full_fields(&variant.fields);
                         }
                     }
                     Err(anyhow!("Could not find enum variant: {}", key))
                 },
-                ToolboxIdlPathPart::Code(code) => {
-                    for variant in variants {
-                        if variant.code == code {
-                            return next.try_get_type_flat_fields(
-                                &variant.fields,
-                                generics_by_symbol,
-                                typedefs,
-                            );
-                        }
-                    }
-                    Err(anyhow!("Could not find enum variant: {}", code))
-                },
             },
-            ToolboxIdlTypeFlat::Padded { content, .. } => {
-                self.try_get_type_flat(content, generics_by_symbol, typedefs)
+            ToolboxIdlTypeFull::Padded { content, .. } => {
+                self.try_get_type_full(content)
             },
-            ToolboxIdlTypeFlat::Const { .. } => Err(anyhow!(
-                "Type literal does not contain path: {}",
-                self.value()
-            )),
-            ToolboxIdlTypeFlat::Primitive { .. } => Err(anyhow!(
+            ToolboxIdlTypeFull::Primitive { .. } => Err(anyhow!(
                 "Type primitive does not contain path: {}",
                 self.value()
             )),
         }
     }
 
-    pub fn try_get_type_flat_fields(
+    pub fn try_get_type_full_fields(
         &self,
-        type_flat_fields: &ToolboxIdlTypeFlatFields,
-        generics_by_symbol: &HashMap<String, &ToolboxIdlTypeFlat>,
-        typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
-    ) -> Result<ToolboxIdlTypeFlat> {
+        type_full_fields: &ToolboxIdlTypeFullFields,
+    ) -> Result<ToolboxIdlTypeFull> {
         let Some((current, next)) = self.split_first() else {
-            return Ok(ToolboxIdlTypeFlat::Struct {
-                fields: type_flat_fields.clone(),
+            return Ok(ToolboxIdlTypeFull::Struct {
+                fields: type_full_fields.clone(), // TODO - could we make this into a reference?
             });
         };
-        match type_flat_fields {
-            ToolboxIdlTypeFlatFields::Nothing => {
+        match type_full_fields {
+            ToolboxIdlTypeFullFields::Nothing => {
                 Err(anyhow!("Type has no fields: {}", self.value()))
             },
-            ToolboxIdlTypeFlatFields::Named(fields) => {
+            ToolboxIdlTypeFullFields::Named(fields) => {
                 let key = current.value();
                 for field in fields {
                     if field.name == key {
-                        return next.try_get_type_flat(
-                            &field.content,
-                            generics_by_symbol,
-                            typedefs,
-                        );
+                        return next.try_get_type_full(&field.content);
                     }
                 }
                 Err(anyhow!("Could not find named field: {}", key))
             },
-            ToolboxIdlTypeFlatFields::Unnamed(fields) => {
-                let index =
-                    usize::try_from(current.code().context("Field index")?)?;
+            ToolboxIdlTypeFullFields::Unnamed(fields) => {
+                let index = current.index().context("Field index")?;
                 let length = fields.len();
                 if index >= length {
                     return Err(anyhow!(
@@ -157,11 +112,7 @@ impl ToolboxIdlPath {
                         length
                     ));
                 }
-                next.try_get_type_flat(
-                    &fields[index].content,
-                    generics_by_symbol,
-                    typedefs,
-                )
+                next.try_get_type_full(&fields[index].content)
             },
         }
     }

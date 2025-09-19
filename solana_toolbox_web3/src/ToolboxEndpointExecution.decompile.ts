@@ -1,10 +1,11 @@
 import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 
 export function decompileTransactionPayerAddress(staticAddresses: PublicKey[]) {
-  if (staticAddresses.length === 0) {
+  let payerAddress = staticAddresses[0];
+  if (payerAddress === undefined) {
     throw new Error('No static addresses provided');
   }
-  return staticAddresses[0];
+  return payerAddress;
 }
 
 export function decompileTransactionInstructions(
@@ -77,7 +78,7 @@ function decompileTransactionSignerAddresses(
 ): Set<PublicKey> {
   let signerAddresses = new Set<PublicKey>();
   for (let index = 0; index < headerNumRequiredSignatures; index++) {
-    signerAddresses.add(staticAddresses[index]);
+    signerAddresses.add(staticAddresses[index]!);
   }
   return signerAddresses;
 }
@@ -94,14 +95,14 @@ function decompiledTransactionStaticReadonlyAddresses(
     index < headerNumRequiredSignatures;
     index++
   ) {
-    readonlyAddresses.add(staticAddresses[index]);
+    readonlyAddresses.add(staticAddresses[index]!);
   }
   for (
     let index = staticAddresses.length - headerNumReadonlyUnsignedAccounts;
     index < staticAddresses.length;
     index++
   ) {
-    readonlyAddresses.add(staticAddresses[index]);
+    readonlyAddresses.add(staticAddresses[index]!);
   }
   return readonlyAddresses;
 }

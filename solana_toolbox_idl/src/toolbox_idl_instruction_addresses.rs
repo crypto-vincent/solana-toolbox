@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -7,6 +8,7 @@ use solana_sdk::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
 
 use crate::toolbox_idl_instruction::ToolboxIdlInstruction;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
 use crate::toolbox_idl_utils::idl_map_get_key_or_else;
 
 impl ToolboxIdlInstruction {
@@ -81,20 +83,25 @@ impl ToolboxIdlInstruction {
         instruction_payload: &Value,
         instruction_addresses: &HashMap<String, Pubkey>,
     ) -> HashMap<String, Pubkey> {
-        self.find_addresses_with_accounts_states(
+        self.find_addresses_with_accounts(
             instruction_program_id,
             instruction_payload,
             instruction_addresses,
             &HashMap::new(),
+            &HashMap::new(),
         )
     }
 
-    pub fn find_addresses_with_accounts_states(
+    pub fn find_addresses_with_accounts(
         &self,
         instruction_program_id: &Pubkey,
         instruction_payload: &Value,
         instruction_addresses: &HashMap<String, Pubkey>,
         instruction_accounts_states: &HashMap<String, Value>,
+        instruction_accounts_contents_type_full: &HashMap<
+            String,
+            Arc<ToolboxIdlTypeFull>,
+        >,
     ) -> HashMap<String, Pubkey> {
         let mut instruction_addresses = instruction_addresses.clone();
         loop {
@@ -109,6 +116,8 @@ impl ToolboxIdlInstruction {
                     instruction_payload,
                     &instruction_addresses,
                     instruction_accounts_states,
+                    &self.args_type_full_fields,
+                    instruction_accounts_contents_type_full,
                 ) {
                     made_progress = true;
                     instruction_addresses.insert(

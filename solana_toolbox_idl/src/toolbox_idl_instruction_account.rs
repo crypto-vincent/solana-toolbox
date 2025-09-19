@@ -31,15 +31,11 @@ pub enum ToolboxIdlInstructionAccountPdaBlob {
     },
     Arg {
         path: ToolboxIdlPath,
-        type_flat: ToolboxIdlTypeFlat,
-        type_full: ToolboxIdlTypeFull,
+        typing: Option<(ToolboxIdlTypeFlat, ToolboxIdlTypeFull)>,
     },
     Account {
-        path: ToolboxIdlPath,
-        instruction_account_name: String,
-        account_content_path: ToolboxIdlPath,
         account: Option<String>,
-        type_flat: ToolboxIdlTypeFlat,
-        type_full: ToolboxIdlTypeFull,
+        path: ToolboxIdlPath,
+        typing: Option<(ToolboxIdlTypeFlat, ToolboxIdlTypeFull)>,
     },
 }

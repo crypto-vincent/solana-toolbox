@@ -91,6 +91,8 @@ it('run', () => {
           writable: true,
           signer: true,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
         new ToolboxIdlInstructionAccount({
           name: 'account_rs',
@@ -98,6 +100,8 @@ it('run', () => {
           writable: false,
           signer: true,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
         new ToolboxIdlInstructionAccount({
           name: 'account_w',
@@ -105,6 +109,8 @@ it('run', () => {
           writable: true,
           signer: false,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
         new ToolboxIdlInstructionAccount({
           name: 'account_r',
@@ -112,6 +118,8 @@ it('run', () => {
           writable: false,
           signer: false,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
       ],
       argsTypeFlatFields: ToolboxIdlTypeFlatFields.named([

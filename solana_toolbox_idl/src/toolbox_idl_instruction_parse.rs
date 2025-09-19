@@ -6,7 +6,6 @@ use anyhow::Result;
 use serde_json::Map;
 use serde_json::Value;
 
-use crate::toolbox_idl_account::ToolboxIdlAccount;
 use crate::toolbox_idl_instruction::ToolboxIdlInstruction;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccount;
 use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
@@ -22,7 +21,6 @@ impl ToolboxIdlInstruction {
     pub fn try_parse(
         idl_instruction_name: &str,
         idl_instruction: &Value,
-        accounts: &HashMap<String, Arc<ToolboxIdlAccount>>,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<ToolboxIdlInstruction> {
         let idl_instruction = idl_value_as_object_or_else(idl_instruction)?;
@@ -48,8 +46,6 @@ impl ToolboxIdlInstruction {
             .context("Hydrate Returns Type")?;
         let accounts = ToolboxIdlInstruction::try_parse_accounts(
             idl_instruction,
-            &args_type_flat_fields,
-            accounts,
             typedefs,
         )
         .context("Parse Accounts")?;
@@ -82,8 +78,6 @@ impl ToolboxIdlInstruction {
 
     fn try_parse_accounts(
         idl_instruction: &Map<String, Value>,
-        args_type_flat_fields: &ToolboxIdlTypeFlatFields,
-        accounts: &HashMap<String, Arc<ToolboxIdlAccount>>,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<Vec<ToolboxIdlInstructionAccount>> {
         let idl_instruction_accounts_array =
@@ -95,8 +89,6 @@ impl ToolboxIdlInstruction {
             instruction_accounts.push(
                 ToolboxIdlInstructionAccount::try_parse(
                     idl_instruction_account,
-                    args_type_flat_fields,
-                    accounts,
                     typedefs,
                 )
                 .with_context(|| format!("Parse Account: {}", index))?,

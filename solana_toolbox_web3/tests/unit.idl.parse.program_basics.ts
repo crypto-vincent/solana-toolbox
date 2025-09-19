@@ -98,6 +98,8 @@ it('run', () => {
           writable: false,
           signer: true,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
         new ToolboxIdlInstructionAccount({
           name: 'content',
@@ -105,6 +107,8 @@ it('run', () => {
           writable: true,
           signer: false,
           optional: false,
+          address: undefined,
+          pda: undefined,
         }),
         new ToolboxIdlInstructionAccount({
           name: 'optional',
@@ -112,6 +116,8 @@ it('run', () => {
           writable: false,
           signer: false,
           optional: true,
+          address: undefined,
+          pda: undefined,
         }),
       ],
       argsTypeFlatFields: ToolboxIdlTypeFlatFields.named([
@@ -136,12 +142,8 @@ it('run', () => {
           content: ToolboxIdlTypeFull.primitive(ToolboxIdlTypePrimitive.I64),
         },
       ]),
-      returnTypeFlat: ToolboxIdlTypeFlat.struct({
-        fields: ToolboxIdlTypeFlatFields.nothing(),
-      }),
-      returnTypeFull: ToolboxIdlTypeFull.struct({
-        fields: ToolboxIdlTypeFullFields.nothing(),
-      }),
+      returnTypeFlat: ToolboxIdlTypeFlat.structNothing(),
+      returnTypeFull: ToolboxIdlTypeFull.structNothing(),
     }),
   );
   // Assert account was parsed correctly

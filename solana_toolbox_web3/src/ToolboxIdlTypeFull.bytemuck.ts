@@ -280,16 +280,28 @@ function bytemuckFields(
 }
 
 let bytemuckFieldsVisitor = {
+  nothing: (
+    _self: never[],
+    _prefixSize: number,
+    _rustReorder: boolean,
+  ): ToolboxIdlTypeFullPodFields => {
+    return {
+      alignment: 1,
+      size: 0,
+      value: ToolboxIdlTypeFullFields.nothing(),
+    };
+  },
   named: (
     self: ToolboxIdlTypeFullFieldNamed[],
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
-    let fieldsInfosPods = self.map((field) => {
+    let fieldsInfosPods = self.map((field, index) => {
       let contentPod = ToolboxUtils.withContext(() => {
         return bytemuckRust(field.content);
       }, `Bytemuck: Field: ${field.name}`);
       return {
+        index: index,
         alignment: contentPod.alignment,
         size: contentPod.size,
         meta: field.name,
@@ -321,11 +333,12 @@ let bytemuckFieldsVisitor = {
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
-    let fieldsInfosPods = self.map((field) => {
+    let fieldsInfosPods = self.map((field, index) => {
       let contentPod = ToolboxUtils.withContext(() => {
         return bytemuckRust(field.content);
       }, `Bytemuck: Field: ${field.position}`);
       return {
+        index: index,
         alignment: contentPod.alignment,
         size: contentPod.size,
         meta: field.position,
@@ -357,6 +370,7 @@ let bytemuckFieldsVisitor = {
 function internalFieldsInfoAligned<T>(
   prefixSize: number,
   fieldsInfo: {
+    index: number;
     alignment: number;
     size: number;
     meta: T;
@@ -367,18 +381,19 @@ function internalFieldsInfoAligned<T>(
   let size = prefixSize;
   let lastFieldIndex = fieldsInfo.length - 1;
   let fieldsInfoPadded = [];
-  for (let i = 0; i < fieldsInfo.length; i++) {
+  for (const fieldInfo of fieldsInfo) {
     let {
+      index: fieldIndex,
       alignment: fieldAlignment,
       size: fieldSize,
       meta: fieldMeta,
       type: fieldType,
-    } = fieldsInfo[i];
+    } = fieldInfo;
     alignment = Math.max(alignment, fieldAlignment);
     let paddingBefore = internalAlignmentPaddingNeeded(size, fieldAlignment);
     size += paddingBefore + fieldSize;
     let paddingAfter = 0;
-    if (i == lastFieldIndex) {
+    if (fieldIndex == lastFieldIndex) {
       paddingAfter = internalAlignmentPaddingNeeded(size, alignment);
     }
     size += paddingAfter;

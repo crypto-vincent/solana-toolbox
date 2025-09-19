@@ -113,9 +113,7 @@ it('run', () => {
           },
           {
             docs: undefined,
-            content: ToolboxIdlTypeFlat.struct({
-              fields: ToolboxIdlTypeFlatFields.nothing(),
-            }),
+            content: ToolboxIdlTypeFlat.structNothing(),
           },
           {
             docs: undefined,
@@ -167,7 +165,7 @@ it('run', () => {
           },
           {
             docs: ['Hello'],
-            content: ToolboxIdlTypeFlat.nothing(),
+            content: ToolboxIdlTypeFlat.structNothing(),
           },
         ]),
       }),

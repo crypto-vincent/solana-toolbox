@@ -145,7 +145,7 @@ let deserializeVisitor = {
     let dataVariantOffset = dataOffset + dataSize;
     for (let variant of self.variants) {
       if (variant.code === (dataPrefix & enumMask)) {
-        if (variant.fields.isEmpty()) {
+        if (variant.fields.isNothing()) {
           return [dataSize, variant.name];
         }
         let [dataVariantSize, dataVariant] = ToolboxUtils.withContext(() => {
@@ -189,13 +189,17 @@ export function deserializeFields(
   data: Buffer,
   dataOffset: number,
 ): [number, any] {
-  if (fields.isEmpty()) {
-    return [0, null];
-  }
   return fields.traverse(deserializeFieldsVisitor, data, dataOffset, undefined);
 }
 
 let deserializeFieldsVisitor = {
+  nothing: (
+    _self: never[],
+    _data: Buffer,
+    _dataOffset: number,
+  ): [number, any] => {
+    return [0, null];
+  },
   named: (
     self: ToolboxIdlTypeFullFieldNamed[],
     data: Buffer,

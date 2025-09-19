@@ -86,6 +86,7 @@ impl ToolboxIdlService {
     ) -> Result<HashMap<String, Pubkey>> {
         let mut instruction_addresses = instruction_addresses.clone();
         let mut instruction_accounts_states = HashMap::new();
+        let mut instruction_accounts_contents_type_full = HashMap::new();
         for (instruction_account_name, instruction_address) in
             &instruction_addresses
         {
@@ -102,6 +103,10 @@ impl ToolboxIdlService {
                 instruction_account_name.to_string(),
                 account_info.state,
             );
+            instruction_accounts_contents_type_full.insert(
+                instruction_account_name.to_string(),
+                Arc::new(account_info.account.content_type_full.clone()),
+            );
         }
         loop {
             let mut made_progress = false;
@@ -117,6 +122,8 @@ impl ToolboxIdlService {
                         instruction_payload,
                         &instruction_addresses,
                         &instruction_accounts_states,
+                        &idl_instruction.args_type_full_fields,
+                        &instruction_accounts_contents_type_full,
                     )
                 {
                     made_progress = true;
@@ -140,6 +147,12 @@ impl ToolboxIdlService {
                     instruction_accounts_states.insert(
                         idl_instruction_account.name.to_string(),
                         account_info.state,
+                    );
+                    instruction_accounts_contents_type_full.insert(
+                        idl_instruction_account.name.to_string(),
+                        Arc::new(
+                            account_info.account.content_type_full.clone(),
+                        ),
                     );
                 }
             }

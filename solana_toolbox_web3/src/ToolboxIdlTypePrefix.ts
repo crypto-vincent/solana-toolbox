@@ -6,22 +6,22 @@ export class ToolboxIdlTypePrefix {
   public static readonly U128 = new ToolboxIdlTypePrefix('u128', 16);
 
   public static readonly prefixesBySize = (() => {
-    let prefixes = [
+    const prefixes = [
       ToolboxIdlTypePrefix.U8,
       ToolboxIdlTypePrefix.U16,
       ToolboxIdlTypePrefix.U32,
       ToolboxIdlTypePrefix.U64,
       ToolboxIdlTypePrefix.U128,
     ];
-    let prefixesBySize = new Map<number, ToolboxIdlTypePrefix>();
-    for (let prefix of prefixes) {
+    const prefixesBySize = new Map<number, ToolboxIdlTypePrefix>();
+    for (const prefix of prefixes) {
       prefixesBySize.set(prefix.size, prefix);
     }
     return prefixesBySize;
   })();
 
-  public name: string;
-  public size: number;
+  public readonly name: string;
+  public readonly size: number;
 
   private constructor(name: string, size: number) {
     this.name = name;

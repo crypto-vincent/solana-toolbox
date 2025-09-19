@@ -35,10 +35,13 @@ impl ToolboxIdlPath {
                 let length = values.len();
                 let index = match current {
                     ToolboxIdlPathPart::Empty => 0,
+                    ToolboxIdlPathPart::Index(index) => index,
                     ToolboxIdlPathPart::Key(key) => {
-                        return Err(anyhow!("Invalid Array Index: {}", key));
+                        return Err(anyhow!(
+                            "Array cannot be accessed by key: {}",
+                            key
+                        ));
                     },
-                    ToolboxIdlPathPart::Code(code) => usize::try_from(code)?,
                 };
                 if index >= length {
                     return Err(anyhow!(
@@ -90,10 +93,10 @@ impl ToolboxIdlPath {
                 let length = values.len();
                 let index = match current {
                     ToolboxIdlPathPart::Empty => length,
+                    ToolboxIdlPathPart::Index(index) => index,
                     ToolboxIdlPathPart::Key(key) => {
                         return Err(anyhow!("Invalid Array Index: {}", key));
                     },
-                    ToolboxIdlPathPart::Code(code) => usize::try_from(code)?,
                 };
                 if index > length {
                     return Err(anyhow!(
@@ -124,11 +127,11 @@ impl ToolboxIdlPath {
                 ToolboxIdlPathPart::Empty => {
                     self.try_set_json_value(Some(json!([])), leaf)
                 },
+                ToolboxIdlPathPart::Index(_) => {
+                    self.try_set_json_value(Some(json!([])), leaf)
+                },
                 ToolboxIdlPathPart::Key(_) => {
                     self.try_set_json_value(Some(json!({})), leaf)
-                },
-                ToolboxIdlPathPart::Code(_) => {
-                    self.try_set_json_value(Some(json!([])), leaf)
                 },
             },
         }

@@ -1,11 +1,5 @@
-import { PublicKey } from '@solana/web3.js';
-import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import { ToolboxUtils } from './ToolboxUtils';
-import {
-  ToolboxIdlTypeFlat,
-  ToolboxIdlTypeFlatFields,
-} from './ToolboxIdlTypeFlat';
 import { parse } from './ToolboxIdlTypeFlat.parse';
 import { hydrate } from './ToolboxIdlTypeFlat.hydrate';
 import { serialize } from './ToolboxIdlTypeFull.serialize';
@@ -89,13 +83,11 @@ export class ToolboxIdlInstructionAccountPdaBlob {
 
   public static tryParse(
     idlInstructionAccountPdaBlob: any,
-    argsTypeFlatFields: ToolboxIdlTypeFlatFields,
-    accounts: Map<string, ToolboxIdlAccount>,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccountPdaBlob {
     if (ToolboxUtils.isObject(idlInstructionAccountPdaBlob)) {
       if (idlInstructionAccountPdaBlob.hasOwnProperty('value')) {
-        return this.tryParseTypeValue(
+        return this.tryParseConstTypeValue(
           idlInstructionAccountPdaBlob['type'],
           idlInstructionAccountPdaBlob['value'],
           typedefs,
@@ -106,31 +98,31 @@ export class ToolboxIdlInstructionAccountPdaBlob {
           idlInstructionAccountPdaBlob['path'],
         );
         if (idlInstructionAccountPdaBlob['kind'] === 'arg') {
-          return this.tryParseArgPath(path, argsTypeFlatFields);
+          return this.tryParseArgPath(path);
         }
         return this.account({ path });
       }
     }
     if (ToolboxUtils.isArray(idlInstructionAccountPdaBlob)) {
-      return this.tryParseTypeValue(
-        'bytes',
+      return this.tryParseConstTypeValue(
         idlInstructionAccountPdaBlob,
+        'bytes',
         typedefs,
       );
     }
     if (ToolboxUtils.isString(idlInstructionAccountPdaBlob)) {
-      return this.tryParseTypeValue(
-        'string',
+      return this.tryParseConstTypeValue(
         idlInstructionAccountPdaBlob,
+        'string',
         typedefs,
       );
     }
     throw new Error('Could not parse IDL instruction account PDA blob');
   }
 
-  static tryParseTypeValue(
-    idlInstructionAccountPdaBlobType: any,
+  static tryParseConstTypeValue(
     idlInstructionAccountPdaBlobValue: any,
+    idlInstructionAccountPdaBlobType: any,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccountPdaBlob {
     let typeFlat = parse(idlInstructionAccountPdaBlobType);
@@ -144,7 +136,6 @@ export class ToolboxIdlInstructionAccountPdaBlob {
 
   static tryParseArgPath(
     idlInstructionAccountPdaBlobPath: string,
-    argsTypeFlatFields: ToolboxIdlTypeFlatFields,
   ): ToolboxIdlInstructionAccountPdaBlob {
     // TODO - finish parsing implementation parsing
     return this.arg({ path: idlInstructionAccountPdaBlobPath });

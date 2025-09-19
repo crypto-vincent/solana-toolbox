@@ -14,8 +14,8 @@ export class ToolboxIdlAccount {
     space: undefined,
     blobs: [],
     discriminator: Buffer.from([]),
-    contentTypeFlat: ToolboxIdlTypeFlat.nothing(),
-    contentTypeFull: ToolboxIdlTypeFull.nothing(),
+    contentTypeFlat: ToolboxIdlTypeFlat.structNothing(),
+    contentTypeFull: ToolboxIdlTypeFull.structNothing(),
   });
 
   public readonly name: string;

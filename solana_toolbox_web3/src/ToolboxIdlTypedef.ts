@@ -5,8 +5,8 @@ import { ToolboxUtils } from './ToolboxUtils';
 export class ToolboxIdlTypedef {
   public readonly name: string;
   public readonly docs: any;
-  public readonly serialization?: string;
-  public readonly repr?: string;
+  public readonly serialization: string | undefined;
+  public readonly repr: string | undefined;
   public readonly generics: string[];
   public readonly typeFlat: ToolboxIdlTypeFlat;
 

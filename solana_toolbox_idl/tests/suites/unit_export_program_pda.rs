@@ -72,8 +72,8 @@ pub async fn run() {
                                         "path": "my_param.field",
                                     },
                                     {
-                                        "path": "my_info.struct.field",
                                         "account": "MyAccount",
+                                        "path": "my_info.struct.field",
                                     },
                                 ]
                             }
@@ -132,12 +132,10 @@ pub async fn run() {
                                     },
                                     {
                                         "kind": "arg",
-                                        "type": "u8",
                                         "path": "my_param.field",
                                     },
                                     {
                                         "kind": "account",
-                                        "type": "u8",
                                         "path": "my_info.struct.field",
                                         "account": "MyAccount",
                                     },
@@ -210,12 +208,10 @@ pub async fn run() {
                                     },
                                     {
                                         "kind": "arg",
-                                        "type": "u8",
                                         "path": "my_param.field",
                                     },
                                     {
                                         "kind": "account",
-                                        "type": "u8",
                                         "path": "my_info.struct.field",
                                         "account": "MyAccount",
                                     },
