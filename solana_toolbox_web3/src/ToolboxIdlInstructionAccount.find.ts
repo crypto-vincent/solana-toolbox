@@ -3,10 +3,7 @@ import {
   ToolboxIdlInstructionAccount,
   ToolboxIdlInstructionAccountPda,
 } from './ToolboxIdlInstructionAccount';
-import {
-  ToolboxIdlTypeFull,
-  ToolboxIdlTypeFullFields,
-} from './ToolboxIdlTypeFull';
+import { ToolboxIdlTypeFull } from './ToolboxIdlTypeFull';
 import { computeInstructionBlob } from './ToolboxIdlInstructionBlob.compute';
 
 export function findInstructionAccount(
@@ -15,7 +12,6 @@ export function findInstructionAccount(
   instructionPayload: any,
   instructionAddresses: Map<string, PublicKey>,
   instructionAccountsStates: Map<string, any>,
-  instructionArgsTypeFullFields: ToolboxIdlTypeFullFields,
   instructionAccountsContentsTypeFull: Map<string, ToolboxIdlTypeFull>,
 ): PublicKey {
   let address = instructionAddresses.get(idlInstructionAccount.name);
@@ -32,7 +28,6 @@ export function findInstructionAccount(
       instructionPayload,
       instructionAddresses,
       instructionAccountsStates,
-      instructionArgsTypeFullFields,
       instructionAccountsContentsTypeFull,
     );
   }
@@ -47,7 +42,6 @@ export function findInstructionAccountPda(
   instructionPayload: any,
   instructionAddresses: Map<string, PublicKey>,
   instructionAccountsStates: Map<string, any>,
-  instructionArgsTypeFullFields: ToolboxIdlTypeFullFields,
   instructionAccountsContentsTypeFull: Map<string, ToolboxIdlTypeFull>,
 ): PublicKey {
   const computeContext = {
@@ -55,13 +49,11 @@ export function findInstructionAccountPda(
     instructionPayload,
     instructionAddresses,
     instructionAccountsStates,
-    instructionArgsTypeFullFields,
     instructionAccountsContentsTypeFull,
   };
   let pdaSeedsBytes = new Array();
   for (let blob of instructionAccountPda.seeds) {
-    let seedBuffer = computeInstructionBlob(blob, computeContext);
-    pdaSeedsBytes.push(seedBuffer);
+    pdaSeedsBytes.push(computeInstructionBlob(blob, computeContext));
   }
   let pdaProgramId = instructionProgramId;
   if (instructionAccountPda.program) {

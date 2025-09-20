@@ -43,7 +43,7 @@ pub async fn run() {
                         "pda": {
                             "seeds": [
                                 { "kind": "const", "type": "string", "value": "hello" },
-                                { "kind": "const", "type": "string", "value": "world" },
+                                { "kind": "const", "value": "world" },
                             ]
                         }
                     },
@@ -52,7 +52,7 @@ pub async fn run() {
                         "pda": {
                             "seeds": [
                                 { "kind": "const", "type": "string", "value": "hello"},
-                                { "kind": "const", "type": "string", "value": "world" },
+                                { "kind": "const", "value": "world" },
                             ],
                             "program": {
                                 "kind": "const",

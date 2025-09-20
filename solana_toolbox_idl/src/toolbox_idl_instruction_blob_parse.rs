@@ -10,6 +10,7 @@ use serde_json::Value;
 use crate::toolbox_idl_instruction_blob::ToolboxIdlInstructionBlob;
 use crate::toolbox_idl_path::ToolboxIdlPath;
 use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_typedef::ToolboxIdlTypedef;
 use crate::toolbox_idl_utils::idl_object_get_key_as_str;
 use crate::toolbox_idl_utils::idl_object_get_key_as_str_or_else;
@@ -17,22 +18,29 @@ use crate::toolbox_idl_utils::idl_object_get_key_as_str_or_else;
 impl ToolboxIdlInstructionBlob {
     pub fn try_parse(
         idl_instruction_blob: &Value,
+        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<ToolboxIdlInstructionBlob> {
         if let Some(idl_instruction_blob) = idl_instruction_blob.as_object() {
             if let Some(idl_instruction_blob_value) =
                 idl_instruction_blob.get("value")
             {
-                let idl_instruction_blob_type = idl_instruction_blob
-                    .get("type")
-                    .cloned()
-                    .unwrap_or_else(|| json!("bytes"));
-                return ToolboxIdlInstructionBlob::try_parse_const(
-                    idl_instruction_blob_value.clone(),
-                    &idl_instruction_blob_type,
-                    typedefs,
-                )
-                .context("Blob object value");
+                if let Some(idl_instruction_blob_type) =
+                    idl_instruction_blob.get("type")
+                {
+                    return ToolboxIdlInstructionBlob::try_parse_const_typed(
+                        idl_instruction_blob_value,
+                        idl_instruction_blob_type,
+                        typedefs,
+                    )
+                    .context("Blob object value with type");
+                } else {
+                    return ToolboxIdlInstructionBlob::try_parse_const_untyped(
+                        idl_instruction_blob_value,
+                        typedefs,
+                    )
+                    .context("Blob object value without type");
+                }
             }
             let idl_instruction_blob_path = idl_object_get_key_as_str_or_else(
                 idl_instruction_blob,
@@ -45,6 +53,7 @@ impl ToolboxIdlInstructionBlob {
                 return ToolboxIdlInstructionBlob::try_parse_arg(
                     idl_instruction_blob_path,
                     idl_instruction_blob_type,
+                    instruction_args_type_full_fields,
                     typedefs,
                 )
                 .context("Blob arg");
@@ -59,29 +68,37 @@ impl ToolboxIdlInstructionBlob {
             )
             .context("Blob account");
         }
-        if let Some(idl_instruction_blob) = idl_instruction_blob.as_array() {
-            return ToolboxIdlInstructionBlob::try_parse_const(
-                json!(idl_instruction_blob),
-                &json!("bytes"),
-                typedefs,
-            )
-            .context("Blob array");
-        }
-        if let Some(idl_instruction_blob) = idl_instruction_blob.as_str() {
-            return ToolboxIdlInstructionBlob::try_parse_const(
-                json!(idl_instruction_blob),
+        ToolboxIdlInstructionBlob::try_parse_const_untyped(
+            idl_instruction_blob,
+            typedefs,
+        )
+    }
+
+    fn try_parse_const_untyped(
+        idl_instruction_blob_value: &Value,
+        typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
+    ) -> Result<ToolboxIdlInstructionBlob> {
+        if idl_instruction_blob_value.is_string() {
+            return ToolboxIdlInstructionBlob::try_parse_const_typed(
+                idl_instruction_blob_value,
                 &json!("string"),
                 typedefs,
             )
-            .context("Blob string");
+            .context("Const string without type");
         }
-        Err(anyhow!(
-            "Could not parse blob bytes (expected an object/array/string)"
-        ))
+        if idl_instruction_blob_value.is_array() {
+            return ToolboxIdlInstructionBlob::try_parse_const_typed(
+                idl_instruction_blob_value,
+                &json!("bytes"),
+                typedefs,
+            )
+            .context("Const array without type");
+        }
+        Err(anyhow!("Could not parse IDL instruction account PDA blob"))
     }
 
-    fn try_parse_const(
-        idl_instruction_blob_value: Value,
+    fn try_parse_const_typed(
+        idl_instruction_blob_value: &Value,
         idl_instruction_blob_type: &Value,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<ToolboxIdlInstructionBlob> {
@@ -94,27 +111,35 @@ impl ToolboxIdlInstructionBlob {
         Ok(ToolboxIdlInstructionBlob::Const {
             type_flat,
             type_full,
-            value: idl_instruction_blob_value,
+            value: idl_instruction_blob_value.clone(),
         })
     }
 
     fn try_parse_arg(
         idl_instruction_blob_path: &str,
         idl_instruction_blob_type: Option<&Value>,
+        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<ToolboxIdlInstructionBlob> {
         let path = ToolboxIdlPath::try_parse(idl_instruction_blob_path)?;
-        let typing = idl_instruction_blob_type
-            .map(|type_value| -> Result<_> {
-                let type_flat = ToolboxIdlTypeFlat::try_parse(type_value)
-                    .context("Parse arg value type")?;
-                let type_full = type_flat
-                    .try_hydrate(&HashMap::new(), typedefs)
-                    .context("Hydrate arg value type")?;
-                Ok((type_flat, type_full))
-            })
-            .transpose()?;
-        Ok(ToolboxIdlInstructionBlob::Arg { path, typing })
+        let type_flat = idl_instruction_blob_type
+            .map(ToolboxIdlTypeFlat::try_parse)
+            .transpose()
+            .context("Parse arg value type")?;
+        let type_full = if let Some(type_flat) = &type_flat {
+            type_flat
+                .try_hydrate(&HashMap::new(), typedefs)
+                .context("Hydrate arg value type")?
+        } else {
+            path.try_get_type_full_fields(instruction_args_type_full_fields)
+                .context("Extract arg type")?
+                .clone()
+        };
+        Ok(ToolboxIdlInstructionBlob::Arg {
+            path,
+            type_flat,
+            type_full,
+        })
     }
 
     fn try_parse_account(

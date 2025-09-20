@@ -25,7 +25,37 @@ export function deserialize(
   return typeFull.traverse(deserializeVisitor, data, dataOffset, undefined);
 }
 
-let deserializeVisitor = {
+export function deserializeFields(
+  fields: ToolboxIdlTypeFullFields,
+  data: Buffer,
+  dataOffset: number,
+): [number, any] {
+  return fields.traverse(deserializeFieldsVisitor, data, dataOffset, undefined);
+}
+
+export function deserializePrefix(
+  prefix: ToolboxIdlTypePrefix,
+  data: Buffer,
+  dataOffset: number,
+): [number, bigint] {
+  return [
+    prefix.size,
+    prefix.traverse(deserializePrefixVisitor, data, dataOffset),
+  ];
+}
+
+export function deserializePrimitive(
+  primitive: ToolboxIdlTypePrimitive,
+  data: Buffer,
+  dataOffset: number,
+): [number, any] {
+  return [
+    primitive.size,
+    primitive.traverse(deserializePrimitiveVisitor, data, dataOffset),
+  ];
+}
+
+const deserializeVisitor = {
   typedef: (
     self: ToolboxIdlTypeFullTypedef,
     data: Buffer,
@@ -186,15 +216,7 @@ let deserializeVisitor = {
   },
 };
 
-export function deserializeFields(
-  fields: ToolboxIdlTypeFullFields,
-  data: Buffer,
-  dataOffset: number,
-): [number, any] {
-  return fields.traverse(deserializeFieldsVisitor, data, dataOffset, undefined);
-}
-
-let deserializeFieldsVisitor = {
+const deserializeFieldsVisitor = {
   nothing: (_self: {}, _data: Buffer, _dataOffset: number): [number, any] => {
     return [0, null];
   },
@@ -234,18 +256,7 @@ let deserializeFieldsVisitor = {
   },
 };
 
-export function deserializePrefix(
-  prefix: ToolboxIdlTypePrefix,
-  data: Buffer,
-  dataOffset: number,
-): [number, bigint] {
-  return [
-    prefix.size,
-    prefix.traverse(deserializePrefixVisitor, data, dataOffset),
-  ];
-}
-
-let deserializePrefixVisitor = {
+const deserializePrefixVisitor = {
   u8: (data: Buffer, dataOffset: number): bigint => {
     return BigInt(data.readUInt8(dataOffset));
   },
@@ -265,18 +276,7 @@ let deserializePrefixVisitor = {
   },
 };
 
-export function deserializePrimitive(
-  primitive: ToolboxIdlTypePrimitive,
-  data: Buffer,
-  dataOffset: number,
-): [number, any] {
-  return [
-    primitive.size,
-    primitive.traverse(deserializePrimitiveVisitor, data, dataOffset),
-  ];
-}
-
-let deserializePrimitiveVisitor = {
+const deserializePrimitiveVisitor = {
   u8: (data: Buffer, dataOffset: number): any => {
     return data.readUInt8(dataOffset);
   },
@@ -287,12 +287,12 @@ let deserializePrimitiveVisitor = {
     return data.readUInt32LE(dataOffset);
   },
   u64: (data: Buffer, dataOffset: number): any => {
-    return data.readBigUInt64LE(dataOffset);
+    return data.readBigUInt64LE(dataOffset).toString();
   },
   u128: (data: Buffer, dataOffset: number): any => {
     let low = data.readBigUInt64LE(dataOffset);
     let high = data.readBigUInt64LE(dataOffset + 8);
-    return low | (high << 64n);
+    return (low | (high << 64n)).toString();
   },
   i8: (data: Buffer, dataOffset: number): any => {
     return data.readInt8(dataOffset);
@@ -304,12 +304,12 @@ let deserializePrimitiveVisitor = {
     return data.readInt32LE(dataOffset);
   },
   i64: (data: Buffer, dataOffset: number): any => {
-    return data.readBigInt64LE(dataOffset);
+    return data.readBigInt64LE(dataOffset).toString();
   },
   i128: (data: Buffer, dataOffset: number): any => {
     let low = data.readBigUInt64LE(dataOffset);
     let high = data.readBigInt64LE(dataOffset + 8);
-    return low | (high << 64n);
+    return (low | (high << 64n)).toString();
   },
   f32: (data: Buffer, dataOffset: number): any => {
     return data.readFloatLE(dataOffset);

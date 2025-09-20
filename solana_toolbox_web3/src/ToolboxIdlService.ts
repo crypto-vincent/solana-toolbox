@@ -8,6 +8,7 @@ import { ToolboxIdlProgram } from './ToolboxIdlProgram';
 import { ToolboxEndpoint } from './ToolboxEndpoint';
 import { ToolboxIdlAccount } from './ToolboxIdlAccount';
 import { ToolboxIdlInstruction } from './ToolboxIdlInstruction';
+import { findInstructionAccount } from './ToolboxIdlInstructionAccount.find';
 
 export class ToolboxIdlService {
   private cachedPrograms: Map<PublicKey, ToolboxIdlProgram | undefined>;
@@ -110,5 +111,93 @@ export class ToolboxIdlService {
     };
   }
 
-  // TODO - support finding
+  public async resolveAndEncodeInstruction(
+    endpoint: ToolboxEndpoint,
+    idlInstruction: ToolboxIdlInstruction,
+    instructionProgramId: PublicKey,
+    instructionPayload: any,
+    instructionAddresses: Map<string, PublicKey>,
+  ): Promise<TransactionInstruction> {
+    return idlInstruction.encode(
+      instructionProgramId,
+      instructionPayload,
+      await this.resolveInstructionAddresses(
+        endpoint,
+        idlInstruction,
+        instructionProgramId,
+        instructionPayload,
+        instructionAddresses,
+      ),
+    );
+  }
+
+  public async resolveInstructionAddresses(
+    endpoint: ToolboxEndpoint,
+    idlInstruction: ToolboxIdlInstruction,
+    instructionProgramId: PublicKey,
+    instructionPayload: any,
+    instructionAddresses: Map<string, PublicKey>,
+  ): Promise<Map<string, PublicKey>> {
+    instructionAddresses = new Map(instructionAddresses);
+    const instructionAccountsStates = new Map();
+    const instructionAccountsContentsTypeFull = new Map();
+    for (const instructionAccountName in instructionAddresses) {
+      const instructionAddress = instructionAddresses.get(
+        instructionAccountName,
+      );
+      if (!instructionAddress) {
+        continue;
+      }
+      let accountInfo = await this.getAndInferAndDecodeAccount(
+        endpoint,
+        instructionAddress,
+      );
+      instructionAccountsStates.set(instructionAccountName, accountInfo.state);
+      instructionAccountsContentsTypeFull.set(
+        instructionAccountName,
+        accountInfo.account.contentTypeFull,
+      );
+    }
+    while (true) {
+      let madeProgress = false;
+      for (const idlInstructionAccount of idlInstruction.accounts) {
+        if (instructionAddresses.has(idlInstructionAccount.name)) {
+          continue;
+        }
+        try {
+          const instructionAddress = findInstructionAccount(
+            idlInstructionAccount,
+            instructionProgramId,
+            instructionPayload,
+            instructionAddresses,
+            instructionAccountsStates,
+            instructionAccountsContentsTypeFull,
+          );
+          madeProgress = true;
+          instructionAddresses.set(
+            idlInstructionAccount.name,
+            instructionAddress,
+          );
+          let accountInfo = await this.getAndInferAndDecodeAccount(
+            endpoint,
+            instructionAddress,
+          );
+          instructionAccountsStates.set(
+            idlInstructionAccount.name,
+            accountInfo.state,
+          );
+          instructionAccountsContentsTypeFull.set(
+            idlInstructionAccount.name,
+            accountInfo.account.contentTypeFull,
+          );
+        } catch (_error) {
+          // Ignore errors, we might not have enough info yet
+        }
+      }
+      if (!madeProgress) {
+        break;
+      }
+    }
+    return instructionAddresses;
+  }
 }

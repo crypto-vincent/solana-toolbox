@@ -21,7 +21,7 @@ export class ToolboxIdlAccount {
   public readonly name: string;
   public readonly docs: any;
   public readonly space: number | undefined;
-  public readonly blobs: { offset: number; value: Buffer }[];
+  public readonly blobs: Array<{ offset: number; value: Buffer }>;
   public readonly discriminator: Buffer;
   public readonly contentTypeFlat: ToolboxIdlTypeFlat;
   public readonly contentTypeFull: ToolboxIdlTypeFull;
@@ -30,7 +30,7 @@ export class ToolboxIdlAccount {
     name: string;
     docs: any;
     space: number | undefined;
-    blobs: { offset: number; value: Buffer }[];
+    blobs: Array<{ offset: number; value: Buffer }>;
     discriminator: Buffer;
     contentTypeFlat: ToolboxIdlTypeFlat;
     contentTypeFull: ToolboxIdlTypeFull;

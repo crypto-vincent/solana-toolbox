@@ -122,7 +122,6 @@ impl ToolboxIdlService {
                         instruction_payload,
                         &instruction_addresses,
                         &instruction_accounts_states,
-                        &idl_instruction.args_type_full_fields,
                         &instruction_accounts_contents_type_full,
                     )
                 {

@@ -11,6 +11,7 @@ use solana_sdk::pubkey::Pubkey;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccount;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPda;
 use crate::toolbox_idl_instruction_blob::ToolboxIdlInstructionBlob;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_typedef::ToolboxIdlTypedef;
 use crate::toolbox_idl_utils::idl_convert_to_snake_case;
 use crate::toolbox_idl_utils::idl_object_get_key_as_array;
@@ -23,6 +24,7 @@ use crate::toolbox_idl_utils::idl_value_as_object_or_else;
 impl ToolboxIdlInstructionAccount {
     pub fn try_parse(
         idl_instruction_account: &Value,
+        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<ToolboxIdlInstructionAccount> {
         let idl_instruction_account =
@@ -59,6 +61,7 @@ impl ToolboxIdlInstructionAccount {
         .with_context(|| format!("Parse {} Address", name))?;
         let pda = ToolboxIdlInstructionAccount::try_parse_pda(
             idl_instruction_account,
+            instruction_args_type_full_fields,
             typedefs,
         )
         .with_context(|| format!("Parse {} Pda", name))?;
@@ -84,6 +87,7 @@ impl ToolboxIdlInstructionAccount {
 
     fn try_parse_pda(
         idl_instruction_account: &Map<String, Value>,
+        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<Option<ToolboxIdlInstructionAccountPda>> {
         let idl_instruction_account_pda = match idl_object_get_key_as_object(
@@ -103,6 +107,7 @@ impl ToolboxIdlInstructionAccount {
                 seeds.push(
                     ToolboxIdlInstructionBlob::try_parse(
                         idl_instruction_account_pda_seed,
+                        instruction_args_type_full_fields,
                         typedefs,
                     )
                     .with_context(|| format!("Seed: {}", index))?,
@@ -116,6 +121,7 @@ impl ToolboxIdlInstructionAccount {
             program = Some(
                 ToolboxIdlInstructionBlob::try_parse(
                     idl_instruction_account_pda_program,
+                    instruction_args_type_full_fields,
                     typedefs,
                 )
                 .context("Program Id")?,

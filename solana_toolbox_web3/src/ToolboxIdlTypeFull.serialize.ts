@@ -27,7 +27,36 @@ export function serialize(
   typeFull.traverse(serializeVisitor, value, data, prefixed);
 }
 
-let serializeVisitor = {
+export function serializeFields(
+  typeFullFields: ToolboxIdlTypeFullFields,
+  value: any,
+  data: Buffer[],
+  prefixed: boolean,
+) {
+  typeFullFields.traverse(serializeFieldsVisitor, value, data, prefixed);
+}
+
+export function serializePrefix(
+  prefix: ToolboxIdlTypePrefix,
+  value: bigint,
+  data: Buffer[],
+) {
+  let buffer = Buffer.alloc(prefix.size);
+  prefix.traverse(serializePrefixVisitor, buffer, value);
+  data.push(buffer);
+}
+
+export function serializePrimitive(
+  primitive: ToolboxIdlTypePrimitive,
+  value: any,
+  data: Buffer[],
+) {
+  let buffer = Buffer.alloc(primitive.size);
+  primitive.traverse(serializePrimitiveVisitor, buffer, value);
+  data.push(buffer);
+}
+
+const serializeVisitor = {
   typedef: (
     self: ToolboxIdlTypeFullTypedef,
     value: any,
@@ -182,16 +211,7 @@ let serializeVisitor = {
   },
 };
 
-export function serializeFields(
-  typeFullFields: ToolboxIdlTypeFullFields,
-  value: any,
-  data: Buffer[],
-  prefixed: boolean,
-) {
-  typeFullFields.traverse(serializeFieldsVisitor, value, data, prefixed);
-}
-
-let serializeFieldsVisitor = {
+const serializeFieldsVisitor = {
   nothing: (_self: {}, _value: any, _data: Buffer[], _prefixed: boolean) => {
     return;
   },
@@ -229,17 +249,7 @@ let serializeFieldsVisitor = {
   },
 };
 
-export function serializePrefix(
-  prefix: ToolboxIdlTypePrefix,
-  value: bigint,
-  data: Buffer[],
-) {
-  let buffer = Buffer.alloc(prefix.size);
-  prefix.traverse(serializePrefixVisitor, buffer, value);
-  data.push(buffer);
-}
-
-let serializePrefixVisitor = {
+const serializePrefixVisitor = {
   u8: (buffer: Buffer, value: bigint) => {
     buffer.writeUInt8(Number(value));
   },
@@ -253,21 +263,12 @@ let serializePrefixVisitor = {
     buffer.writeBigUInt64LE(value);
   },
   u128: (buffer: Buffer, value: bigint) => {
-    buffer.writeBigUInt64LE(value);
+    buffer.writeBigUInt64LE(value & 0xffffffffffffffffn, 0);
+    buffer.writeBigUInt64LE((value >> 64n) & 0xffffffffffffffffn, 8);
   },
 };
 
-export function serializePrimitive(
-  primitive: ToolboxIdlTypePrimitive,
-  value: any,
-  data: Buffer[],
-) {
-  let buffer = Buffer.alloc(primitive.size);
-  primitive.traverse(serializePrimitiveVisitor, buffer, value);
-  data.push(buffer);
-}
-
-let serializePrimitiveVisitor = {
+const serializePrimitiveVisitor = {
   u8: (buffer: Buffer, value: any) => {
     buffer.writeUInt8(ToolboxUtils.expectNumber(value));
   },
@@ -278,10 +279,10 @@ let serializePrimitiveVisitor = {
     buffer.writeUInt32LE(ToolboxUtils.expectNumber(value));
   },
   u64: (buffer: Buffer, value: any) => {
-    buffer.writeBigUInt64LE(ToolboxUtils.expectBigInt(value));
+    buffer.writeBigUInt64LE(expectInteger(value));
   },
   u128: (buffer: Buffer, value: any) => {
-    let num = ToolboxUtils.expectBigInt(value);
+    let num = expectInteger(value);
     let low = num & 0xffffffffffffffffn;
     let high = (num >> 64n) & 0xffffffffffffffffn;
     buffer.writeBigUInt64LE(low, 0);
@@ -297,10 +298,10 @@ let serializePrimitiveVisitor = {
     buffer.writeInt32LE(ToolboxUtils.expectNumber(value));
   },
   i64: (buffer: Buffer, value: any) => {
-    buffer.writeBigInt64LE(ToolboxUtils.expectBigInt(value));
+    buffer.writeBigInt64LE(expectInteger(value));
   },
   i128: (buffer: Buffer, value: any) => {
-    let num = ToolboxUtils.expectBigInt(value);
+    let num = expectInteger(value);
     let low = BigInt.asIntN(64, num);
     let high = BigInt.asIntN(64, num >> 64n);
     buffer.writeBigInt64LE(low, 0);
@@ -323,3 +324,10 @@ let serializePrimitiveVisitor = {
     buffer.set(new PublicKey(ToolboxUtils.expectString(value)).toBuffer());
   },
 };
+
+function expectInteger(value: any): bigint {
+  if (ToolboxUtils.isNumber(value) || ToolboxUtils.isString(value)) {
+    return BigInt(value);
+  }
+  throw new Error(`Expected an integer (found: ${typeof value})`);
+}

@@ -26,7 +26,7 @@ export type ToolboxIdlTypeFullStruct = {
 };
 export type ToolboxIdlTypeFullEnum = {
   prefix: ToolboxIdlTypePrefix;
-  variants: ToolboxIdlTypeFullEnumVariant[];
+  variants: Array<ToolboxIdlTypeFullEnumVariant>;
 };
 export type ToolboxIdlTypeFullPadded = {
   before: number;
@@ -134,8 +134,8 @@ export type ToolboxIdlTypeFullFieldUnnamed = {
 type ToolboxIdlTypeFullFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
 type ToolboxIdlTypeFullFieldsContent =
   | {}
-  | ToolboxIdlTypeFullFieldNamed[]
-  | ToolboxIdlTypeFullFieldUnnamed[];
+  | Array<ToolboxIdlTypeFullFieldNamed>
+  | Array<ToolboxIdlTypeFullFieldUnnamed>;
 
 export class ToolboxIdlTypeFullFields {
   private readonly discriminant: ToolboxIdlTypeFullFieldsDiscriminant;
@@ -153,12 +153,12 @@ export class ToolboxIdlTypeFullFields {
     return new ToolboxIdlTypeFullFields('nothing', {});
   }
   public static named(
-    value: ToolboxIdlTypeFullFieldNamed[],
+    value: Array<ToolboxIdlTypeFullFieldNamed>,
   ): ToolboxIdlTypeFullFields {
     return new ToolboxIdlTypeFullFields('named', value);
   }
   public static unnamed(
-    value: ToolboxIdlTypeFullFieldUnnamed[],
+    value: Array<ToolboxIdlTypeFullFieldUnnamed>,
   ): ToolboxIdlTypeFullFields {
     return new ToolboxIdlTypeFullFields('unnamed', value);
   }
@@ -171,13 +171,13 @@ export class ToolboxIdlTypeFullFields {
     visitor: {
       nothing: (value: {}, p1: P1, p2: P2, p3: P3) => T;
       named: (
-        value: ToolboxIdlTypeFullFieldNamed[],
+        value: Array<ToolboxIdlTypeFullFieldNamed>,
         p1: P1,
         p2: P2,
         p3: P3,
       ) => T;
       unnamed: (
-        value: ToolboxIdlTypeFullFieldUnnamed[],
+        value: Array<ToolboxIdlTypeFullFieldUnnamed>,
         p1: P1,
         p2: P2,
         p3: P3,

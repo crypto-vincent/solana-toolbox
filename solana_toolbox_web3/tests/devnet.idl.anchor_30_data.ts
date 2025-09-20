@@ -27,7 +27,9 @@ it('run', async () => {
   );
   expect(campaignDecoded.account.name).toStrictEqual('Campaign');
   expect(campaignDecoded.state['bump']).toStrictEqual(campaignBump);
-  expect(campaignDecoded.state['index']).toStrictEqual(campaignIndexNumber);
+  expect(campaignDecoded.state['index']).toStrictEqual(
+    campaignIndexNumber.toString(),
+  );
   expect(campaignDecoded.state['authority']).toStrictEqual(
     'Ady55LhZxWFABzdg8NCNTAZv5XstBqyNZYCMfWqW3Rq9',
   );

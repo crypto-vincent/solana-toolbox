@@ -38,7 +38,25 @@ it('run', async () => {
   );
   // Prepare the IDL service
   let idlService = new ToolboxIdlService();
-  // TODO - check ATA resolution
+  // Check that we can resolve ATA with just the IDL
+  let idlProgramAta = await idlService.getOrResolveProgram(
+    endpoint,
+    ataProgramId,
+  );
+  let createAtaInstructionAddresses =
+    await idlService.resolveInstructionAddresses(
+      endpoint,
+      idlProgramAta?.instructions.get('create')!,
+      ataProgramId, // TODO - that's interesting it's error prone, should be from the param?
+      null,
+      new Map([
+        ['wallet', user],
+        ['mint', collateralMint],
+      ]),
+    );
+  expect(createAtaInstructionAddresses.get('ata')).toStrictEqual(
+    userCollateral,
+  );
   // Check the state of a system account
   await assertAccountInfo(idlService, endpoint, user, 'system', 'Wallet', null);
   // Check the state of the collateral mint
@@ -50,7 +68,7 @@ it('run', async () => {
     'TokenMint',
     {
       mint_authority: mintAuthority.toBase58(),
-      supply: BigInt(1000000000000000),
+      supply: 1000000000000000n.toString(),
       decimals: 9,
       is_initialized: true,
       freeze_authority: null,
@@ -66,11 +84,11 @@ it('run', async () => {
     {
       mint: collateralMint.toBase58(),
       owner: user.toBase58(),
-      amount: BigInt(996906108000000),
+      amount: 996906108000000n.toString(),
       delegate: null,
       state: 'Initialized',
       is_native: null,
-      delegated_amount: BigInt(0),
+      delegated_amount: 0n.toString(),
       close_authority: null,
     },
   );
@@ -93,7 +111,7 @@ it('run', async () => {
     'bpf_loader_upgradeable',
     'ProgramData',
     {
-      slot: BigInt(347133692),
+      slot: 347133692n.toString(),
       upgrade_authority: mintAuthority.toBase58(),
     },
   );

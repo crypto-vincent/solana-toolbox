@@ -10,7 +10,6 @@ use solana_sdk::pubkey::Pubkey;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccount;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPda;
 use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
-use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 
 impl ToolboxIdlInstructionAccount {
     pub fn try_find(
@@ -19,7 +18,6 @@ impl ToolboxIdlInstructionAccount {
         instruction_payload: &Value,
         instruction_addresses: &HashMap<String, Pubkey>,
         instruction_accounts_states: &HashMap<String, Value>,
-        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         instruction_accounts_contents_type_full: &HashMap<
             String,
             Arc<ToolboxIdlTypeFull>,
@@ -38,7 +36,6 @@ impl ToolboxIdlInstructionAccount {
                     instruction_payload,
                     instruction_addresses,
                     instruction_accounts_states,
-                    instruction_args_type_full_fields,
                     instruction_accounts_contents_type_full,
                 )
                 .context("Compute Pda");
@@ -57,7 +54,6 @@ impl ToolboxIdlInstructionAccountPda {
         instruction_payload: &Value,
         instruction_addresses: &HashMap<String, Pubkey>,
         instruction_accounts_states: &HashMap<String, Value>,
-        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         instruction_accounts_contents_type_full: &HashMap<
             String,
             Arc<ToolboxIdlTypeFull>,
@@ -71,7 +67,6 @@ impl ToolboxIdlInstructionAccountPda {
                         instruction_payload,
                         instruction_addresses,
                         instruction_accounts_states,
-                        instruction_args_type_full_fields,
                         instruction_accounts_contents_type_full,
                     )
                     .with_context(|| format!("Compute Seed Blob: {}", index))?,
@@ -83,7 +78,6 @@ impl ToolboxIdlInstructionAccountPda {
                     instruction_payload,
                     instruction_addresses,
                     instruction_accounts_states,
-                    instruction_args_type_full_fields,
                     instruction_accounts_contents_type_full,
                 )
                 .context("Compute Program Blob")?;

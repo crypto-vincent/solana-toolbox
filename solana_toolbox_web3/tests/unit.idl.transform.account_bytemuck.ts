@@ -91,7 +91,7 @@ it('run', () => {
   let bytemuckStructC = {
     field1: 0xf1f1,
     field2: keyF2.toBase58(),
-    field3: 0xf3f3f3f3f3f3f3f3n,
+    field3: 0xf3f3f3f3f3f3f3f3n.toString(),
     field4: 0xf4,
     field5: [0xf5, 0xf5f5f5f5],
   };
@@ -197,8 +197,8 @@ it('run', () => {
       ]),
       state: {
         bytemuck_struct_c: bytemuckStructC,
-        bytemuck_enum_c: { Case3: [0xc3c3c3c3c3c3c3c3n] },
-        bytemuck_enum_u8: { Case3: [0xc3c3c3c3c3c3c3c3n] },
+        bytemuck_enum_c: { Case3: [0xc3c3c3c3c3c3c3c3n.toString()] },
+        bytemuck_enum_u8: { Case3: [0xc3c3c3c3c3c3c3c3n.toString()] },
         bytemuck_discriminant_c: 'CaseA',
         bytemuck_discriminant_u8: 'CaseA',
         bytemuck_never: null,

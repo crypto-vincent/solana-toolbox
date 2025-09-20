@@ -10,6 +10,7 @@ use crate::toolbox_idl_instruction::ToolboxIdlInstruction;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccount;
 use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
 use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlatFields;
+use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_typedef::ToolboxIdlTypedef;
 use crate::toolbox_idl_utils::idl_hash_discriminator_from_string;
 use crate::toolbox_idl_utils::idl_object_get_key_as_array;
@@ -46,6 +47,7 @@ impl ToolboxIdlInstruction {
             .context("Hydrate Returns Type")?;
         let accounts = ToolboxIdlInstruction::try_parse_accounts(
             idl_instruction,
+            &args_type_full_fields,
             typedefs,
         )
         .context("Parse Accounts")?;
@@ -78,6 +80,7 @@ impl ToolboxIdlInstruction {
 
     fn try_parse_accounts(
         idl_instruction: &Map<String, Value>,
+        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         typedefs: &HashMap<String, Arc<ToolboxIdlTypedef>>,
     ) -> Result<Vec<ToolboxIdlInstructionAccount>> {
         let idl_instruction_accounts_array =
@@ -89,6 +92,7 @@ impl ToolboxIdlInstruction {
             instruction_accounts.push(
                 ToolboxIdlInstructionAccount::try_parse(
                     idl_instruction_account,
+                    instruction_args_type_full_fields,
                     typedefs,
                 )
                 .with_context(|| format!("Parse Account: {}", index))?,

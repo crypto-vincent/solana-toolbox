@@ -24,14 +24,16 @@ impl ToolboxIdlInstructionBlob {
                     "value": value,
                 })
             },
-            ToolboxIdlInstructionBlob::Arg { path, typing } => {
+            ToolboxIdlInstructionBlob::Arg {
+                path, type_flat, ..
+            } => {
                 let mut json_pda_blob_arg = Map::new();
                 json_pda_blob_arg.insert("kind".to_string(), json!("arg"));
                 json_pda_blob_arg
                     .insert("path".to_string(), json!(path.value()));
-                if let Some(typing) = typing {
+                if let Some(type_flat) = type_flat {
                     json_pda_blob_arg
-                        .insert("type".to_string(), typing.0.export(format));
+                        .insert("type".to_string(), type_flat.export(format));
                 }
                 json!(json_pda_blob_arg)
             },

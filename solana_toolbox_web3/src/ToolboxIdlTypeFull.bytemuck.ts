@@ -60,7 +60,24 @@ function bytemuckC(value: ToolboxIdlTypeFull): ToolboxIdlTypeFullPod {
   return value.traverse(bytemuckCVisitor, undefined, undefined, undefined);
 }
 
-let bytemuckCVisitor = {
+function bytemuckRust(value: ToolboxIdlTypeFull): ToolboxIdlTypeFullPod {
+  return value.traverse(bytemuckRustVisitor, undefined, undefined, undefined);
+}
+
+function bytemuckFields(
+  typeFields: ToolboxIdlTypeFullFields,
+  prefixSize: number,
+  rustReorder: boolean,
+): ToolboxIdlTypeFullPodFields {
+  return typeFields.traverse(
+    bytemuckFieldsVisitor,
+    prefixSize,
+    rustReorder,
+    undefined,
+  );
+}
+
+const bytemuckCVisitor = {
   typedef: (self: ToolboxIdlTypeFullTypedef): ToolboxIdlTypeFullPod => {
     return bytemuck(self);
   },
@@ -161,11 +178,7 @@ let bytemuckCVisitor = {
   },
 };
 
-function bytemuckRust(value: ToolboxIdlTypeFull): ToolboxIdlTypeFullPod {
-  return value.traverse(bytemuckRustVisitor, undefined, undefined, undefined);
-}
-
-let bytemuckRustVisitor = {
+const bytemuckRustVisitor = {
   typedef: (self: ToolboxIdlTypeFullTypedef): ToolboxIdlTypeFullPod => {
     return bytemuck(self);
   },
@@ -266,20 +279,7 @@ let bytemuckRustVisitor = {
   },
 };
 
-function bytemuckFields(
-  typeFields: ToolboxIdlTypeFullFields,
-  prefixSize: number,
-  rustReorder: boolean,
-): ToolboxIdlTypeFullPodFields {
-  return typeFields.traverse(
-    bytemuckFieldsVisitor,
-    prefixSize,
-    rustReorder,
-    undefined,
-  );
-}
-
-let bytemuckFieldsVisitor = {
+const bytemuckFieldsVisitor = {
   nothing: (
     _self: {},
     _prefixSize: number,

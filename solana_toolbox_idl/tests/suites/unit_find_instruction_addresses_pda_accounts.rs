@@ -75,7 +75,7 @@ pub async fn run() {
         &222u8.to_le_bytes(),
         &222u32.to_le_bytes(),
     ];
-    let dummy_address =
+    let dummy_pda =
         Pubkey::find_program_address(dummy_seeds, &dummy_program_id).0;
     // Assert that the accounts can be properly resolved
     let idl_account = idl_program.accounts.get("MyAccount").unwrap();
@@ -105,5 +105,5 @@ pub async fn run() {
             Arc::new(idl_account.content_type_full.clone()),
         )]),
     );
-    assert_eq!(*instruction_addresses.get("pda").unwrap(), dummy_address);
+    assert_eq!(*instruction_addresses.get("pda").unwrap(), dummy_pda);
 }

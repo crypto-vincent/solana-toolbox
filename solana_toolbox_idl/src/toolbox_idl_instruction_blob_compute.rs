@@ -9,7 +9,6 @@ use solana_sdk::pubkey::Pubkey;
 
 use crate::toolbox_idl_instruction_blob::ToolboxIdlInstructionBlob;
 use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
-use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_utils::idl_map_get_key_or_else;
 
 impl ToolboxIdlInstructionBlob {
@@ -18,7 +17,6 @@ impl ToolboxIdlInstructionBlob {
         instruction_payload: &Value,
         instruction_addresses: &HashMap<String, Pubkey>,
         instruction_accounts_states: &HashMap<String, Value>,
-        instruction_args_type_full_fields: &ToolboxIdlTypeFullFields,
         instruction_accounts_contents_type_full: &HashMap<
             String,
             Arc<ToolboxIdlTypeFull>,
@@ -32,25 +30,17 @@ impl ToolboxIdlInstructionBlob {
             } => {
                 type_full
                     .try_serialize(value, &mut data, prefixed)
-                    .context("Serialize Blob Bytes")?;
+                    .context("Serialize const bytes")?;
             },
-            ToolboxIdlInstructionBlob::Arg { path, typing } => {
+            ToolboxIdlInstructionBlob::Arg {
+                path, type_full, ..
+            } => {
                 let value = path
                     .try_get_json_value(instruction_payload)
                     .context("Extract arg value")?;
-                if let Some(typing) = typing {
-                    typing
-                        .1
-                        .try_serialize(value, &mut data, prefixed)
-                        .context("Serialize Blob Bytes")?;
-                } else {
-                    path.try_get_type_full_fields(
-                        instruction_args_type_full_fields,
-                    )
-                    .context("Extract arg type")?
+                type_full
                     .try_serialize(value, &mut data, prefixed)
-                    .context("Serialize Blob Bytes")?;
-                };
+                    .context("Serialize arg bytes")?;
             },
             ToolboxIdlInstructionBlob::Account { path, typing, .. } => {
                 let (instruction_account_name, account_content_path) =
@@ -81,12 +71,14 @@ impl ToolboxIdlInstructionBlob {
                         .try_serialize(value, &mut data, prefixed)
                         .context("Serialize Blob Bytes")?;
                 } else {
-                    let content_type_full =
+                    let instruction_account_content_type_full =
                         instruction_accounts_contents_type_full
                             .get(instruction_account_name)
                             .context("Account content type")?;
                     account_content_path
-                        .try_get_type_full(content_type_full)
+                        .try_get_type_full(
+                            instruction_account_content_type_full,
+                        )
                         .context("Account content type from path")?
                         .try_serialize(value, &mut data, prefixed)
                         .context("Serialize Blob Bytes")?;

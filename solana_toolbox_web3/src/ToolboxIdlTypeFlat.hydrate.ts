@@ -50,7 +50,19 @@ export function hydrateOrConstLiteral(
   );
 }
 
-let hydrateOrConstLiteralVisitor = {
+export function hydrateFields(
+  typeFlatFields: ToolboxIdlTypeFlatFields,
+  genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
+  typedefs: Map<string, ToolboxIdlTypedef>,
+): ToolboxIdlTypeFullFields {
+  return typeFlatFields.traverse(
+    hydrateFieldsVisitor,
+    genericsBySymbol,
+    typedefs,
+  );
+}
+
+const hydrateOrConstLiteralVisitor = {
   defined: (
     self: ToolboxIdlTypeFlatDefined,
     genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
@@ -67,7 +79,7 @@ let hydrateOrConstLiteralVisitor = {
       (genericFlat: ToolboxIdlTypeFlat) => {
         return hydrateOrConstLiteral(genericFlat, genericsBySymbol, typedefs);
       },
-    ); // TODO - this could be safer and cleaner by using strong types
+    );
     const innerGenericsBySymbol = new Map<
       string,
       ToolboxIdlTypeFull | number
@@ -197,19 +209,7 @@ let hydrateOrConstLiteralVisitor = {
   },
 };
 
-export function hydrateFields(
-  typeFlatFields: ToolboxIdlTypeFlatFields,
-  genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
-  typedefs: Map<string, ToolboxIdlTypedef>,
-): ToolboxIdlTypeFullFields {
-  return typeFlatFields.traverse(
-    hydrateFieldsVisitor,
-    genericsBySymbol,
-    typedefs,
-  );
-}
-
-let hydrateFieldsVisitor = {
+const hydrateFieldsVisitor = {
   nothing: (
     _self: {},
     _genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,

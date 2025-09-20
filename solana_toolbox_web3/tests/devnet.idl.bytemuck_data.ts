@@ -13,7 +13,7 @@ it('run', async () => {
   );
   // Check that the account was parsed properly and values matches
   expect(decoded.state['state']['metadata']['vocab_size']).toStrictEqual(
-    129280n,
+    129280n.toString(),
   );
   expect(
     decoded.state['state']['coordinator']['config']['min_clients'],

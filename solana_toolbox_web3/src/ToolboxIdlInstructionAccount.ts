@@ -2,9 +2,10 @@ import { PublicKey } from '@solana/web3.js';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import { ToolboxUtils } from './ToolboxUtils';
 import { ToolboxIdlInstructionBlob } from './ToolboxIdlInstructionBlob';
+import { ToolboxIdlTypeFullFields } from './ToolboxIdlTypeFull';
 
 export type ToolboxIdlInstructionAccountPda = {
-  seeds: ToolboxIdlInstructionBlob[];
+  seeds: Array<ToolboxIdlInstructionBlob>;
   program: ToolboxIdlInstructionBlob | undefined;
 };
 
@@ -37,6 +38,7 @@ export class ToolboxIdlInstructionAccount {
 
   public static tryParse(
     idlInstructionAccount: any,
+    instructionArgsTypeFullFields: ToolboxIdlTypeFullFields,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccount {
     ToolboxUtils.expectObject(idlInstructionAccount);
@@ -71,12 +73,17 @@ export class ToolboxIdlInstructionAccount {
       ToolboxUtils.expectObject(idlPda);
       let idlSeeds = ToolboxUtils.expectArray(idlPda['seeds'] ?? []);
       let seeds = idlSeeds.map((idlSeed: any) =>
-        ToolboxIdlInstructionBlob.tryParse(idlSeed, typedefs),
+        ToolboxIdlInstructionBlob.tryParse(
+          idlSeed,
+          instructionArgsTypeFullFields,
+          typedefs,
+        ),
       );
       let program = undefined;
       if (idlPda['program']) {
         program = ToolboxIdlInstructionBlob.tryParse(
           idlPda['program'],
+          instructionArgsTypeFullFields,
           typedefs,
         );
       }

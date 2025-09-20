@@ -13,7 +13,8 @@ pub enum ToolboxIdlInstructionBlob {
     },
     Arg {
         path: ToolboxIdlPath,
-        typing: Option<(ToolboxIdlTypeFlat, ToolboxIdlTypeFull)>,
+        type_flat: Option<ToolboxIdlTypeFlat>,
+        type_full: ToolboxIdlTypeFull,
     },
     Account {
         account: Option<String>,

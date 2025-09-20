@@ -3,17 +3,22 @@ import { ToolboxUtils } from './ToolboxUtils';
 import { parse } from './ToolboxIdlTypeFlat.parse';
 import { hydrate } from './ToolboxIdlTypeFlat.hydrate';
 import { serialize } from './ToolboxIdlTypeFull.serialize';
-import { ToolboxIdlTypeFull } from './ToolboxIdlTypeFull';
+import {
+  ToolboxIdlTypeFull,
+  ToolboxIdlTypeFullFields,
+} from './ToolboxIdlTypeFull';
+import { ToolboxIdlPath } from './ToolboxIdlPath';
+import { pathGetTypeFullFields } from './ToolboxIdlPath.type';
 
 export type ToolboxIdlInstructionBlobConst = {
   value: Buffer;
 };
 export type ToolboxIdlInstructionBlobArg = {
-  path: string;
-  typeFull: ToolboxIdlTypeFull | undefined;
+  path: ToolboxIdlPath;
+  typeFull: ToolboxIdlTypeFull;
 };
 export type ToolboxIdlInstructionBlobAccount = {
-  path: string;
+  path: ToolboxIdlPath;
   typeFull: ToolboxIdlTypeFull | undefined;
 };
 
@@ -65,24 +70,33 @@ export class ToolboxIdlInstructionBlob {
 
   public static tryParse(
     idlInstructionBlob: any,
+    instructionArgsTypeFullFields: ToolboxIdlTypeFullFields,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionBlob {
     if (ToolboxUtils.isObject(idlInstructionBlob)) {
       if (idlInstructionBlob.hasOwnProperty('value')) {
-        return this.tryParseConst(
-          idlInstructionBlob['value'],
-          idlInstructionBlob['type'] ?? 'bytes',
-          typedefs,
-        );
+        if (idlInstructionBlob.hasOwnProperty('type')) {
+          return this.tryParseConstTyped(
+            idlInstructionBlob['value'],
+            idlInstructionBlob['type'],
+            typedefs,
+          );
+        } else {
+          return this.tryParseConstUntyped(
+            idlInstructionBlob['value'],
+            typedefs,
+          );
+        }
       }
       const idlInstructionBlobPath = ToolboxUtils.expectString(
         idlInstructionBlob['path'],
       );
       const idlInstructionBlobType = idlInstructionBlob['type'];
-      if (idlInstructionBlob.hasOwnProperty('arg')) {
+      if (idlInstructionBlob['kind'] === 'arg') {
         return ToolboxIdlInstructionBlob.tryParseArg(
           idlInstructionBlobPath,
           idlInstructionBlobType,
+          instructionArgsTypeFullFields,
           typedefs,
         );
       }
@@ -92,16 +106,31 @@ export class ToolboxIdlInstructionBlob {
         typedefs,
       );
     }
-    if (ToolboxUtils.isArray(idlInstructionBlob)) {
-      return this.tryParseConst(idlInstructionBlob, 'bytes', typedefs);
+    return this.tryParseConstUntyped(idlInstructionBlob, typedefs);
+  }
+
+  static tryParseConstUntyped(
+    idlInstructionBlobValue: any,
+    typedefs: Map<string, ToolboxIdlTypedef>,
+  ): ToolboxIdlInstructionBlob {
+    if (ToolboxUtils.isString(idlInstructionBlobValue)) {
+      return this.tryParseConstTyped(
+        idlInstructionBlobValue,
+        'string',
+        typedefs,
+      );
     }
-    if (ToolboxUtils.isString(idlInstructionBlob)) {
-      return this.tryParseConst(idlInstructionBlob, 'string', typedefs);
+    if (ToolboxUtils.isArray(idlInstructionBlobValue)) {
+      return this.tryParseConstTyped(
+        idlInstructionBlobValue,
+        'bytes',
+        typedefs,
+      );
     }
     throw new Error('Could not parse IDL instruction account PDA blob');
   }
 
-  static tryParseConst(
+  static tryParseConstTyped(
     idlInstructionBlobValue: any,
     idlInstructionBlobType: any,
     typedefs: Map<string, ToolboxIdlTypedef>,
@@ -109,7 +138,7 @@ export class ToolboxIdlInstructionBlob {
     let typeFlat = parse(idlInstructionBlobType);
     let typeFull = hydrate(typeFlat, new Map(), typedefs);
     let data: Buffer[] = [];
-    serialize(typeFull, idlInstructionBlobValue, data, true);
+    serialize(typeFull, idlInstructionBlobValue, data, false);
     return ToolboxIdlInstructionBlob.const({
       value: Buffer.concat(data),
     });
@@ -118,18 +147,24 @@ export class ToolboxIdlInstructionBlob {
   static tryParseArg(
     idlInstructionBlobPath: string,
     idlInstructionBlobType: any,
+    instructionArgsTypeFullFields: ToolboxIdlTypeFullFields,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionBlob {
+    const path = ToolboxIdlPath.tryParse(idlInstructionBlobPath);
     if (idlInstructionBlobType === undefined) {
+      const typeFull = pathGetTypeFullFields(
+        path,
+        instructionArgsTypeFullFields,
+      );
       return this.arg({
-        path: idlInstructionBlobPath,
-        typeFull: undefined,
+        path,
+        typeFull,
       });
     }
     let typeFlat = parse(idlInstructionBlobType);
     let typeFull = hydrate(typeFlat, new Map(), typedefs);
     return this.arg({
-      path: idlInstructionBlobPath,
+      path,
       typeFull,
     });
   }
@@ -139,16 +174,17 @@ export class ToolboxIdlInstructionBlob {
     idlInstructionBlobType: any,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionBlob {
+    const path = ToolboxIdlPath.tryParse(idlInstructionBlobPath);
     if (idlInstructionBlobType === undefined) {
       return this.account({
-        path: idlInstructionBlobPath,
+        path,
         typeFull: undefined,
       });
     }
     let typeFlat = parse(idlInstructionBlobType);
     let typeFull = hydrate(typeFlat, new Map(), typedefs);
     return this.account({
-      path: idlInstructionBlobPath,
+      path,
       typeFull,
     });
   }

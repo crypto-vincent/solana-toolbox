@@ -34,7 +34,7 @@ export class ToolboxIdlInstruction {
   public readonly name: string;
   public readonly docs: any;
   public readonly discriminator: Buffer;
-  public readonly accounts: ToolboxIdlInstructionAccount[];
+  public readonly accounts: Array<ToolboxIdlInstructionAccount>;
   public readonly argsTypeFlatFields: ToolboxIdlTypeFlatFields;
   public readonly argsTypeFullFields: ToolboxIdlTypeFullFields;
   public readonly returnTypeFlat: ToolboxIdlTypeFlat;
@@ -44,7 +44,7 @@ export class ToolboxIdlInstruction {
     name: string;
     docs: any;
     discriminator: Buffer;
-    accounts: ToolboxIdlInstructionAccount[];
+    accounts: Array<ToolboxIdlInstructionAccount>;
     argsTypeFlatFields: ToolboxIdlTypeFlatFields;
     argsTypeFullFields: ToolboxIdlTypeFullFields;
     returnTypeFlat: ToolboxIdlTypeFlat;
@@ -71,17 +71,6 @@ export class ToolboxIdlInstruction {
       idlInstruction['discriminator'] ??
         ToolboxUtils.discriminator(`global:${idlInstructionName}`),
     );
-    let idlInstructionAccounts = ToolboxUtils.expectArray(
-      idlInstruction['accounts'] ?? [],
-    );
-    let instructionAccounts = idlInstructionAccounts.map(
-      (idlInstructionAccount: any) => {
-        return ToolboxIdlInstructionAccount.tryParse(
-          idlInstructionAccount,
-          typedefs,
-        );
-      },
-    );
     let argsTypeFlatFields = parseFields(idlInstruction['args'] ?? []);
     let argsTypeFullFields = hydrateFields(
       argsTypeFlatFields,
@@ -90,6 +79,18 @@ export class ToolboxIdlInstruction {
     );
     let returnTypeFlat = parse(idlInstruction['returns'] ?? { fields: [] });
     let returnTypeFull = hydrate(returnTypeFlat, new Map(), typedefs);
+    let idlInstructionAccounts = ToolboxUtils.expectArray(
+      idlInstruction['accounts'] ?? [],
+    );
+    let instructionAccounts = idlInstructionAccounts.map(
+      (idlInstructionAccount: any) => {
+        return ToolboxIdlInstructionAccount.tryParse(
+          idlInstructionAccount,
+          argsTypeFullFields,
+          typedefs,
+        );
+      },
+    );
     return new ToolboxIdlInstruction({
       name: idlInstructionName,
       docs,
@@ -164,7 +165,7 @@ export class ToolboxIdlInstruction {
   }
 
   public decodeAddresses(
-    instructionMetas: AccountMeta[],
+    instructionMetas: Array<AccountMeta>,
   ): Map<string, PublicKey> {
     let instructionOptionalsPossible = 0;
     for (let account of this.accounts) {

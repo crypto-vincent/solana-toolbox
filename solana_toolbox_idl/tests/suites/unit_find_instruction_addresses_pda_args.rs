@@ -90,6 +90,5 @@ pub async fn run() {
             }),
             &HashMap::new(),
         );
-    // Assert that the accounts can be properly resolved
     assert_eq!(*instruction_addresses.get("pda").unwrap(), dummy_pda);
 }

@@ -5,17 +5,16 @@ import {
   ToolboxIdlInstructionBlobArg,
   ToolboxIdlInstructionBlobConst,
 } from './ToolboxIdlInstructionBlob';
-import {
-  ToolboxIdlTypeFullFields,
-  ToolboxIdlTypeFull,
-} from './ToolboxIdlTypeFull';
+import { ToolboxIdlTypeFull } from './ToolboxIdlTypeFull';
+import { serialize } from './ToolboxIdlTypeFull.serialize';
+import { pathGetJsonValue } from './ToolboxIdlPath.json';
+import { pathGetTypeFull } from './ToolboxIdlPath.type';
 
 export type ToolboxIdlInstructionBlobComputeContext = {
   instructionProgramId: PublicKey;
   instructionPayload: any;
   instructionAddresses: Map<string, PublicKey>;
   instructionAccountsStates: Map<string, any>;
-  instructionArgsTypeFullFields: ToolboxIdlTypeFullFields;
   instructionAccountsContentsTypeFull: Map<string, ToolboxIdlTypeFull>;
 };
 
@@ -23,27 +22,79 @@ export function computeInstructionBlob(
   blob: ToolboxIdlInstructionBlob,
   context: ToolboxIdlInstructionBlobComputeContext,
 ): Buffer {
-  blob.traverse(computeVisitor, context, undefined);
-  // TODO - finish this
-  return Buffer.from([]);
+  return blob.traverse(computeVisitor, context, undefined);
 }
 
-let computeVisitor = {
+const computeVisitor = {
   const: (
     self: ToolboxIdlInstructionBlobConst,
-    context: ToolboxIdlInstructionBlobComputeContext,
+    _context: ToolboxIdlInstructionBlobComputeContext,
   ) => {
-    self.value;
+    return self.value;
   },
   arg: (
     self: ToolboxIdlInstructionBlobArg,
     context: ToolboxIdlInstructionBlobComputeContext,
   ) => {
-    if (!self.typeFull) {
-    }
+    const value = pathGetJsonValue(self.path, context.instructionPayload);
+    const data = new Array<Buffer>();
+    serialize(self.typeFull, value, data, false);
+    return Buffer.concat(data);
   },
   account: (
     self: ToolboxIdlInstructionBlobAccount,
     context: ToolboxIdlInstructionBlobComputeContext,
-  ) => {},
+  ) => {
+    if (self.path.isEmpty()) {
+      throw new Error(
+        'PDA Blob account path is empty (should have at least the account name)',
+      );
+    }
+    const { first: current, rest: next } = self.path.splitFirst()!;
+    const instructionAccountName = current.key();
+    if (!instructionAccountName) {
+      throw new Error(
+        'PDA Blob account path first part should be an account name',
+      );
+    }
+    const accountContentPath = next;
+    if (accountContentPath.isEmpty()) {
+      const instructionAddress = context.instructionAddresses.get(
+        instructionAccountName,
+      )!;
+      if (!instructionAddress) {
+        throw new Error(
+          `Could not find address for account: ${instructionAccountName}`,
+        );
+      }
+      return instructionAddress.toBuffer();
+    }
+    const accountContentState = context.instructionAccountsStates.get(
+      instructionAccountName,
+    );
+    if (accountContentState === undefined) {
+      throw new Error(
+        `Could not find state for account: ${instructionAccountName}`,
+      );
+    }
+    const value = pathGetJsonValue(accountContentPath, accountContentState);
+    const data = new Array<Buffer>();
+    if (self.typeFull !== undefined) {
+      serialize(self.typeFull, value, data, false);
+      return Buffer.concat(data);
+    }
+    const instructionAccountContentTypeFull =
+      context.instructionAccountsContentsTypeFull.get(instructionAccountName);
+    if (instructionAccountContentTypeFull === undefined) {
+      throw new Error(
+        `Could not find content type for account: ${instructionAccountName}`,
+      );
+    }
+    const typeFull = pathGetTypeFull(
+      accountContentPath,
+      instructionAccountContentTypeFull,
+    );
+    serialize(typeFull, value, data, false);
+    return Buffer.concat(data);
+  },
 };
