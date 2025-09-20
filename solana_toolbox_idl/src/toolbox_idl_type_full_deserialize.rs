@@ -14,6 +14,7 @@ use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_type_prefix::ToolboxIdlTypePrefix;
 use crate::toolbox_idl_type_primitive::ToolboxIdlTypePrimitive;
 use crate::toolbox_idl_utils::idl_slice_from_bytes;
+use crate::toolbox_idl_utils::idl_u128_from_bytes_at;
 use crate::toolbox_idl_utils::idl_u16_from_bytes_at;
 use crate::toolbox_idl_utils::idl_u32_from_bytes_at;
 use crate::toolbox_idl_utils::idl_u64_from_bytes_at;
@@ -388,7 +389,7 @@ impl ToolboxIdlTypePrefix {
         &self,
         data: &[u8],
         data_offset: usize,
-    ) -> Result<(usize, u64)> {
+    ) -> Result<(usize, u128)> {
         Ok((
             self.to_size(),
             match self {
@@ -402,10 +403,10 @@ impl ToolboxIdlTypePrefix {
                     idl_u32_from_bytes_at(data, data_offset)?.into()
                 },
                 ToolboxIdlTypePrefix::U64 => {
-                    idl_u64_from_bytes_at(data, data_offset)?
+                    idl_u64_from_bytes_at(data, data_offset)?.into()
                 },
                 ToolboxIdlTypePrefix::U128 => {
-                    idl_u64_from_bytes_at(data, data_offset)?
+                    idl_u128_from_bytes_at(data, data_offset)?.into()
                 },
             },
         ))
@@ -445,14 +446,14 @@ impl ToolboxIdlTypePrimitive {
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = u64::from_le_bytes(data_slice.try_into()?);
-                (data_size, json!(data_num))
+                (data_size, json!(data_num.to_string()))
             },
             ToolboxIdlTypePrimitive::U128 => {
                 let data_size = std::mem::size_of::<u128>();
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = u128::from_le_bytes(data_slice.try_into()?);
-                (data_size, json!(data_num))
+                (data_size, json!(data_num.to_string()))
             },
             ToolboxIdlTypePrimitive::I8 => {
                 let data_size = std::mem::size_of::<i8>();
@@ -480,14 +481,14 @@ impl ToolboxIdlTypePrimitive {
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = i64::from_le_bytes(data_slice.try_into()?);
-                (data_size, json!(data_num))
+                (data_size, json!(data_num.to_string()))
             },
             ToolboxIdlTypePrimitive::I128 => {
                 let data_size = std::mem::size_of::<i128>();
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = i128::from_le_bytes(data_slice.try_into()?);
-                (data_size, json!(data_num))
+                (data_size, json!(data_num.to_string()))
             },
             ToolboxIdlTypePrimitive::F32 => {
                 let data_size = std::mem::size_of::<f32>();

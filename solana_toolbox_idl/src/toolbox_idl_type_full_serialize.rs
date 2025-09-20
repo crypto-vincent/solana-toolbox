@@ -18,6 +18,7 @@ use crate::toolbox_idl_utils::idl_value_as_bool_or_else;
 use crate::toolbox_idl_utils::idl_value_as_bytes_or_else;
 use crate::toolbox_idl_utils::idl_value_as_f64_or_else;
 use crate::toolbox_idl_utils::idl_value_as_i64_or_else;
+use crate::toolbox_idl_utils::idl_value_as_integer_or_else;
 use crate::toolbox_idl_utils::idl_value_as_object_or_else;
 use crate::toolbox_idl_utils::idl_value_as_str_or_else;
 use crate::toolbox_idl_utils::idl_value_as_u64_or_else;
@@ -27,9 +28,6 @@ impl ToolboxIdlTypeFull {
         &self,
         value: &Value,
         data: &mut Vec<u8>,
-        // TODO (FAR) - Config object for allowing numbers as string
-        // TODO (FAR) - Config object for pubkey hashmap and prefixes and existing
-        // TODO (FAR) - Config object for custom serializers ?
         prefixed: bool,
     ) -> Result<()> {
         match self {
@@ -109,14 +107,14 @@ impl ToolboxIdlTypeFull {
         if vec_items.is_primitive(&ToolboxIdlTypePrimitive::U8) {
             let bytes = idl_value_as_bytes_or_else(value)?;
             if prefixed {
-                vec_prefix.try_serialize(u64::try_from(bytes.len())?, data)?;
+                vec_prefix.try_serialize(u128::try_from(bytes.len())?, data)?;
             }
             data.extend_from_slice(&bytes);
             return Ok(());
         }
         let values = idl_value_as_array_or_else(value)?;
         if prefixed {
-            vec_prefix.try_serialize(u64::try_from(values.len())?, data)?;
+            vec_prefix.try_serialize(u128::try_from(values.len())?, data)?;
         }
         for (index, value_item) in values.iter().enumerate() {
             vec_items
@@ -170,7 +168,7 @@ impl ToolboxIdlTypeFull {
         let value_str = idl_value_as_str_or_else(value)?;
         if prefixed {
             string_prefix
-                .try_serialize(u64::try_from(value_str.len())?, data)?;
+                .try_serialize(u128::try_from(value_str.len())?, data)?;
         }
         data.extend_from_slice(value_str.as_bytes());
         Ok(())
@@ -202,7 +200,7 @@ impl ToolboxIdlTypeFull {
         }
         if let Some(value_number) = value.as_u64() {
             for enum_variant in enum_variants {
-                if enum_variant.code == value_number {
+                if enum_variant.code == u128::from(value_number) {
                     enum_prefix.try_serialize(enum_variant.code, data)?;
                     return ToolboxIdlTypeFull::try_serialize_enum_variant(
                         enum_variant,
@@ -335,7 +333,7 @@ impl ToolboxIdlTypeFullFields {
 }
 
 impl ToolboxIdlTypePrefix {
-    pub fn try_serialize(&self, value: u64, data: &mut Vec<u8>) -> Result<()> {
+    pub fn try_serialize(&self, value: u128, data: &mut Vec<u8>) -> Result<()> {
         match self {
             ToolboxIdlTypePrefix::U8 => {
                 data.extend_from_slice(&u8::try_from(value)?.to_le_bytes())
@@ -347,10 +345,10 @@ impl ToolboxIdlTypePrefix {
                 data.extend_from_slice(&u32::try_from(value)?.to_le_bytes())
             },
             ToolboxIdlTypePrefix::U64 => {
-                data.extend_from_slice(&value.to_le_bytes())
+                data.extend_from_slice(&u64::try_from(value)?.to_le_bytes())
             },
             ToolboxIdlTypePrefix::U128 => {
-                data.extend_from_slice(&u128::from(value).to_le_bytes())
+                data.extend_from_slice(&value.to_le_bytes())
             },
         }
         Ok(())
@@ -359,7 +357,7 @@ impl ToolboxIdlTypePrefix {
 
 impl ToolboxIdlTypePrimitive {
     pub fn try_serialize(
-        self: &ToolboxIdlTypePrimitive,
+        &self,
         value: &Value,
         data: &mut Vec<u8>,
     ) -> Result<()> {
@@ -380,13 +378,12 @@ impl ToolboxIdlTypePrimitive {
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::U64 => {
-                let value_integer = idl_value_as_u64_or_else(value)?;
-                data.extend_from_slice(&value_integer.to_le_bytes());
+                let value_typed = idl_value_as_integer_or_else::<u64>(value)?;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::U128 => {
-                let value_integer =
-                    u128::from(idl_value_as_u64_or_else(value)?);
-                data.extend_from_slice(&value_integer.to_le_bytes());
+                let value_typed = idl_value_as_integer_or_else::<u128>(value)?;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I8 => {
                 let value_integer = idl_value_as_i64_or_else(value)?;
@@ -404,13 +401,12 @@ impl ToolboxIdlTypePrimitive {
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I64 => {
-                let value_integer = idl_value_as_i64_or_else(value)?;
-                data.extend_from_slice(&value_integer.to_le_bytes());
+                let value_typed = idl_value_as_integer_or_else::<i64>(value)?;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I128 => {
-                let value_integer =
-                    i128::from(idl_value_as_i64_or_else(value)?);
-                data.extend_from_slice(&value_integer.to_le_bytes());
+                let value_typed = idl_value_as_integer_or_else::<i128>(value)?;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::F32 => {
                 let value_floating = idl_value_as_f64_or_else(value)? as f32;

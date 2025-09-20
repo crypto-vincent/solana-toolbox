@@ -53,7 +53,7 @@ impl ToolboxIdlPath {
                 },
                 ToolboxIdlPathPart::Index(index) => {
                     for variant in variants {
-                        if variant.code == u64::try_from(index)? {
+                        if variant.code == u128::try_from(index)? {
                             return next
                                 .try_get_type_full_fields(&variant.fields);
                         }

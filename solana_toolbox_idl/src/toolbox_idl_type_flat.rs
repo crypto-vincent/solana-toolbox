@@ -51,7 +51,7 @@ pub enum ToolboxIdlTypeFlat {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ToolboxIdlTypeFlatEnumVariant {
     pub name: String,
-    pub code: u64,
+    pub code: u128,
     pub docs: Option<Value>,
     pub fields: ToolboxIdlTypeFlatFields,
 }

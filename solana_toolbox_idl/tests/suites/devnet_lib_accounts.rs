@@ -73,7 +73,7 @@ pub async fn run() {
         "TokenMint",
         json!({
             "mint_authority": mint_authority.to_string(),
-            "supply": 1000000000000000u64,
+            "supply": 1000000000000000u64.to_string(),
             "decimals": 9,
             "is_initialized": true,
             "freeze_authority": null,
@@ -90,11 +90,11 @@ pub async fn run() {
         json!({
             "mint": collateral_mint.to_string(),
             "owner": user.to_string(),
-            "amount": 996906108000000u64,
+            "amount": 996906108000000u64.to_string(),
             "delegate": null,
             "state": "Initialized",
             "is_native": null,
-            "delegated_amount": 0,
+            "delegated_amount": 0.to_string(),
             "close_authority": null,
         }),
     )
@@ -119,7 +119,7 @@ pub async fn run() {
         "bpf_loader_upgradeable",
         "ProgramData",
         json!({
-            "slot": 347133692,
+            "slot": 347133692.to_string(),
             "upgrade_authority": mint_authority.to_string(),
         }),
     )

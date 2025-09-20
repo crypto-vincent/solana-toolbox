@@ -27,8 +27,11 @@ pub async fn run() {
         Some("psyche_crowd_funding".to_string()),
     );
     assert_eq!(campaign_info.account.name, "Campaign");
-    assert_eq!(&campaign_info.state["bump"], &json!(campaign_bump),);
-    assert_eq!(&campaign_info.state["index"], &json!(campaign_index),);
+    assert_eq!(&campaign_info.state["bump"], &json!(campaign_bump));
+    assert_eq!(
+        &campaign_info.state["index"],
+        &json!(campaign_index.to_string())
+    );
     assert_eq!(
         &campaign_info.state["authority"],
         &json!("Ady55LhZxWFABzdg8NCNTAZv5XstBqyNZYCMfWqW3Rq9"),

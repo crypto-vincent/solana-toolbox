@@ -112,8 +112,7 @@ impl ToolboxIdlTypeFull {
                 | ToolboxIdlTypePrimitive::I128 => {
                     json!({
                         "description": primitive.as_str(),
-                        "type": "integer", // TODO - should this be a string ?
-                        "tsType": "bigint",
+                        "type": ["string", "integer"],
                     })
                 },
                 ToolboxIdlTypePrimitive::F32 | ToolboxIdlTypePrimitive::F64 => {

@@ -92,7 +92,7 @@ pub async fn run() {
                         },
                         "string": { "type": "string" },
                         "struct": { "type": "null" },
-                        "u64": { "description": "u64", "tsType": "bigint", "type": "integer" },
+                        "u64": { "description": "u64", "type": ["string", "integer"] },
                         "u8": { "description": "u8", "type": "integer" },
                         "vec_u8": {
                             "items": { "description": "u8", "type": "integer" },

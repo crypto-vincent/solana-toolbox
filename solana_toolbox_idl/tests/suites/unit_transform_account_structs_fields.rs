@@ -51,5 +51,5 @@ pub async fn run() {
     // Check that we can use the manual IDL to encode/decode our account
     let account_data = idl_account.encode(&account_state).unwrap();
     assert_eq!(vec![77, 78, 42, 0, 0, 0, 66, 67, 22, 0, 23], account_data);
-    assert_eq!(account_state, idl_account.decode(&account_data).unwrap());
+    assert_eq!(idl_account.decode(&account_data).unwrap(), account_state);
 }

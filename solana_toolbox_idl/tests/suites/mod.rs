@@ -51,6 +51,7 @@ pub mod unit_path_type_get;
 pub mod unit_schema_account;
 pub mod unit_transform_account_bytemuck;
 pub mod unit_transform_account_enums_fields;
+pub mod unit_transform_account_integers;
 pub mod unit_transform_account_nested;
 pub mod unit_transform_account_padded;
 pub mod unit_transform_account_prefixes;

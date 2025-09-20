@@ -19,6 +19,7 @@ pub mod program_test_get_slot_unix_timestamp;
 pub mod program_test_loggers;
 pub mod program_test_preflight;
 pub mod program_test_preloaded_accounts;
+pub mod program_test_process_speed;
 pub mod program_test_program;
 pub mod program_test_search_addresses;
 pub mod program_test_search_signatures;

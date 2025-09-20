@@ -38,6 +38,6 @@ pub async fn run() {
         &json!("H7JmSvR6w6Qrp9wEbw4xGEBkbh95Jc9C4yXYYYvWmF8B"),
     );
     // Related "UCT mint" account checks
-    assert_eq!(&realm_info.state["uct_mint_bump"], &json!(uct_mint_bump),);
-    assert_eq!(&realm_info.state["uct_mint"], &json!(uct_mint.to_string()),);
+    assert_eq!(&realm_info.state["uct_mint_bump"], &json!(uct_mint_bump));
+    assert_eq!(&realm_info.state["uct_mint"], &json!(uct_mint.to_string()));
 }

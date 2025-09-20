@@ -21,8 +21,8 @@ pub async fn run() {
     }
     let instruction_payload = json!({
         "params": {
-            "index": 42,
-            "funding_goal_collateral_amount": 41,
+            "index": "42",
+            "funding_goal_collateral_amount": "41",
             "funding_phase_duration_seconds": 99,
             "metadata": {
                 "length": 22,
@@ -49,17 +49,17 @@ pub async fn run() {
         account_state_metadata_bytes.push(json!(index % 100));
     }
     let account_state = json!({
-        "index": 77,
         "bump": 99,
+        "index": "77",
         "authority": Pubkey::new_unique().to_string(),
         "collateral_mint": Pubkey::new_unique().to_string(),
         "redeemable_mint": Pubkey::new_unique().to_string(),
-        "funding_goal_collateral_amount": 11,
-        "total_deposited_collateral_amount": 22,
-        "total_claimed_redeemable_amount": 33,
-        "funding_phase_start_unix_timestamp": -44,
-        "funding_phase_end_unix_timestamp": -55,
-        "extracted_collateral_amount": 66,
+        "funding_goal_collateral_amount": "11",
+        "total_deposited_collateral_amount": "22",
+        "total_claimed_redeemable_amount": "33",
+        "funding_phase_start_unix_timestamp": "-44",
+        "funding_phase_end_unix_timestamp": "-55",
+        "extracted_collateral_amount": "66",
         "metadata": {
             "length": 99,
             "bytes": account_state_metadata_bytes,
@@ -73,8 +73,8 @@ pub async fn run() {
     let idl_account = idl_program.accounts.get("Pledge").unwrap();
     let account_state = json!({
         "bump": 44,
-        "deposited_collateral_amount": 999,
-        "claimed_redeemable_amount": 22,
+        "deposited_collateral_amount": "999",
+        "claimed_redeemable_amount": "22",
     });
     // Encode/decode the account content and check that it matches the original
     let account_data = idl_account.encode(&account_state).unwrap();

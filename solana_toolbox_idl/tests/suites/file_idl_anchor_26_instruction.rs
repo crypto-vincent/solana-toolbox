@@ -20,7 +20,7 @@ pub async fn run() {
     let instruction_payload = json!({
         "max_funding_duration": 42,
         "deal_name": "deal hello world",
-        "arrangement_fees": 41,
+        "arrangement_fees": "41",
         "arrangement_fee_percentage": {
             "numerator": 100,
             "denominator": 1,

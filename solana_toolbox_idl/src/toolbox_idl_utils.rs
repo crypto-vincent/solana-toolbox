@@ -1,5 +1,7 @@
 use std::cmp::max;
 use std::collections::HashMap;
+use std::fmt::Debug;
+use std::str::FromStr;
 
 use anyhow::anyhow;
 use anyhow::Context;
@@ -12,8 +14,8 @@ use serde_json::Value;
 use solana_sdk::hash::Hasher;
 use solana_toolbox_endpoint::ToolboxEndpoint;
 
+use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
 use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
-use crate::ToolboxIdlTypeFlat;
 
 pub(crate) fn idl_object_get_key_as_array<'a>(
     object: &'a Map<String, Value>,
@@ -141,16 +143,6 @@ pub(crate) fn idl_value_as_object_get_key_as_str<'a>(
         .and_then(|item| item.as_str())
 }
 
-pub(crate) fn idl_value_as_object_get_key_as_u64(
-    value: &Value,
-    key: &str,
-) -> Option<u64> {
-    value
-        .as_object()
-        .and_then(|object| object.get(key))
-        .and_then(|item| item.as_u64())
-}
-
 pub(crate) fn idl_value_as_object_get_key<'a>(
     value: &'a Value,
     key: &str,
@@ -186,6 +178,38 @@ pub(crate) fn idl_value_as_f64_or_else(value: &Value) -> Result<f64> {
 
 pub(crate) fn idl_value_as_bool_or_else(value: &Value) -> Result<bool> {
     value.as_bool().context("Expected a boolean")
+}
+
+pub(crate) fn idl_value_as_integer_or_else<T>(value: &Value) -> Result<T>
+where
+    T: TryFrom<i128> + FromStr,
+    <T as TryFrom<i128>>::Error: Debug,
+    <T as FromStr>::Err: Debug,
+{
+    match value {
+        Value::Number(number) => Ok(T::try_from(
+            number
+                .as_i128()
+                .context("Number is not representable as i128")?,
+        )
+        .map_err(|error| {
+            anyhow!(
+                "Failed to convert {} from: {}: {:?}",
+                std::any::type_name::<T>(),
+                number,
+                error,
+            )
+        })?),
+        Value::String(string) => string.parse::<T>().map_err(|error| {
+            anyhow!(
+                "Failed to parse {} from: {}: {:?}",
+                std::any::type_name::<T>(),
+                string,
+                error,
+            )
+        }),
+        _ => Err(anyhow!("Expected a number or a string")),
+    }
 }
 
 pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
@@ -297,6 +321,15 @@ pub(crate) fn idl_u64_from_bytes_at(
     let size = std::mem::size_of::<u64>();
     let slice = idl_slice_from_bytes(bytes, offset, size)?;
     Ok(u64::from_le_bytes(slice.try_into()?))
+}
+
+pub(crate) fn idl_u128_from_bytes_at(
+    bytes: &[u8],
+    offset: usize,
+) -> Result<u128> {
+    let size = std::mem::size_of::<u128>();
+    let slice = idl_slice_from_bytes(bytes, offset, size)?;
+    Ok(u128::from_le_bytes(slice.try_into()?))
 }
 
 pub(crate) fn idl_map_get_key_or_else<'a, V: std::fmt::Debug>(

@@ -54,7 +54,7 @@ pub async fn run() {
     let account_state = json!({
         "base_token_mint": Pubkey::new_unique().to_string(),
         "lp_token_mint": Pubkey::new_unique().to_string(),
-        "pool_outstanding_credit": 5_000_000_000u64,
+        "pool_outstanding_credit": 5_000_000_000u64.to_string(),
         "treasury_pool_token_account": Pubkey::new_unique().to_string(),
         "signing_authority_bump": 4,
         "bump": 5,
@@ -76,9 +76,9 @@ pub async fn run() {
         "withdraw_epoch_redeem_seconds": 0x42_42_42_02,
         "withdraw_epoch_available_liquidity_seconds": 0x42_42_42_03,
         "latest_withdraw_epoch_idx": 0x42_42_42_04,
-        "latest_withdraw_epoch_end": -42,
-        "locked_liquidity": 777_777,
-        "total_redeemed_base_amount": 888_888,
+        "latest_withdraw_epoch_end": (-42).to_string(),
+        "locked_liquidity": 777_777.to_string(),
+        "total_redeemed_base_amount": 888_888.to_string(),
         "has_withdraw_epochs": true,
         "redeem_authority_bump": 9,
     });

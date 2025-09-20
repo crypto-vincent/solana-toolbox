@@ -88,5 +88,5 @@ async fn assert_account_info(
         Some(program_name.to_string()),
     );
     assert_eq!(account_info.account.name, account_name);
-    assert_eq!(&account_info.state[account_state_key], account_state_value,);
+    assert_eq!(&account_info.state[account_state_key], account_state_value);
 }

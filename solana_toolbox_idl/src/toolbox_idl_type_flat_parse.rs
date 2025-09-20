@@ -19,7 +19,6 @@ use crate::toolbox_idl_utils::idl_object_get_key_as_u64;
 use crate::toolbox_idl_utils::idl_value_as_object_get_key;
 use crate::toolbox_idl_utils::idl_value_as_object_get_key_as_array;
 use crate::toolbox_idl_utils::idl_value_as_object_get_key_as_str;
-use crate::toolbox_idl_utils::idl_value_as_object_get_key_as_u64;
 use crate::toolbox_idl_utils::idl_value_as_str_or_object_with_key_as_str_or_else;
 
 impl ToolboxIdlTypeFlat {
@@ -391,13 +390,22 @@ impl ToolboxIdlTypeFlat {
             for (index, idl_enum_variant) in
                 idl_enum_variants.iter().enumerate()
             {
-                let idl_enum_variant_code = idl_enum_variant
-                    .as_u64()
-                    .or(idl_value_as_object_get_key_as_u64(
-                        idl_enum_variant,
-                        "code",
-                    ))
-                    .unwrap_or(u64::try_from(index)?);
+                let idl_enum_variant_code =
+                    idl_value_as_object_get_key(idl_enum_variant, "code");
+                let idl_enum_variant_code =
+                    if let Some(code) = idl_enum_variant.as_u64() {
+                        u128::from(code)
+                    } else if let Some(code) =
+                        idl_enum_variant_code.and_then(Value::as_u64)
+                    {
+                        u128::from(code)
+                    } else if let Some(code) =
+                        idl_enum_variant_code.and_then(Value::as_str)
+                    {
+                        code.parse()?
+                    } else {
+                        u128::try_from(index)?
+                    };
                 let idl_enum_variant_name = idl_enum_variant
                     .as_str()
                     .or(idl_value_as_object_get_key_as_str(
@@ -417,20 +425,25 @@ impl ToolboxIdlTypeFlat {
             for (idl_enum_variant_name, idl_enum_variant) in
                 idl_enum_variants.iter()
             {
-                let idl_enum_variant_code = idl_enum_variant
-                    .as_u64()
-                    .or_else(|| {
-                        idl_value_as_object_get_key_as_u64(
-                            idl_enum_variant,
-                            "code",
-                        )
-                    })
-                    .with_context(|| {
-                        anyhow!(
+                let idl_enum_variant_code =
+                    idl_value_as_object_get_key(idl_enum_variant, "code");
+                let idl_enum_variant_code =
+                    if let Some(code) = idl_enum_variant.as_u64() {
+                        u128::from(code)
+                    } else if let Some(code) =
+                        idl_enum_variant_code.and_then(Value::as_u64)
+                    {
+                        u128::from(code)
+                    } else if let Some(code) =
+                        idl_enum_variant_code.and_then(Value::as_str)
+                    {
+                        code.parse()?
+                    } else {
+                        return Err(anyhow!(
                             "Enum Variant: Missing code for: {}",
                             idl_enum_variant_name
-                        )
-                    })?;
+                        ));
+                    };
                 variants.push(ToolboxIdlTypeFlat::try_parse_enum_variant(
                     idl_enum_variant_name.to_string(),
                     idl_enum_variant_code,
@@ -446,7 +459,7 @@ impl ToolboxIdlTypeFlat {
 
     fn try_parse_enum_variant(
         idl_enum_variant_name: String,
-        idl_enum_variant_code: u64,
+        idl_enum_variant_code: u128,
         idl_enum_variant: &Value,
     ) -> Result<ToolboxIdlTypeFlatEnumVariant> {
         let docs =

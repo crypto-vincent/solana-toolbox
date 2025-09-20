@@ -50,7 +50,7 @@ pub enum ToolboxIdlTypeFullOrConstLiteral {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ToolboxIdlTypeFullEnumVariant {
     pub name: String,
-    pub code: u64,
+    pub code: u128,
     pub fields: ToolboxIdlTypeFullFields,
 }
 

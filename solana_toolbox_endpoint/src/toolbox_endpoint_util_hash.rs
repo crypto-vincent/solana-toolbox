@@ -20,8 +20,8 @@ impl ToolboxEndpoint {
 
     pub fn keypair_from_seed_string_hash(value: &str) -> Result<Keypair> {
         Keypair::from_seed(&ToolboxEndpoint::hash_string(value).to_bytes())
-            .map_err(|err| {
-                anyhow!("Failed to create keypair from seed: {}", err)
+            .map_err(|error| {
+                anyhow!("Failed to create keypair from seed: {}", error)
             })
     }
 }

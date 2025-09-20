@@ -161,7 +161,7 @@ impl ToolboxIdlTypeFlat {
 
 impl ToolboxIdlTypeFlatEnumVariant {
     pub fn export(&self, index: usize, format: &ToolboxIdlFormat) -> Value {
-        let index_code = u64::try_from(index).unwrap();
+        let index_code = u128::try_from(index).unwrap();
         if format.can_shortcut_enum_variant_to_string_if_no_fields
             && self.docs.is_none()
             && self.code == index_code
@@ -175,7 +175,12 @@ impl ToolboxIdlTypeFlatEnumVariant {
             json_variant.insert("docs".to_string(), json!(variant_docs));
         }
         if self.code != index_code {
-            json_variant.insert("code".to_string(), json!(self.code));
+            if self.code > u128::from(u32::MAX) {
+                json_variant
+                    .insert("code".to_string(), json!(self.code.to_string()));
+            } else {
+                json_variant.insert("code".to_string(), json!(self.code));
+            }
         }
         if self.fields != ToolboxIdlTypeFlatFields::Nothing {
             json_variant
