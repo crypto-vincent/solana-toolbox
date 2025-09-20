@@ -48,7 +48,7 @@ export function findInstructionAddressesWithAccounts(
           instructionAddress,
         );
         madeProgress = true;
-      } catch (_error) {
+      } catch {
         // Ignore errors, we might not have enough info yet
       }
     }

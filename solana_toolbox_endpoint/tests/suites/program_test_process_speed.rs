@@ -27,8 +27,21 @@ pub async fn run() {
     // Have all the users send some back
     for user in &users {
         endpoint
-            .process_system_transfer(&user, &user, &payer.pubkey(), 100_000)
+            .process_system_transfer(user, user, &payer.pubkey(), 100_000)
             .await
             .unwrap();
+    }
+    // Check the final balance of the payer
+    let count = users.len() as u64;
+    assert_eq!(
+        endpoint.get_balance(&payer.pubkey()).await.unwrap(),
+        1_000_000_000 - (1_000_000 - 100_000) * count - 5000 * count,
+    );
+    // Check the final balance of all users
+    for user in &users {
+        assert_eq!(
+            endpoint.get_balance(&user.pubkey()).await.unwrap(),
+            1_000_000 - 100_000 - 5000,
+        );
     }
 }

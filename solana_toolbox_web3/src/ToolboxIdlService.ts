@@ -190,7 +190,7 @@ export class ToolboxIdlService {
             idlInstructionAccount.name,
             accountInfo.account.contentTypeFull,
           );
-        } catch (_error) {
+        } catch {
           // Ignore errors, we might not have enough info yet
         }
       }

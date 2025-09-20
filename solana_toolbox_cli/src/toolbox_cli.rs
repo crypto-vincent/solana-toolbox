@@ -75,11 +75,11 @@ pub struct ToolboxCliArgs {
 impl ToolboxCliArgs {
     pub async fn process(&self) -> Result<()> {
         let mut solana_cli_config = match self.config {
-            Some(ref config_file) => Config::load(&config_file)?,
+            Some(ref config_file) => Config::load(config_file)?,
             None => CONFIG_FILE
                 .clone()
                 .and_then(|config_file| Config::load(&config_file).ok())
-                .unwrap_or(Config::default()),
+                .unwrap_or_default(),
         };
         if let Some(commitment) = &self.commitment {
             solana_cli_config.commitment = commitment.to_string();

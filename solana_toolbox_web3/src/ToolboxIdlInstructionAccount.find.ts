@@ -51,8 +51,8 @@ export function findInstructionAccountPda(
     instructionAccountsStates,
     instructionAccountsContentsTypeFull,
   };
-  let pdaSeedsBytes = new Array();
-  for (let blob of instructionAccountPda.seeds) {
+  let pdaSeedsBytes = [];
+  for (const blob of instructionAccountPda.seeds) {
     pdaSeedsBytes.push(computeInstructionBlob(blob, computeContext));
   }
   let pdaProgramId = instructionProgramId;

@@ -68,7 +68,7 @@ impl ToolboxCliCommandHistoryArgs {
         let mut json_history = vec![];
         for signature in signatures.iter().skip(self.offset) {
             let mut json_instructions = vec![];
-            let execution = endpoint.get_execution(&signature).await?;
+            let execution = endpoint.get_execution(signature).await?;
             for instruction in execution.instructions {
                 match idl_service
                     .infer_and_decode_instruction(&mut endpoint, &instruction)
@@ -105,7 +105,7 @@ impl ToolboxCliCommandHistoryArgs {
                 "slot": execution.slot,
                 "success": execution.error.is_none(),
                 "instructions": json_instructions,
-                "explorer_url": context.compute_explorer_signature_url(&signature),
+                "explorer_url": context.compute_explorer_signature_url(signature),
             }));
         }
         Ok(json!(json_history))
