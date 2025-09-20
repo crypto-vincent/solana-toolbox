@@ -16,7 +16,7 @@ pub async fn run() {
     // Check that the account was parsed properly and values matches
     assert_eq!(
         &decoded.state["state"]["metadata"]["vocab_size"],
-        &json!(129280)
+        &json!(129280.to_string())
     );
     assert_eq!(
         &decoded.state["state"]["coordinator"]["config"]["min_clients"],
