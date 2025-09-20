@@ -100,8 +100,8 @@ export class ToolboxIdlTypePrimitive {
 
   private constructor(value: {
     name: string;
-    alignment: number;
     size: number;
+    alignment: number;
   }) {
     this.name = value.name;
     this.size = value.size;
@@ -110,24 +110,24 @@ export class ToolboxIdlTypePrimitive {
 
   public traverse<P1, P2, T>(
     visitor: {
-      u8: (param1: P1, param2: P2) => T;
-      u16: (param1: P1, param2: P2) => T;
-      u32: (param1: P1, param2: P2) => T;
-      u64: (param1: P1, param2: P2) => T;
-      u128: (param1: P1, param2: P2) => T;
-      i8: (param1: P1, param2: P2) => T;
-      i16: (param1: P1, param2: P2) => T;
-      i32: (param1: P1, param2: P2) => T;
-      i64: (param1: P1, param2: P2) => T;
-      i128: (param1: P1, param2: P2) => T;
-      f32: (param1: P1, param2: P2) => T;
-      f64: (param1: P1, param2: P2) => T;
-      bool: (param1: P1, param2: P2) => T;
-      pubkey: (param1: P1, param2: P2) => T;
+      u8: (p1: P1, p2: P2) => T;
+      u16: (p1: P1, p2: P2) => T;
+      u32: (p1: P1, p2: P2) => T;
+      u64: (p1: P1, p2: P2) => T;
+      u128: (p1: P1, p2: P2) => T;
+      i8: (p1: P1, p2: P2) => T;
+      i16: (p1: P1, p2: P2) => T;
+      i32: (p1: P1, p2: P2) => T;
+      i64: (p1: P1, p2: P2) => T;
+      i128: (p1: P1, p2: P2) => T;
+      f32: (p1: P1, p2: P2) => T;
+      f64: (p1: P1, p2: P2) => T;
+      bool: (p1: P1, p2: P2) => T;
+      pubkey: (p1: P1, p2: P2) => T;
     },
-    param1: P1,
-    param2: P2,
+    p1: P1,
+    p2: P2,
   ): T {
-    return visitor[this.name as keyof typeof visitor](param1, param2);
+    return visitor[this.name as keyof typeof visitor](p1, p2);
   }
 }

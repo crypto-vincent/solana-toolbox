@@ -1,9 +1,7 @@
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
 
-use crate::toolbox_idl_path::ToolboxIdlPath;
-use crate::toolbox_idl_type_flat::ToolboxIdlTypeFlat;
-use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
+use crate::toolbox_idl_instruction_blob::ToolboxIdlInstructionBlob;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ToolboxIdlInstructionAccount {
@@ -18,24 +16,6 @@ pub struct ToolboxIdlInstructionAccount {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ToolboxIdlInstructionAccountPda {
-    pub seeds: Vec<ToolboxIdlInstructionAccountPdaBlob>,
-    pub program: Option<ToolboxIdlInstructionAccountPdaBlob>,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ToolboxIdlInstructionAccountPdaBlob {
-    Const {
-        value: Value,
-        type_flat: ToolboxIdlTypeFlat,
-        type_full: ToolboxIdlTypeFull,
-    },
-    Arg {
-        path: ToolboxIdlPath,
-        typing: Option<(ToolboxIdlTypeFlat, ToolboxIdlTypeFull)>,
-    },
-    Account {
-        account: Option<String>,
-        path: ToolboxIdlPath,
-        typing: Option<(ToolboxIdlTypeFlat, ToolboxIdlTypeFull)>,
-    },
+    pub seeds: Vec<ToolboxIdlInstructionBlob>,
+    pub program: Option<ToolboxIdlInstructionBlob>,
 }

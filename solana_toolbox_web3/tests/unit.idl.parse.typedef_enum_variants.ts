@@ -68,25 +68,25 @@ it('run', () => {
         variants: [
           {
             name: '77',
-            code: 77,
+            code: BigInt(77),
             docs: undefined,
             fields: ToolboxIdlTypeFlatFields.nothing(),
           },
           {
             name: 'Case1',
-            code: 1,
+            code: BigInt(1),
             docs: undefined,
             fields: ToolboxIdlTypeFlatFields.nothing(),
           },
           {
             name: 'Case2',
-            code: 42,
+            code: BigInt(42),
             docs: undefined,
             fields: ToolboxIdlTypeFlatFields.nothing(),
           },
           {
             name: 'Case3',
-            code: 3,
+            code: BigInt(3),
             docs: undefined,
             fields: ToolboxIdlTypeFlatFields.nothing(),
           },

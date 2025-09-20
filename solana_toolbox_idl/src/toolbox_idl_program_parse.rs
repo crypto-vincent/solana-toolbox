@@ -23,7 +23,6 @@ use crate::toolbox_idl_utils::idl_object_get_key_as_array;
 use crate::toolbox_idl_utils::idl_object_get_key_as_object;
 use crate::toolbox_idl_utils::idl_object_get_key_as_str;
 use crate::toolbox_idl_utils::idl_slice_from_bytes;
-use crate::toolbox_idl_utils::idl_u32_from_bytes_at;
 use crate::toolbox_idl_utils::idl_value_as_object_or_else;
 
 impl ToolboxIdlProgram {
@@ -41,8 +40,11 @@ impl ToolboxIdlProgram {
                 account_data
             ));
         }
-        let length =
-            idl_u32_from_bytes_at(account_data, 40).context("Read Length")?;
+        let length = u32::from_le_bytes(
+            idl_slice_from_bytes(account_data, 40, 4)
+                .context("Read Length")?
+                .try_into()?,
+        );
         let content =
             idl_slice_from_bytes(account_data, 44, usize::try_from(length)?)
                 .context("Read Content")?;

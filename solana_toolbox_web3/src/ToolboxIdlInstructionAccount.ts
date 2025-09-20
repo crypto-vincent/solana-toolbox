@@ -1,11 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
 import { ToolboxIdlTypedef } from './ToolboxIdlTypedef';
 import { ToolboxUtils } from './ToolboxUtils';
-import { ToolboxIdlInstructionAccountPdaBlob } from './ToolboxIdlInstructionAccountPdaBlob';
+import { ToolboxIdlInstructionBlob } from './ToolboxIdlInstructionBlob';
 
 export type ToolboxIdlInstructionAccountPda = {
-  seeds: ToolboxIdlInstructionAccountPdaBlob[];
-  program: ToolboxIdlInstructionAccountPdaBlob | undefined;
+  seeds: ToolboxIdlInstructionBlob[];
+  program: ToolboxIdlInstructionBlob | undefined;
 };
 
 export class ToolboxIdlInstructionAccount {
@@ -71,11 +71,11 @@ export class ToolboxIdlInstructionAccount {
       ToolboxUtils.expectObject(idlPda);
       let idlSeeds = ToolboxUtils.expectArray(idlPda['seeds'] ?? []);
       let seeds = idlSeeds.map((idlSeed: any) =>
-        ToolboxIdlInstructionAccountPdaBlob.tryParse(idlSeed, typedefs),
+        ToolboxIdlInstructionBlob.tryParse(idlSeed, typedefs),
       );
       let program = undefined;
       if (idlPda['program']) {
-        program = ToolboxIdlInstructionAccountPdaBlob.tryParse(
+        program = ToolboxIdlInstructionBlob.tryParse(
           idlPda['program'],
           typedefs,
         );

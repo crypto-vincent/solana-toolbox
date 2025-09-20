@@ -194,7 +194,7 @@ where
         )
         .map_err(|error| {
             anyhow!(
-                "Failed to convert {} from: {}: {:?}",
+                "Failed to read {} from: {}: {:?}",
                 std::any::type_name::<T>(),
                 number,
                 error,
@@ -208,7 +208,9 @@ where
                 error,
             )
         }),
-        _ => Err(anyhow!("Expected a number or a string")),
+        _ => Err(anyhow!(
+            "Expected an integer in the form of number or a string"
+        )),
     }
 }
 
@@ -287,49 +289,6 @@ pub(crate) fn idl_slice_from_bytes(
         ));
     }
     Ok(&bytes[offset..end])
-}
-
-// TODO - are those needed or can those be inlined ?
-pub(crate) fn idl_u8_from_bytes_at(bytes: &[u8], offset: usize) -> Result<u8> {
-    let size = std::mem::size_of::<u8>();
-    let slice = idl_slice_from_bytes(bytes, offset, size)?;
-    Ok(u8::from_le_bytes(slice.try_into()?))
-}
-
-pub(crate) fn idl_u16_from_bytes_at(
-    bytes: &[u8],
-    offset: usize,
-) -> Result<u16> {
-    let size = std::mem::size_of::<u16>();
-    let slice = idl_slice_from_bytes(bytes, offset, size)?;
-    Ok(u16::from_le_bytes(slice.try_into()?))
-}
-
-pub(crate) fn idl_u32_from_bytes_at(
-    bytes: &[u8],
-    offset: usize,
-) -> Result<u32> {
-    let size = std::mem::size_of::<u32>();
-    let slice = idl_slice_from_bytes(bytes, offset, size)?;
-    Ok(u32::from_le_bytes(slice.try_into()?))
-}
-
-pub(crate) fn idl_u64_from_bytes_at(
-    bytes: &[u8],
-    offset: usize,
-) -> Result<u64> {
-    let size = std::mem::size_of::<u64>();
-    let slice = idl_slice_from_bytes(bytes, offset, size)?;
-    Ok(u64::from_le_bytes(slice.try_into()?))
-}
-
-pub(crate) fn idl_u128_from_bytes_at(
-    bytes: &[u8],
-    offset: usize,
-) -> Result<u128> {
-    let size = std::mem::size_of::<u128>();
-    let slice = idl_slice_from_bytes(bytes, offset, size)?;
-    Ok(u128::from_le_bytes(slice.try_into()?))
 }
 
 pub(crate) fn idl_map_get_key_or_else<'a, V: std::fmt::Debug>(

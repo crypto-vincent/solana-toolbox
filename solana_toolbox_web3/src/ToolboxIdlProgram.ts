@@ -212,9 +212,9 @@ export class ToolboxIdlProgram {
     idlRoot: any,
     collectionKey: string,
     convertNameToSnakeCase: boolean,
-    param1: P1,
-    param2: P2,
-    parsingFunction: (name: string, value: any, param1: P1, param2: P2) => T,
+    p1: P1,
+    p2: P2,
+    parsingFunction: (name: string, value: any, p1: P1, p2: P2) => T,
   ): Map<string, T> {
     let values = new Map();
     let collection = idlRoot[collectionKey];
@@ -224,7 +224,7 @@ export class ToolboxIdlProgram {
         if (convertNameToSnakeCase) {
           name = ToolboxUtils.convertToSnakeCase(name);
         }
-        values.set(name, parsingFunction(name, item, param1, param2));
+        values.set(name, parsingFunction(name, item, p1, p2));
       }
     }
     if (ToolboxUtils.isObject(collection)) {
@@ -232,7 +232,7 @@ export class ToolboxIdlProgram {
         if (convertNameToSnakeCase) {
           key = ToolboxUtils.convertToSnakeCase(key);
         }
-        values.set(key, parsingFunction(key, value, param1, param2));
+        values.set(key, parsingFunction(key, value, p1, p2));
       });
     }
     return values;

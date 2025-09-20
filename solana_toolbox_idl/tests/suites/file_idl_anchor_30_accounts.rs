@@ -155,7 +155,7 @@ pub async fn run() {
             &HashMap::from_iter([(
                 "campaign".to_string(),
                 Arc::new(
-                    // TODO - make this nicer
+                    // TODO - make this nicer?
                     idl_program
                         .accounts
                         .get("Campaign")

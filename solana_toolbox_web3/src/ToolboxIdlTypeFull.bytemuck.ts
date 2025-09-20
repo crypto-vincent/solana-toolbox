@@ -281,7 +281,7 @@ function bytemuckFields(
 
 let bytemuckFieldsVisitor = {
   nothing: (
-    _self: never[],
+    _self: {},
     _prefixSize: number,
     _rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {

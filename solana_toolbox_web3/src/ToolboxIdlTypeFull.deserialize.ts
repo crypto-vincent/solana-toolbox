@@ -45,7 +45,7 @@ let deserializeVisitor = {
       data,
       dataOffset,
     );
-    if ((dataPrefix & 1) == 0) {
+    if ((dataPrefix & 1n) == 0n) {
       return [dataSize, null];
     }
     let dataContentOffset = dataOffset + dataSize;
@@ -67,8 +67,9 @@ let deserializeVisitor = {
       data,
       dataOffset,
     );
+    let dataLength = Number(dataPrefix);
     let dataItems = [];
-    for (let i = 0; i < dataPrefix; i++) {
+    for (let i = 0; i < dataLength; i++) {
       let dataItemOffset = dataOffset + dataSize;
       let [dataItemSize, dataItem] = deserialize(
         self.items,
@@ -109,13 +110,14 @@ let deserializeVisitor = {
       data,
       dataOffset,
     );
+    let dataLength = Number(dataPrefix);
     let dataCharsOffset = dataOffset + dataSize;
     let dataString = data.toString(
       'utf8',
       dataCharsOffset,
-      dataCharsOffset + dataPrefix,
+      dataCharsOffset + dataLength,
     );
-    dataSize += dataPrefix;
+    dataSize += dataLength;
     return [dataSize, dataString];
   },
   struct: (
@@ -133,7 +135,7 @@ let deserializeVisitor = {
     if (self.variants.length == 0) {
       return [0, null];
     }
-    let enumMask = 0;
+    let enumMask = 0n;
     for (let variant of self.variants) {
       enumMask |= variant.code;
     }
@@ -193,11 +195,7 @@ export function deserializeFields(
 }
 
 let deserializeFieldsVisitor = {
-  nothing: (
-    _self: never[],
-    _data: Buffer,
-    _dataOffset: number,
-  ): [number, any] => {
+  nothing: (_self: {}, _data: Buffer, _dataOffset: number): [number, any] => {
     return [0, null];
   },
   named: (
@@ -240,7 +238,7 @@ export function deserializePrefix(
   prefix: ToolboxIdlTypePrefix,
   data: Buffer,
   dataOffset: number,
-): [number, number] {
+): [number, bigint] {
   return [
     prefix.size,
     prefix.traverse(deserializePrefixVisitor, data, dataOffset),
@@ -248,20 +246,22 @@ export function deserializePrefix(
 }
 
 let deserializePrefixVisitor = {
-  u8: (data: Buffer, dataOffset: number): number => {
-    return data.readUInt8(dataOffset);
+  u8: (data: Buffer, dataOffset: number): bigint => {
+    return BigInt(data.readUInt8(dataOffset));
   },
-  u16: (data: Buffer, dataOffset: number): number => {
-    return data.readUInt16LE(dataOffset);
+  u16: (data: Buffer, dataOffset: number): bigint => {
+    return BigInt(data.readUInt16LE(dataOffset));
   },
-  u32: (data: Buffer, dataOffset: number): number => {
-    return data.readUInt32LE(dataOffset);
+  u32: (data: Buffer, dataOffset: number): bigint => {
+    return BigInt(data.readUInt32LE(dataOffset));
   },
-  u64: (data: Buffer, dataOffset: number): number => {
-    return Number(data.readBigUInt64LE(dataOffset) & 0xffffffffffffn);
+  u64: (data: Buffer, dataOffset: number): bigint => {
+    return data.readBigUInt64LE(dataOffset);
   },
-  u128: (data: Buffer, dataOffset: number): number => {
-    return Number(data.readBigUInt64LE(dataOffset) & 0xffffffffffffn);
+  u128: (data: Buffer, dataOffset: number): bigint => {
+    let high = data.readBigUInt64LE(dataOffset);
+    let low = data.readBigUInt64LE(dataOffset + 8);
+    return low | (high << 64n);
   },
 };
 

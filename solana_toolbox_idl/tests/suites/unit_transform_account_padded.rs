@@ -47,7 +47,7 @@ pub async fn run() {
     let account_data = idl_account.encode(&account_state).unwrap();
     assert_eq!(
         account_data,
-        vec![
+        [
             vec![22],
             vec![0, 0, 0],
             vec![40],

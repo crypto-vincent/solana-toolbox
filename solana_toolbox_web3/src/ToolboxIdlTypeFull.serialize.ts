@@ -45,10 +45,10 @@ let serializeVisitor = {
     prefixed: boolean,
   ) => {
     if (value === null) {
-      serializePrefix(self.prefix, 0, data);
+      serializePrefix(self.prefix, 0n, data);
       return;
     }
-    serializePrefix(self.prefix, 1, data);
+    serializePrefix(self.prefix, 1n, data);
     serialize(self.content, value, data, prefixed);
   },
   vec: (
@@ -59,7 +59,7 @@ let serializeVisitor = {
   ) => {
     let array = ToolboxUtils.expectArray(value);
     if (prefixed) {
-      serializePrefix(self.prefix, array.length, data);
+      serializePrefix(self.prefix, BigInt(array.length), data);
     }
     // TODO - handle special case of "bytes" fancy serializer
     for (let item of array) {
@@ -89,7 +89,7 @@ let serializeVisitor = {
   ) => {
     let string = ToolboxUtils.expectString(value);
     if (prefixed) {
-      serializePrefix(self.prefix, string.length, data);
+      serializePrefix(self.prefix, BigInt(string.length), data);
     }
     data.push(Buffer.from(string, 'utf8'));
   },
@@ -192,12 +192,7 @@ export function serializeFields(
 }
 
 let serializeFieldsVisitor = {
-  nothing: (
-    _self: never[],
-    _value: any,
-    _data: Buffer[],
-    _prefixed: boolean,
-  ) => {
+  nothing: (_self: {}, _value: any, _data: Buffer[], _prefixed: boolean) => {
     return;
   },
   named: (
@@ -236,7 +231,7 @@ let serializeFieldsVisitor = {
 
 export function serializePrefix(
   prefix: ToolboxIdlTypePrefix,
-  value: number,
+  value: bigint,
   data: Buffer[],
 ) {
   let buffer = Buffer.alloc(prefix.size);
@@ -245,20 +240,20 @@ export function serializePrefix(
 }
 
 let serializePrefixVisitor = {
-  u8: (buffer: Buffer, value: any) => {
-    buffer.writeUInt8(ToolboxUtils.expectNumber(value));
+  u8: (buffer: Buffer, value: bigint) => {
+    buffer.writeUInt8(Number(value));
   },
-  u16: (buffer: Buffer, value: any) => {
-    buffer.writeUInt16LE(ToolboxUtils.expectNumber(value));
+  u16: (buffer: Buffer, value: bigint) => {
+    buffer.writeUInt16LE(Number(value));
   },
-  u32: (buffer: Buffer, value: any) => {
-    buffer.writeUInt32LE(ToolboxUtils.expectNumber(value));
+  u32: (buffer: Buffer, value: bigint) => {
+    buffer.writeUInt32LE(Number(value));
   },
-  u64: (buffer: Buffer, value: any) => {
-    buffer.writeBigUInt64LE(BigInt(ToolboxUtils.expectNumber(value)));
+  u64: (buffer: Buffer, value: bigint) => {
+    buffer.writeBigUInt64LE(value);
   },
-  u128: (buffer: Buffer, value: any) => {
-    buffer.writeBigUInt64LE(BigInt(ToolboxUtils.expectNumber(value)));
+  u128: (buffer: Buffer, value: bigint) => {
+    buffer.writeBigUInt64LE(value);
   },
 };
 

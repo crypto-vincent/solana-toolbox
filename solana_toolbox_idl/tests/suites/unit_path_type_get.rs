@@ -1,6 +1,7 @@
 use serde_json::json;
 use solana_toolbox_idl::ToolboxIdlPath;
 use solana_toolbox_idl::ToolboxIdlProgram;
+use solana_toolbox_idl::ToolboxIdlTypeFull;
 use solana_toolbox_idl::ToolboxIdlTypePrimitive;
 
 #[tokio::test]
@@ -113,6 +114,8 @@ fn assert_get(
                     .content_type_full,
             )
             .unwrap(),
-        expected.into()
+        &ToolboxIdlTypeFull::Primitive {
+            primitive: expected
+        },
     );
 }

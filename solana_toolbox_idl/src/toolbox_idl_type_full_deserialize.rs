@@ -14,11 +14,6 @@ use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 use crate::toolbox_idl_type_prefix::ToolboxIdlTypePrefix;
 use crate::toolbox_idl_type_primitive::ToolboxIdlTypePrimitive;
 use crate::toolbox_idl_utils::idl_slice_from_bytes;
-use crate::toolbox_idl_utils::idl_u128_from_bytes_at;
-use crate::toolbox_idl_utils::idl_u16_from_bytes_at;
-use crate::toolbox_idl_utils::idl_u32_from_bytes_at;
-use crate::toolbox_idl_utils::idl_u64_from_bytes_at;
-use crate::toolbox_idl_utils::idl_u8_from_bytes_at;
 
 impl ToolboxIdlTypeFull {
     pub fn try_deserialize(
@@ -390,23 +385,25 @@ impl ToolboxIdlTypePrefix {
         data: &[u8],
         data_offset: usize,
     ) -> Result<(usize, u128)> {
+        let size = self.to_size();
+        let slice = idl_slice_from_bytes(data, data_offset, size)?;
         Ok((
-            self.to_size(),
+            size,
             match self {
                 ToolboxIdlTypePrefix::U8 => {
-                    idl_u8_from_bytes_at(data, data_offset)?.into()
+                    u128::from(u8::from_le_bytes(slice.try_into()?))
                 },
                 ToolboxIdlTypePrefix::U16 => {
-                    idl_u16_from_bytes_at(data, data_offset)?.into()
+                    u128::from(u16::from_le_bytes(slice.try_into()?))
                 },
                 ToolboxIdlTypePrefix::U32 => {
-                    idl_u32_from_bytes_at(data, data_offset)?.into()
+                    u128::from(u32::from_le_bytes(slice.try_into()?))
                 },
                 ToolboxIdlTypePrefix::U64 => {
-                    idl_u64_from_bytes_at(data, data_offset)?.into()
+                    u128::from(u64::from_le_bytes(slice.try_into()?))
                 },
                 ToolboxIdlTypePrefix::U128 => {
-                    idl_u128_from_bytes_at(data, data_offset)?.into()
+                    u128::from_le_bytes(slice.try_into()?)
                 },
             },
         ))

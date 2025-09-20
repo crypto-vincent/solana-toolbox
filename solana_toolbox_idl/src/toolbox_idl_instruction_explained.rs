@@ -5,7 +5,7 @@ use solana_toolbox_endpoint::ToolboxEndpoint;
 
 use crate::toolbox_idl_instruction::ToolboxIdlInstruction;
 use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPda;
-use crate::toolbox_idl_instruction_account::ToolboxIdlInstructionAccountPdaBlob;
+use crate::toolbox_idl_instruction_blob::ToolboxIdlInstructionBlob;
 
 impl ToolboxIdlInstruction {
     // TODO - this should go into the CLI probably directly
@@ -46,13 +46,11 @@ impl ToolboxIdlInstructionAccountPda {
     }
 }
 
-impl ToolboxIdlInstructionAccountPdaBlob {
+impl ToolboxIdlInstructionBlob {
     pub fn explained(&self) -> Value {
         match self {
-            ToolboxIdlInstructionAccountPdaBlob::Const {
-                value,
-                type_full,
-                ..
+            ToolboxIdlInstructionBlob::Const {
+                value, type_full, ..
             } => {
                 let mut data = vec![];
                 match type_full.try_serialize(value, &mut data, false) {
@@ -72,10 +70,10 @@ impl ToolboxIdlInstructionAccountPdaBlob {
                     }),
                 }
             },
-            ToolboxIdlInstructionAccountPdaBlob::Arg { path, .. } => {
+            ToolboxIdlInstructionBlob::Arg { path, .. } => {
                 json!({ "arg": path.value() })
             },
-            ToolboxIdlInstructionAccountPdaBlob::Account { path, .. } => {
+            ToolboxIdlInstructionBlob::Account { path, .. } => {
                 json!({ "account": path.value() })
             },
         }

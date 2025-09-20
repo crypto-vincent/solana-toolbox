@@ -15,12 +15,13 @@ pub async fn run() {
                     "MyEnum",
                     "MyEnum",
                     "MyEnum",
+                    "MyEnum",
                 ]
             },
         },
         "types": {
             "MyEnum": {
-                "variants": [
+                "variants128": [
                     {
                         "name": "Named",
                         "fields": [
@@ -36,6 +37,10 @@ pub async fn run() {
                         "name": "Empty",
                     },
                     "Shortened",
+                    {
+                        "name": "BigCode",
+                        "code": u128::MAX.to_string(),
+                    }
                 ],
             },
         },
@@ -43,22 +48,30 @@ pub async fn run() {
     .unwrap();
     // MyAccount info
     let idl_account = idl_program.accounts.get("MyAccount").unwrap();
+    eprintln!("{:#?}", idl_account.content_type_full);
     let account_state = json!([
         "Empty",
         {"Named": {"field1": 42}},
         {"Unnamed": [22, 23]},
         "Shortened",
+        "BigCode",
     ]);
     // Check that we can use the manual IDL to encode/decode our account
     let account_data = idl_account.encode(&account_state).unwrap();
     assert_eq!(
         account_data,
-        vec![
+        [
             vec![77, 78],
-            vec![2],
-            vec![0, 42, 0, 0, 0],
-            vec![99, 22, 23],
-            vec![3],
+            2u128.to_le_bytes().to_vec(),
+            vec![],
+            0u128.to_le_bytes().to_vec(),
+            vec![42, 0, 0, 0],
+            99u128.to_le_bytes().to_vec(),
+            vec![22, 23],
+            3u128.to_le_bytes().to_vec(),
+            vec![],
+            u128::MAX.to_le_bytes().to_vec(),
+            vec![],
         ]
         .concat()
     );

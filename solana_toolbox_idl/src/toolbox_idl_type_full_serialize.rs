@@ -166,11 +166,12 @@ impl ToolboxIdlTypeFull {
         prefixed: bool,
     ) -> Result<()> {
         let value_str = idl_value_as_str_or_else(value)?;
+        let value_bytes = value_str.as_bytes();
         if prefixed {
             string_prefix
-                .try_serialize(u128::try_from(value_str.len())?, data)?;
+                .try_serialize(u128::try_from(value_bytes.len())?, data)?;
         }
-        data.extend_from_slice(value_str.as_bytes());
+        data.extend_from_slice(value_bytes);
         Ok(())
     }
 

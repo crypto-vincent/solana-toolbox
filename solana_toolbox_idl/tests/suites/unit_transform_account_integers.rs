@@ -67,7 +67,7 @@ pub async fn run() {
     let account_data_raw = idl_account.encode(&account_state_raw).unwrap();
     assert_eq!(
         account_data_raw,
-        vec![
+        [
             vec![22],
             u8::MAX.to_le_bytes().to_vec(),
             u16::MAX.to_le_bytes().to_vec(),
@@ -85,7 +85,7 @@ pub async fn run() {
     let account_data_v1 = idl_account.encode(&account_state_v1).unwrap();
     assert_eq!(
         account_data_v1,
-        vec![
+        [
             vec![22],
             8u8.to_le_bytes().to_vec(),
             16u16.to_le_bytes().to_vec(),

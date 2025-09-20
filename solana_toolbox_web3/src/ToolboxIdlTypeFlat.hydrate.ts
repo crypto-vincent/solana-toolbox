@@ -211,7 +211,7 @@ export function hydrateFields(
 
 let hydrateFieldsVisitor = {
   nothing: (
-    _self: never[],
+    _self: {},
     _genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
     _typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlTypeFullFields => {

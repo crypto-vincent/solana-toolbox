@@ -8,12 +8,12 @@ use crate::toolbox_idl_type_full::ToolboxIdlTypeFull;
 use crate::toolbox_idl_type_full::ToolboxIdlTypeFullFields;
 
 impl ToolboxIdlPath {
-    pub fn try_get_type_full(
+    pub fn try_get_type_full<'a>(
         &self,
-        type_full: &ToolboxIdlTypeFull,
-    ) -> Result<ToolboxIdlTypeFull> {
+        type_full: &'a ToolboxIdlTypeFull,
+    ) -> Result<&'a ToolboxIdlTypeFull> {
         let Some((current, next)) = self.split_first() else {
-            return Ok(type_full.clone());
+            return Ok(type_full);
         };
         match type_full {
             ToolboxIdlTypeFull::Typedef { content, .. } => {
@@ -80,14 +80,12 @@ impl ToolboxIdlPath {
         }
     }
 
-    pub fn try_get_type_full_fields(
+    pub fn try_get_type_full_fields<'a>(
         &self,
-        type_full_fields: &ToolboxIdlTypeFullFields,
-    ) -> Result<ToolboxIdlTypeFull> {
+        type_full_fields: &'a ToolboxIdlTypeFullFields,
+    ) -> Result<&'a ToolboxIdlTypeFull> {
         let Some((current, next)) = self.split_first() else {
-            return Ok(ToolboxIdlTypeFull::Struct {
-                fields: type_full_fields.clone(), // TODO - could we make this into a reference?
-            });
+            return Err(anyhow!("Fields cannot be a standalone type"));
         };
         match type_full_fields {
             ToolboxIdlTypeFullFields::Nothing => {

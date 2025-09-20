@@ -10,7 +10,7 @@ import { ToolboxUtils } from './ToolboxUtils';
 
 export function parseObjectIsPossible(idlType: any): boolean {
   if (
-    idlType.hasOwnProperty('type') || // TODO - can this be optimized ?
+    idlType.hasOwnProperty('type') ||
     idlType.hasOwnProperty('defined') ||
     idlType.hasOwnProperty('generic') ||
     idlType.hasOwnProperty('option') ||
@@ -249,14 +249,17 @@ function parseEnum(
   if (ToolboxUtils.isArray(idlEnumVariants)) {
     for (let i = 0; i < idlEnumVariants.length; i++) {
       let idlEnumVariant = idlEnumVariants[i];
-      let idlEnumVariantCode = i;
+      let idlEnumVariantCode = BigInt(i);
       if (ToolboxUtils.isNumber(idlEnumVariant)) {
-        idlEnumVariantCode = idlEnumVariant;
+        idlEnumVariantCode = BigInt(idlEnumVariant);
       }
       if (ToolboxUtils.isObject(idlEnumVariant)) {
-        idlEnumVariantCode = ToolboxUtils.expectNumber(
-          idlEnumVariant['code'] ?? idlEnumVariantCode,
-        );
+        if (
+          ToolboxUtils.isNumber(idlEnumVariant['code']) ||
+          ToolboxUtils.isString(idlEnumVariant['code'])
+        ) {
+          idlEnumVariantCode = BigInt(idlEnumVariant['code']);
+        }
       }
       let idlEnumVariantName = idlEnumVariantCode.toString();
       if (ToolboxUtils.isString(idlEnumVariant)) {
@@ -270,7 +273,7 @@ function parseEnum(
       variants.push(
         parseEnumVariant(
           idlEnumVariantName,
-          ToolboxUtils.expectNumber(idlEnumVariantCode),
+          idlEnumVariantCode,
           idlEnumVariant,
         ),
       );
@@ -281,15 +284,17 @@ function parseEnum(
       ([idlEnumVariantName, idlEnumVariant]) => {
         let idlEnumVariantCode;
         if (ToolboxUtils.isNumber(idlEnumVariant)) {
-          idlEnumVariantCode = idlEnumVariant;
+          idlEnumVariantCode = BigInt(idlEnumVariant as number);
         } else {
-          idlEnumVariantCode =
-            ToolboxUtils.expectObject(idlEnumVariant)['code'];
+          // TODO - this needs a proper type checked implementation
+          idlEnumVariantCode = BigInt(
+            ToolboxUtils.expectObject(idlEnumVariant)['code'],
+          );
         }
         variants.push(
           parseEnumVariant(
             idlEnumVariantName,
-            ToolboxUtils.expectNumber(idlEnumVariantCode),
+            idlEnumVariantCode,
             idlEnumVariant,
           ),
         );
@@ -304,7 +309,7 @@ function parseEnum(
 
 function parseEnumVariant(
   idlEnumVariantName: string,
-  idlEnumVariantCode: number,
+  idlEnumVariantCode: bigint,
   idlEnumVariant: any,
 ): ToolboxIdlTypeFlatEnumVariant {
   let docs = undefined;
