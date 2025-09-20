@@ -26,7 +26,7 @@ pub mod unit_export_program_metadata;
 pub mod unit_export_program_pda;
 pub mod unit_export_program_struct;
 pub mod unit_find_instruction_addresses_address;
-pub mod unit_find_instruction_addresses_pda_account;
+pub mod unit_find_instruction_addresses_pda_accounts;
 pub mod unit_find_instruction_addresses_pda_args;
 pub mod unit_find_instruction_addresses_pda_consts;
 pub mod unit_guess_account_blobs;
