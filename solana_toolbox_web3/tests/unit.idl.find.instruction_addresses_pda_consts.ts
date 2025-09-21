@@ -4,10 +4,10 @@ import { findInstructionAddresses } from '../src/ToolboxIdlInstruction.find';
 
 it('run', () => {
   // Keys used during the test
-  let programId1 = PublicKey.unique();
-  let programId2 = PublicKey.unique();
+  const programId1 = PublicKey.unique();
+  const programId2 = PublicKey.unique();
   // Create IDLs on the fly
-  let idlProgram1 = ToolboxIdlProgram.tryParse({
+  const idlProgram1 = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [77, 78],
@@ -60,7 +60,7 @@ it('run', () => {
       },
     },
   });
-  let idlProgram2 = ToolboxIdlProgram.tryParse({
+  const idlProgram2 = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [77, 78],
@@ -104,33 +104,33 @@ it('run', () => {
   // Make sure the IDLs are equivalent
   expect(idlProgram1).toStrictEqual(idlProgram2);
   // Pdas based off of const bytes seeds
-  let pdaSeedsConstBytes = [
+  const pdaSeedsConstBytes = [
     Uint8Array.from([41, 0, 0, 0]),
     Uint8Array.from([42, 0, 0, 0]),
   ];
-  let pdaConstBytes1 = PublicKey.findProgramAddressSync(
+  const pdaConstBytes1 = PublicKey.findProgramAddressSync(
     pdaSeedsConstBytes,
     programId1,
   )[0];
-  let pdaConstBytes2 = PublicKey.findProgramAddressSync(
+  const pdaConstBytes2 = PublicKey.findProgramAddressSync(
     pdaSeedsConstBytes,
     programId2,
   )[0];
   // Pdas based off of const string seeds
-  let pdaSeedsConstString = [
+  const pdaSeedsConstString = [
     new TextEncoder().encode('hello'),
     new TextEncoder().encode('world'),
   ];
-  let pdaConstString1 = PublicKey.findProgramAddressSync(
+  const pdaConstString1 = PublicKey.findProgramAddressSync(
     pdaSeedsConstString,
     programId1,
   )[0];
-  let pdaConstString2 = PublicKey.findProgramAddressSync(
+  const pdaConstString2 = PublicKey.findProgramAddressSync(
     pdaSeedsConstString,
     programId2,
   )[0];
   // Assert that the accounts can be properly resolved
-  let instructionAddresses = findInstructionAddresses(
+  const instructionAddresses = findInstructionAddresses(
     idlProgram1.instructions.get('my_ix')!,
     programId1,
     null,

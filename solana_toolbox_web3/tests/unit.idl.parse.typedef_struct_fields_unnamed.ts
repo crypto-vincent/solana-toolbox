@@ -9,7 +9,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create IDLs using different shortened formats
-  let idlProgram1 = ToolboxIdlProgram.tryParse({
+  const idlProgram1 = ToolboxIdlProgram.tryParse({
     types: {
       MyStruct: {
         fields: [
@@ -33,7 +33,7 @@ it('run', () => {
       },
     },
   });
-  let idlProgram2 = ToolboxIdlProgram.tryParse({
+  const idlProgram2 = ToolboxIdlProgram.tryParse({
     types: {
       MyStruct: {
         fields: [

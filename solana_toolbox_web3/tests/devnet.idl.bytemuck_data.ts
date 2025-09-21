@@ -4,10 +4,10 @@ import { ToolboxIdlService } from '../src/ToolboxIdlService';
 
 it('run', async () => {
   // Create the endpoint
-  let endpoint = new ToolboxEndpoint('devnet', 'confirmed');
+  const endpoint = new ToolboxEndpoint('devnet', 'confirmed');
   // Actually fetch our account using the auto-resolved IDL on-chain
-  let address = new PublicKey('FdoXZqdMysWbzB8j5bK6U5J1Dczsos1vGwQi5Tur2mwk');
-  let decoded = await new ToolboxIdlService().getAndInferAndDecodeAccount(
+  const address = new PublicKey('FdoXZqdMysWbzB8j5bK6U5J1Dczsos1vGwQi5Tur2mwk');
+  const decoded = await new ToolboxIdlService().getAndInferAndDecodeAccount(
     endpoint,
     address,
   );

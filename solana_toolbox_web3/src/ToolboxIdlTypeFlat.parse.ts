@@ -180,7 +180,7 @@ function parseString(idlTypeString: string): ToolboxIdlTypeFlat {
   if (idlTypeString === 'string128') {
     return ToolboxIdlTypeFlat.string({ prefix: ToolboxIdlTypePrefix.U128 });
   }
-  let primitive = ToolboxIdlTypePrimitive.primitivesByName.get(idlTypeString);
+  const primitive = ToolboxIdlTypePrimitive.primitivesByName.get(idlTypeString);
   return primitive
     ? ToolboxIdlTypeFlat.primitive(primitive)
     : ToolboxIdlTypeFlat.defined({
@@ -201,9 +201,9 @@ function parseDefined(idlDefined: any): ToolboxIdlTypeFlat {
     });
   }
   ToolboxUtils.expectObject(idlDefined);
-  let generics = [];
+  const generics = [];
   if (ToolboxUtils.isArray(idlDefined['generics'])) {
-    for (let idlGeneric of idlDefined['generics']) {
+    for (const idlGeneric of idlDefined['generics']) {
       generics.push(parse(idlGeneric));
     }
   }
@@ -245,10 +245,10 @@ function parseEnum(
   idlEnumPrefix: ToolboxIdlTypePrefix,
   idlEnumVariants: any,
 ): ToolboxIdlTypeFlat {
-  let variants = [];
+  const variants = [];
   if (ToolboxUtils.isArray(idlEnumVariants)) {
     for (let i = 0; i < idlEnumVariants.length; i++) {
-      let idlEnumVariant = idlEnumVariants[i];
+      const idlEnumVariant = idlEnumVariants[i];
       let idlEnumVariantCode = BigInt(i);
       if (ToolboxUtils.isNumber(idlEnumVariant)) {
         idlEnumVariantCode = BigInt(idlEnumVariant);
@@ -351,9 +351,9 @@ export function parseFields(idlFields: any): ToolboxIdlTypeFlatFields {
     return ToolboxIdlTypeFlatFields.nothing();
   }
   let named = false;
-  let fieldsInfos: ToolboxIdlTypeFlatFieldNamed[] = [];
+  const fieldsInfos: ToolboxIdlTypeFlatFieldNamed[] = [];
   for (let i = 0; i < idlFields.length; i++) {
-    let idlField = idlFields[i];
+    const idlField = idlFields[i];
     if (idlField.hasOwnProperty('name')) {
       named = true;
     }

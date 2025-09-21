@@ -14,7 +14,7 @@ import { ToolboxIdlTypePrimitive } from '../src/ToolboxIdlTypePrimitive';
 
 it('run', () => {
   // Create IDLs using different shortened formats
-  let idlProgram1 = ToolboxIdlProgram.tryParse({
+  const idlProgram1 = ToolboxIdlProgram.tryParse({
     instructions: [
       {
         name: 'my_ix',
@@ -30,7 +30,7 @@ it('run', () => {
       },
     ],
   });
-  let idlProgram2 = ToolboxIdlProgram.tryParse({
+  const idlProgram2 = ToolboxIdlProgram.tryParse({
     instructions: [
       {
         name: 'my_ix',
@@ -45,7 +45,7 @@ it('run', () => {
       },
     ],
   });
-  let idlProgram3 = ToolboxIdlProgram.tryParse({
+  const idlProgram3 = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [38, 19, 70, 194, 0, 59, 80, 114],
@@ -60,7 +60,7 @@ it('run', () => {
       },
     },
   });
-  let idlProgram4 = ToolboxIdlProgram.tryParse({
+  const idlProgram4 = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         accounts: [

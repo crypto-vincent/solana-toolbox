@@ -42,21 +42,21 @@ export class ToolboxIdlInstructionAccount {
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionAccount {
     ToolboxUtils.expectObject(idlInstructionAccount);
-    let name = ToolboxUtils.convertToSnakeCase(
+    const name = ToolboxUtils.convertToSnakeCase(
       ToolboxUtils.expectString(idlInstructionAccount['name']),
     );
-    let docs = idlInstructionAccount['docs'];
-    let writable = ToolboxUtils.expectBoolean(
+    const docs = idlInstructionAccount['docs'];
+    const writable = ToolboxUtils.expectBoolean(
       idlInstructionAccount['writable'] ??
         idlInstructionAccount['isMut'] ??
         false,
     );
-    let signer = ToolboxUtils.expectBoolean(
+    const signer = ToolboxUtils.expectBoolean(
       idlInstructionAccount['signer'] ??
         idlInstructionAccount['isSigner'] ??
         false,
     );
-    let optional = ToolboxUtils.expectBoolean(
+    const optional = ToolboxUtils.expectBoolean(
       idlInstructionAccount['optional'] ??
         idlInstructionAccount['isOptional'] ??
         false,
@@ -69,10 +69,10 @@ export class ToolboxIdlInstructionAccount {
     }
     let pda = undefined;
     if (idlInstructionAccount['pda']) {
-      let idlPda = idlInstructionAccount['pda'];
+      const idlPda = idlInstructionAccount['pda'];
       ToolboxUtils.expectObject(idlPda);
-      let idlSeeds = ToolboxUtils.expectArray(idlPda['seeds'] ?? []);
-      let seeds = idlSeeds.map((idlSeed: any) =>
+      const idlSeeds = ToolboxUtils.expectArray(idlPda['seeds'] ?? []);
+      const seeds = idlSeeds.map((idlSeed: any) =>
         ToolboxIdlInstructionBlob.tryParse(
           idlSeed,
           instructionArgsTypeFullFields,

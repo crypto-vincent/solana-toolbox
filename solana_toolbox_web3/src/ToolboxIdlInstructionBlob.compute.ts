@@ -57,8 +57,8 @@ const computeVisitor = {
         'PDA Blob account path first part should be an account name',
       );
     }
-    const accountContentPath = next;
-    if (accountContentPath.isEmpty()) {
+    const instructionAccountContentPath = next;
+    if (instructionAccountContentPath.isEmpty()) {
       const instructionAddress = context.instructionAddresses.get(
         instructionAccountName,
       )!;
@@ -69,15 +69,17 @@ const computeVisitor = {
       }
       return instructionAddress.toBuffer();
     }
-    const accountContentState = context.instructionAccountsStates.get(
-      instructionAccountName,
-    );
-    if (accountContentState === undefined) {
+    const instructionAccountContentState =
+      context.instructionAccountsStates.get(instructionAccountName);
+    if (instructionAccountContentState === undefined) {
       throw new Error(
         `Could not find state for account: ${instructionAccountName}`,
       );
     }
-    const value = pathGetJsonValue(accountContentPath, accountContentState);
+    const value = pathGetJsonValue(
+      instructionAccountContentPath,
+      instructionAccountContentState,
+    );
     const data = new Array<Buffer>();
     if (self.typeFull !== undefined) {
       serialize(self.typeFull, value, data, false);
@@ -91,7 +93,7 @@ const computeVisitor = {
       );
     }
     const typeFull = pathGetTypeFull(
-      accountContentPath,
+      instructionAccountContentPath,
       instructionAccountContentTypeFull,
     );
     serialize(typeFull, value, data, false);

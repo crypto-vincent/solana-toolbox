@@ -2,7 +2,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create an IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     accounts: {
       MyAccount1: {
         discriminator: [74, 73, 72, 71],
@@ -38,8 +38,8 @@ it('run', () => {
     },
   });
   // MyAccount1 prepared
-  let idlAccount1 = idlProgram.accounts.get('MyAccount1')!;
-  let accountstate1 = {
+  const idlAccount1 = idlProgram.accounts.get('MyAccount1')!;
+  const accountstate1 = {
     name: 'ABCD',
     struct: {
       integer: 42,
@@ -51,7 +51,7 @@ it('run', () => {
     vec: [-55, 56, 57],
   };
   // Check that we can use the manual IDL to encode/decode our account 1
-  let accountData1 = idlAccount1.encode(accountstate1);
+  const accountData1 = idlAccount1.encode(accountstate1);
   expect(accountData1).toStrictEqual(
     Buffer.from([
       74, 73, 72, 71, 4, 0, 0, 0, 65, 66, 67, 68, 42, 0, 0, 0, 1, 77, 99, 0, 98,
@@ -60,8 +60,8 @@ it('run', () => {
   );
   expect(accountstate1).toStrictEqual(idlAccount1.decode(accountData1));
   // MyAccount2 prepared
-  let idlAccount2 = idlProgram.accounts.get('MyAccount2')!;
-  let accountState2 = {
+  const idlAccount2 = idlProgram.accounts.get('MyAccount2')!;
+  const accountState2 = {
     val1: {
       integer: 43,
       my_enum: 'Hello0',
@@ -74,7 +74,7 @@ it('run', () => {
     },
   };
   // Check that we can use the manual IDL to encode/decode our account 2
-  let accountData2 = idlAccount2.encode(accountState2);
+  const accountData2 = idlAccount2.encode(accountState2);
   expect(
     Buffer.from([99, 43, 0, 0, 0, 0, 78, 44, 0, 0, 0, 2, 79]),
   ).toStrictEqual(accountData2);

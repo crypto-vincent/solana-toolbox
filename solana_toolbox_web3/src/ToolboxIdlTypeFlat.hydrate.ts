@@ -103,7 +103,7 @@ const hydrateOrConstLiteralVisitor = {
     genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
     _typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlTypeFull | number => {
-    let typeFull = genericsBySymbol.get(self.symbol);
+    const typeFull = genericsBySymbol.get(self.symbol);
     if (typeFull === undefined) {
       throw new Error(`Could not resolve generic named: ${self.symbol}`);
     }

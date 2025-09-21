@@ -4,7 +4,7 @@ import { findInstructionAddresses } from '../src/ToolboxIdlInstruction.find';
 
 it('run', () => {
   // Create an IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [77, 78],
@@ -48,8 +48,8 @@ it('run', () => {
     },
   });
   // Keys used during the test
-  let dummyProgramId = PublicKey.unique();
-  let dummySeeds = [
+  const dummyProgramId = PublicKey.unique();
+  const dummySeeds = [
     Uint8Array.from([77]),
     Uint8Array.from([78, 0]),
     Uint8Array.from([79, 0, 0, 0]),
@@ -62,12 +62,12 @@ it('run', () => {
     Uint8Array.from([222]),
     Uint8Array.from([222, 0, 0, 0]),
   ];
-  let dummyPda = PublicKey.findProgramAddressSync(
+  const dummyPda = PublicKey.findProgramAddressSync(
     dummySeeds,
     dummyProgramId,
   )[0];
   // Assert that the accounts can be properly resolved
-  let instructionAddresses = findInstructionAddresses(
+  const instructionAddresses = findInstructionAddresses(
     idlProgram.instructions.get('my_ix')!,
     dummyProgramId,
     {

@@ -31,7 +31,7 @@ export class ToolboxIdlTypedef {
     idlTypedef: any,
   ): ToolboxIdlTypedef {
     ToolboxUtils.expectObject(idlTypedef);
-    let docs = idlTypedef['docs'];
+    const docs = idlTypedef['docs'];
     let serialization = undefined;
     if (ToolboxUtils.isString(idlTypedef['serialization'])) {
       serialization = idlTypedef['serialization'];
@@ -43,9 +43,9 @@ export class ToolboxIdlTypedef {
     if (ToolboxUtils.isObject(idlTypedef['repr'])) {
       repr = ToolboxUtils.expectString(idlTypedef['repr']['kind']);
     }
-    let generics = [];
+    const generics = [];
     if (ToolboxUtils.isArray(idlTypedef['generics'])) {
-      for (let idlGeneric of idlTypedef['generics']) {
+      for (const idlGeneric of idlTypedef['generics']) {
         if (ToolboxUtils.isString(idlGeneric)) {
           generics.push(idlGeneric);
         } else {
@@ -54,7 +54,7 @@ export class ToolboxIdlTypedef {
         }
       }
     }
-    let typeFlat = parse(idlTypedef);
+    const typeFlat = parse(idlTypedef);
     return new ToolboxIdlTypedef({
       name: idlTypedefName,
       docs,

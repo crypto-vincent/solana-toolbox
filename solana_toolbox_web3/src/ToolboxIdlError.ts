@@ -23,9 +23,9 @@ export class ToolboxIdlError {
       });
     }
     if (ToolboxUtils.isObject(idlError)) {
-      let docs = idlError['docs'];
-      let code = ToolboxUtils.expectNumber(idlError['code']);
-      let msg = ToolboxUtils.expectString(idlError['msg'] ?? '');
+      const docs = idlError['docs'];
+      const code = ToolboxUtils.expectNumber(idlError['code']);
+      const msg = ToolboxUtils.expectString(idlError['msg'] ?? '');
       return new ToolboxIdlError({
         name: idlErrorName,
         docs,

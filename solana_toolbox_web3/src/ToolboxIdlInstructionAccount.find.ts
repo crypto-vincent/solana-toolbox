@@ -14,14 +14,14 @@ export function findInstructionAccount(
   instructionAccountsStates: Map<string, any>,
   instructionAccountsContentsTypeFull: Map<string, ToolboxIdlTypeFull>,
 ): PublicKey {
-  let address = instructionAddresses.get(idlInstructionAccount.name);
-  if (address) {
+  const address = instructionAddresses.get(idlInstructionAccount.name);
+  if (address !== undefined) {
     return address;
   }
-  if (idlInstructionAccount.address) {
+  if (idlInstructionAccount.address !== undefined) {
     return idlInstructionAccount.address;
   }
-  if (idlInstructionAccount.pda) {
+  if (idlInstructionAccount.pda !== undefined) {
     return findInstructionAccountPda(
       idlInstructionAccount.pda,
       instructionProgramId,
@@ -51,13 +51,13 @@ export function findInstructionAccountPda(
     instructionAccountsStates,
     instructionAccountsContentsTypeFull,
   };
-  let pdaSeedsBytes = [];
+  const pdaSeedsBytes = [];
   for (const blob of instructionAccountPda.seeds) {
     pdaSeedsBytes.push(computeInstructionBlob(blob, computeContext));
   }
   let pdaProgramId = instructionProgramId;
-  if (instructionAccountPda.program) {
-    let programBuffer = computeInstructionBlob(
+  if (instructionAccountPda.program !== undefined) {
+    const programBuffer = computeInstructionBlob(
       instructionAccountPda.program,
       computeContext,
     );
@@ -66,6 +66,9 @@ export function findInstructionAccountPda(
     }
     pdaProgramId = new PublicKey(programBuffer);
   }
-  let [pda, _] = PublicKey.findProgramAddressSync(pdaSeedsBytes, pdaProgramId);
+  const [pda, _] = PublicKey.findProgramAddressSync(
+    pdaSeedsBytes,
+    pdaProgramId,
+  );
   return pda;
 }

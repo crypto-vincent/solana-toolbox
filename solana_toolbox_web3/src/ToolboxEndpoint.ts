@@ -82,7 +82,7 @@ export class ToolboxEndpoint {
   public async getAccount(
     address: PublicKey,
   ): Promise<AccountInfo<Buffer> | undefined> {
-    let account = await this.connection.getAccountInfo(address);
+    const account = await this.connection.getAccountInfo(address);
     if (account === null) {
       return undefined;
     }
@@ -94,7 +94,7 @@ export class ToolboxEndpoint {
     verifySignatures: boolean,
   ): Promise<ToolboxEndpointExecution> {
     // TODO - resolved lookup tables
-    let response = await this.connection.simulateTransaction(
+    const response = await this.connection.simulateTransaction(
       versionedTransaction,
       {
         sigVerify: verifySignatures,
@@ -131,7 +131,7 @@ export class ToolboxEndpoint {
     signature: TransactionSignature;
     execution: ToolboxEndpointExecution;
   }> {
-    let signature = await this.connection.sendTransaction(
+    const signature = await this.connection.sendTransaction(
       versionedTransaction,
       {
         skipPreflight: !verifyPreflight,
@@ -174,18 +174,18 @@ export class ToolboxEndpoint {
   private async getExecutionIfExists(
     signature: TransactionSignature,
   ): Promise<ToolboxEndpointExecution | undefined> {
-    let response = await this.connection.getTransaction(signature, {
+    const response = await this.connection.getTransaction(signature, {
       commitment: this.commitment,
       maxSupportedTransactionVersion: 0,
     });
     if (!response) {
       return undefined;
     }
-    let staticAddresses = response.transaction.message.staticAccountKeys;
-    let payer = decompileTransactionPayerAddress(staticAddresses);
-    let header = response.transaction.message.header;
-    let compiledInstructions = [];
-    for (let responseInstruction of response.transaction.message
+    const staticAddresses = response.transaction.message.staticAccountKeys;
+    const payer = decompileTransactionPayerAddress(staticAddresses);
+    const header = response.transaction.message.header;
+    const compiledInstructions = [];
+    for (const responseInstruction of response.transaction.message
       .compiledInstructions) {
       compiledInstructions.push({
         programIdIndex: responseInstruction.programIdIndex,
@@ -193,8 +193,8 @@ export class ToolboxEndpoint {
         data: Buffer.from(responseInstruction.data),
       });
     }
-    let loadedAddresses = response.meta?.loadedAddresses;
-    let instructions = decompileTransactionInstructions(
+    const loadedAddresses = response.meta?.loadedAddresses;
+    const instructions = decompileTransactionInstructions(
       header.numRequiredSignatures,
       header.numReadonlySignedAccounts,
       header.numReadonlyUnsignedAccounts,
@@ -221,14 +221,14 @@ export class ToolboxEndpoint {
     dataLength?: number,
     dataChunks?: { offset: number; bytes: Buffer }[],
   ): Promise<Set<PublicKey>> {
-    let filters = [];
+    const filters = [];
     if (dataLength !== undefined) {
       filters.push({
         dataSize: dataLength,
       });
     }
     if (dataChunks !== undefined) {
-      for (let dataChunk of dataChunks) {
+      for (const dataChunk of dataChunks) {
         filters.push({
           memcmp: {
             offset: dataChunk.offset,
@@ -238,7 +238,7 @@ export class ToolboxEndpoint {
         });
       }
     }
-    let response = await this.connection.getProgramAccounts(programId, {
+    const response = await this.connection.getProgramAccounts(programId, {
       commitment: this.commitment,
       dataSlice: {
         offset: 0,
@@ -246,8 +246,8 @@ export class ToolboxEndpoint {
       },
       filters: filters,
     });
-    let addresses = new Set<PublicKey>();
-    for (let finding of response) {
+    const addresses = new Set<PublicKey>();
+    for (const finding of response) {
       addresses.add(finding.pubkey);
     }
     return addresses;
@@ -259,16 +259,16 @@ export class ToolboxEndpoint {
     startBefore?: TransactionSignature,
     rewindUntil?: TransactionSignature,
   ): Promise<TransactionSignature[]> {
+    const orderedSignatures = [];
     let oldestKnownSignature = startBefore;
-    let orderedSignatures = [];
     let retries = 0;
     while (true) {
-      let batchSize = Math.min(
+      const batchSize = Math.min(
         1000,
         rewindUntil ? (retries == 0 ? 10 : 1000) : limit,
       );
       retries++;
-      let signatures = await this.connection.getSignaturesForAddress(
+      const signatures = await this.connection.getSignaturesForAddress(
         address,
         {
           before: oldestKnownSignature,
@@ -279,8 +279,8 @@ export class ToolboxEndpoint {
       if (signatures.length == 0) {
         return orderedSignatures;
       }
-      for (let signature of signatures) {
-        let foundSignature = signature.signature;
+      for (const signature of signatures) {
+        const foundSignature = signature.signature;
         orderedSignatures.push(foundSignature);
         if (orderedSignatures.length >= limit) {
           return orderedSignatures;

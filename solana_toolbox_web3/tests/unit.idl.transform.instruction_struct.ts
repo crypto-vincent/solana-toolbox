@@ -3,7 +3,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create an IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [77, 78],
@@ -27,21 +27,21 @@ it('run', () => {
     },
   });
   // Choose the instruction
-  let idlInstruction = idlProgram.instructions.get('my_ix')!;
+  const idlInstruction = idlProgram.instructions.get('my_ix')!;
   // Check that we can use the manual IDL to encode/decode our IX
-  let instructionProgramId = PublicKey.unique();
-  let instructionPayload = {
+  const instructionProgramId = PublicKey.unique();
+  const instructionPayload = {
     arg1: {
       id: 42,
       data: [1, 2, 3],
     },
     arg2: -2,
   };
-  let instructionAddresses = new Map<string, PublicKey>([
+  const instructionAddresses = new Map<string, PublicKey>([
     ['signer', PublicKey.unique()],
     ['writable', PublicKey.unique()],
   ]);
-  let instruction = idlInstruction.encode(
+  const instruction = idlInstruction.encode(
     instructionProgramId,
     instructionPayload,
     instructionAddresses,

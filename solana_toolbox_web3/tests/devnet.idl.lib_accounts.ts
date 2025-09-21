@@ -2,48 +2,50 @@ import { PublicKey } from '@solana/web3.js';
 import { ToolboxEndpoint } from '../src/ToolboxEndpoint';
 import { ToolboxIdlService } from '../src';
 
-let systemProgramId = new PublicKey('11111111111111111111111111111111');
-let tokenProgramId = new PublicKey(
+const systemProgramId = new PublicKey('11111111111111111111111111111111');
+const tokenProgramId = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 );
-let ataProgramId = new PublicKey(
+const ataProgramId = new PublicKey(
   'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
 );
 
 it('run', async () => {
   // Create the endpoint
-  let endpoint = new ToolboxEndpoint('devnet', 'confirmed');
+  const endpoint = new ToolboxEndpoint('devnet', 'confirmed');
   // Prepare known accounts available on devnet
-  let programId = new PublicKey('UCNcQRtrbGmvuLKA3Jv719Cc6DS4r661ZRpyZduxu2j');
-  let programData = new PublicKey(
+  const programId = new PublicKey(
+    'UCNcQRtrbGmvuLKA3Jv719Cc6DS4r661ZRpyZduxu2j',
+  );
+  const programData = new PublicKey(
     '9rtcXuviJngSZTRSCXxsHyd6qaWpqWSQ56SNumXAuLJ1',
   );
-  let mintAuthority = new PublicKey(
+  const mintAuthority = new PublicKey(
     '7poxwHXi62Cwa57xdrpfoW2bUF7s8iXm1CU4jJqYPhu',
   );
-  let user = new PublicKey('Ady55LhZxWFABzdg8NCNTAZv5XstBqyNZYCMfWqW3Rq9');
-  let collateralMint = new PublicKey(
+  const user = new PublicKey('Ady55LhZxWFABzdg8NCNTAZv5XstBqyNZYCMfWqW3Rq9');
+  const collateralMint = new PublicKey(
     'EsQycjp856vTPvrxMuH1L6ymd5K63xT7aULGepiTcgM3',
   );
   // TODO - should this be a util function?
-  let userCollateral = PublicKey.findProgramAddressSync(
+  const userCollateral = PublicKey.findProgramAddressSync(
     [user.toBuffer(), tokenProgramId.toBuffer(), collateralMint.toBuffer()],
     ataProgramId,
   )[0];
-  let nameRecordHeader = new PublicKey(
+  const nameRecordHeader = new PublicKey(
     '8EodedXFv8DAJ6jGTg4DVXaBVJTVL3o4T2BWwTJTTJjw',
   );
-  let nameRecordOwner = new PublicKey(
+  const nameRecordOwner = new PublicKey(
     '8aU2gq8XgzNZr8z4noV87Sx8a3EV29gmi645qQERsaTD',
   );
   // Prepare the IDL service
-  let idlService = new ToolboxIdlService();
+  const idlService = new ToolboxIdlService();
   // Check that we can resolve ATA with just the IDL
-  let idlProgramAta = await idlService.getOrResolveProgram(
+  const idlProgramAta = await idlService.getOrResolveProgram(
     endpoint,
     ataProgramId,
   );
-  let createAtaInstructionAddresses =
+  const createAtaInstructionAddresses =
     await idlService.resolveInstructionAddresses(
       endpoint,
       idlProgramAta?.instructions.get('create')!,
@@ -138,7 +140,7 @@ async function assertAccountInfo(
   accountName: string,
   accountState: any,
 ) {
-  let accountInfo = await idlService.getAndInferAndDecodeAccount(
+  const accountInfo = await idlService.getAndInferAndDecodeAccount(
     endpoint,
     address,
   );

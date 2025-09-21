@@ -2,12 +2,12 @@ import { ToolboxIdlPath } from './ToolboxIdlPath';
 import { ToolboxUtils } from './ToolboxUtils';
 
 export function pathGetJsonValue(path: ToolboxIdlPath, value: any): any {
-  let split = path.splitFirst();
+  const split = path.splitFirst();
   if (split === undefined) {
     return value;
   }
-  let current = split.first;
-  let next = split.rest;
+  const current = split.first;
+  const next = split.rest;
   if (ToolboxUtils.isArray(value)) {
     const length = value.length;
     const index = current.isEmpty() ? 0 : current.index();

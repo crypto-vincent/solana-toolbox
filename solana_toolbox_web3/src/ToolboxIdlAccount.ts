@@ -50,14 +50,14 @@ export class ToolboxIdlAccount {
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlAccount {
     ToolboxUtils.expectObject(idlAccount);
-    let docs = idlAccount['docs'];
+    const docs = idlAccount['docs'];
     let space = undefined;
     if (ToolboxUtils.isNumber(idlAccount['space'])) {
       space = idlAccount['space'];
     }
-    let blobs = [];
+    const blobs = [];
     if (ToolboxUtils.isArray(idlAccount['blobs'])) {
-      for (let blob of idlAccount['blobs']) {
+      for (const blob of idlAccount['blobs']) {
         ToolboxUtils.expectObject(blob);
         blobs.push({
           offset: ToolboxUtils.expectNumber(blob['offset']),
@@ -65,14 +65,14 @@ export class ToolboxIdlAccount {
         });
       }
     }
-    let discriminator = Buffer.from(
+    const discriminator = Buffer.from(
       idlAccount['discriminator'] ??
         ToolboxUtils.discriminator(`account:${idlAccountName}`),
     );
-    let contentTypeFlat = parseObjectIsPossible(idlAccount)
+    const contentTypeFlat = parseObjectIsPossible(idlAccount)
       ? parse(idlAccount)
       : parse(idlAccountName);
-    let contentTypeFull = hydrate(contentTypeFlat, new Map(), typedefs);
+    const contentTypeFull = hydrate(contentTypeFlat, new Map(), typedefs);
     return new ToolboxIdlAccount({
       name: idlAccountName,
       docs,
@@ -85,7 +85,7 @@ export class ToolboxIdlAccount {
   }
 
   public encode(accountState: any): Buffer {
-    let data: Buffer[] = [];
+    const data: Buffer[] = [];
     data.push(this.discriminator);
     serialize(this.contentTypeFull, accountState, data, true);
     return Buffer.concat(data);
@@ -93,7 +93,7 @@ export class ToolboxIdlAccount {
 
   public decode(accountData: Buffer): any {
     this.check(accountData);
-    let [, accountState] = deserialize(
+    const [, accountState] = deserialize(
       this.contentTypeFull,
       accountData,
       this.discriminator.length,
@@ -109,7 +109,7 @@ export class ToolboxIdlAccount {
         );
       }
     }
-    for (let blob of this.blobs) {
+    for (const blob of this.blobs) {
       if (
         blob.offset < 0 ||
         blob.offset + blob.value.length > accountData.length

@@ -15,7 +15,7 @@ import { ToolboxIdlTypePrimitive } from '../src/ToolboxIdlTypePrimitive';
 
 it('run', () => {
   // Create IDLs on the fly
-  let idlProgram1 = ToolboxIdlProgram.tryParse({
+  const idlProgram1 = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         docs: ['my ix doc'],
@@ -46,7 +46,7 @@ it('run', () => {
       },
     },
   });
-  let idlProgram2 = ToolboxIdlProgram.tryParse({
+  const idlProgram2 = ToolboxIdlProgram.tryParse({
     instructions: [
       {
         name: 'my_ix',

@@ -19,12 +19,12 @@ export function pathGetTypeFull(
   path: ToolboxIdlPath,
   typeFull: ToolboxIdlTypeFull,
 ): ToolboxIdlTypeFull {
-  let split = path.splitFirst();
+  const split = path.splitFirst();
   if (split === undefined) {
     return typeFull;
   }
-  let current = split.first;
-  let next = split.rest;
+  const current = split.first;
+  const next = split.rest;
   return typeFull.traverse(pathGetTypeFullVisitor, path, current, next);
 }
 
@@ -32,12 +32,12 @@ export function pathGetTypeFullFields(
   path: ToolboxIdlPath,
   typeFullFields: ToolboxIdlTypeFullFields,
 ): ToolboxIdlTypeFull {
-  let split = path.splitFirst();
+  const split = path.splitFirst();
   if (split === undefined) {
     throw new Error('Fields cannot be a standalone type');
   }
-  let current = split.first;
-  let next = split.rest;
+  const current = split.first;
+  const next = split.rest;
   return typeFullFields.traverse(
     pathGetTypeFullFieldsVisitor,
     path,
@@ -142,7 +142,7 @@ const pathGetTypeFullFieldsVisitor = {
     current: ToolboxIdlPathPart,
     next: ToolboxIdlPath,
   ) => {
-    let key = current.value();
+    const key = current.value();
     for (const field of self) {
       if (field.name === key) {
         return pathGetTypeFull(next, field.content);
@@ -156,7 +156,7 @@ const pathGetTypeFullFieldsVisitor = {
     current: ToolboxIdlPathPart,
     next: ToolboxIdlPath,
   ) => {
-    let index = current.index();
+    const index = current.index();
     if (index === undefined) {
       throw new Error(`Expected index but got '${current.value()}'`);
     }

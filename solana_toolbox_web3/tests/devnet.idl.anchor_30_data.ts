@@ -4,19 +4,19 @@ import { ToolboxIdlService } from '../src/ToolboxIdlService';
 
 it('run', async () => {
   // Create the endpoint
-  let endpoint = new ToolboxEndpoint('devnet', 'confirmed');
+  const endpoint = new ToolboxEndpoint('devnet', 'confirmed');
   // Find an account we can read from the endpoint
-  let campaignIndexNumber = 0n;
-  let campaignIndexBuffer = Buffer.alloc(8);
+  const campaignIndexNumber = 0n;
+  const campaignIndexBuffer = Buffer.alloc(8);
   campaignIndexBuffer.writeBigInt64LE(campaignIndexNumber);
-  let campaignPda = PublicKey.findProgramAddressSync(
+  const campaignPda = PublicKey.findProgramAddressSync(
     [Buffer.from('Campaign'), campaignIndexBuffer],
     new PublicKey('UCNcQRtrbGmvuLKA3Jv719Cc6DS4r661ZRpyZduxu2j'),
   );
-  let campaign = campaignPda[0];
-  let campaignBump = campaignPda[1];
+  const campaign = campaignPda[0];
+  const campaignBump = campaignPda[1];
   // Read an account using the IDL directly auto-downloaded from the chain
-  let campaignDecoded =
+  const campaignDecoded =
     await new ToolboxIdlService().getAndInferAndDecodeAccount(
       endpoint,
       campaign,

@@ -34,17 +34,17 @@ export class ToolboxIdlEvent {
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlEvent {
     ToolboxUtils.expectObject(idlEvent);
-    let docs = idlEvent['docs'];
-    let discriminator = Buffer.from(
+    const docs = idlEvent['docs'];
+    const discriminator = Buffer.from(
       ToolboxUtils.expectArray(
         idlEvent['discriminator'] ??
           ToolboxUtils.discriminator(`event:${idlEventName}`),
       ),
     );
-    let infoTypeFlat = parseObjectIsPossible(idlEvent)
+    const infoTypeFlat = parseObjectIsPossible(idlEvent)
       ? parse(idlEvent)
       : parse(idlEventName);
-    let infoTypeFull = hydrate(infoTypeFlat, new Map(), typedefs);
+    const infoTypeFull = hydrate(infoTypeFlat, new Map(), typedefs);
     return new ToolboxIdlEvent({
       name: idlEventName,
       docs,

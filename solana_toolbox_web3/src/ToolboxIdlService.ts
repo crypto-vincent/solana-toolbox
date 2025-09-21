@@ -28,11 +28,11 @@ export class ToolboxIdlService {
     endpoint: ToolboxEndpoint,
     programId: PublicKey,
   ): Promise<ToolboxIdlProgram | undefined> {
-    let cachedProgram = this.cachedPrograms.get(programId);
+    const cachedProgram = this.cachedPrograms.get(programId);
     if (cachedProgram !== undefined) {
       return cachedProgram;
     }
-    let resolvedProgram = await ToolboxIdlService.resolveProgram(
+    const resolvedProgram = await ToolboxIdlService.resolveProgram(
       endpoint,
       programId,
     );
@@ -44,11 +44,11 @@ export class ToolboxIdlService {
     endpoint: ToolboxEndpoint,
     programId: PublicKey,
   ): Promise<ToolboxIdlProgram | undefined> {
-    let libProgram = ToolboxIdlProgram.fromLib(programId);
+    const libProgram = ToolboxIdlProgram.fromLib(programId);
     if (libProgram !== undefined) {
       return libProgram;
     }
-    let account = await endpoint.getAccount(
+    const account = await endpoint.getAccount(
       await ToolboxIdlProgram.findAnchorAddress(programId),
     );
     if (account === undefined) {
@@ -61,7 +61,7 @@ export class ToolboxIdlService {
     endpoint: ToolboxEndpoint,
     address: PublicKey,
   ) {
-    let account = (await endpoint.getAccount(address)) ?? {
+    const account = (await endpoint.getAccount(address)) ?? {
       lamports: 0,
       owner: SystemProgram.programId,
       data: Buffer.from([]),
@@ -74,12 +74,12 @@ export class ToolboxIdlService {
     endpoint: ToolboxEndpoint,
     account: AccountInfo<Buffer>,
   ) {
-    let idlProgram =
+    const idlProgram =
       (await this.getOrResolveProgram(endpoint, account.owner)) ??
       ToolboxIdlProgram.Unknown;
-    let idlAccount =
+    const idlAccount =
       idlProgram.guessAccount(account.data) ?? ToolboxIdlAccount.Unknown;
-    let accountState = idlAccount.decode(account.data);
+    const accountState = idlAccount.decode(account.data);
     return {
       lamports: account.lamports,
       owner: account.owner,
@@ -94,13 +94,13 @@ export class ToolboxIdlService {
     endpoint: ToolboxEndpoint,
     instruction: TransactionInstruction,
   ) {
-    let idlProgram =
+    const idlProgram =
       (await this.getOrResolveProgram(endpoint, instruction.programId)) ??
       ToolboxIdlProgram.Unknown;
-    let idlInstruction =
+    const idlInstruction =
       idlProgram.guessInstruction(instruction.data) ??
       ToolboxIdlInstruction.Unknown;
-    let { instructionProgramId, instructionAddresses, instructionPayload } =
+    const { instructionProgramId, instructionAddresses, instructionPayload } =
       idlInstruction.decode(instruction);
     return {
       program: idlProgram,
@@ -148,7 +148,7 @@ export class ToolboxIdlService {
       if (!instructionAddress) {
         continue;
       }
-      let accountInfo = await this.getAndInferAndDecodeAccount(
+      const accountInfo = await this.getAndInferAndDecodeAccount(
         endpoint,
         instructionAddress,
       );
@@ -178,7 +178,7 @@ export class ToolboxIdlService {
             idlInstructionAccount.name,
             instructionAddress,
           );
-          let accountInfo = await this.getAndInferAndDecodeAccount(
+          const accountInfo = await this.getAndInferAndDecodeAccount(
             endpoint,
             instructionAddress,
           );

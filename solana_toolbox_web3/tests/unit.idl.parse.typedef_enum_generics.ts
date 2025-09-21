@@ -7,7 +7,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create IDLs using different shortened formats
-  let idlProgram1 = ToolboxIdlProgram.tryParse({
+  const idlProgram1 = ToolboxIdlProgram.tryParse({
     types: [
       {
         name: 'MyEnum',
@@ -16,7 +16,7 @@ it('run', () => {
       },
     ],
   });
-  let idlProgram2 = ToolboxIdlProgram.tryParse({
+  const idlProgram2 = ToolboxIdlProgram.tryParse({
     types: [
       {
         name: 'MyEnum',
@@ -25,7 +25,7 @@ it('run', () => {
       },
     ],
   });
-  let idlProgram3 = ToolboxIdlProgram.tryParse({
+  const idlProgram3 = ToolboxIdlProgram.tryParse({
     types: [
       {
         name: 'MyEnum',
@@ -34,7 +34,7 @@ it('run', () => {
       },
     ],
   });
-  let idlProgram4 = ToolboxIdlProgram.tryParse({
+  const idlProgram4 = ToolboxIdlProgram.tryParse({
     types: {
       MyEnum: {
         generics: [{ kind: 'type', name: 'A' }, { name: 'B' }],
@@ -42,7 +42,7 @@ it('run', () => {
       },
     },
   });
-  let idlProgram5 = ToolboxIdlProgram.tryParse({
+  const idlProgram5 = ToolboxIdlProgram.tryParse({
     types: {
       MyEnum: {
         generics: ['A', 'B'],

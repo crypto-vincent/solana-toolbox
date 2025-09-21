@@ -4,9 +4,9 @@ import { ToolboxEndpointExecution } from '../src/ToolboxEndpointExecution';
 
 it('run', async () => {
   // Create the endpoint pointing to devnet
-  let endpoint = new ToolboxEndpoint('devnet', 'confirmed');
+  const endpoint = new ToolboxEndpoint('devnet', 'confirmed');
   // Lookup a transaction execution that already happened and succeeded
-  let executionSuccess = await endpoint.getExecution(
+  const executionSuccess = await endpoint.getExecution(
     '2pqW2HvC2FqVr1GkSgLrPCp55THBzYWP6oMkaB6bZzaRXKYNJ2wfcBCu3M9r64SVcX3fEC5EomwxF939kn4pYXBW',
   );
   // Check that the execution details are correct

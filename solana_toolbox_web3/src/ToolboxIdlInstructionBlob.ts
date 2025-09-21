@@ -135,9 +135,9 @@ export class ToolboxIdlInstructionBlob {
     idlInstructionBlobType: any,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstructionBlob {
-    let typeFlat = parse(idlInstructionBlobType);
-    let typeFull = hydrate(typeFlat, new Map(), typedefs);
-    let data: Buffer[] = [];
+    const typeFlat = parse(idlInstructionBlobType);
+    const typeFull = hydrate(typeFlat, new Map(), typedefs);
+    const data: Buffer[] = [];
     serialize(typeFull, idlInstructionBlobValue, data, false);
     return ToolboxIdlInstructionBlob.const({
       value: Buffer.concat(data),
@@ -161,8 +161,8 @@ export class ToolboxIdlInstructionBlob {
         typeFull,
       });
     }
-    let typeFlat = parse(idlInstructionBlobType);
-    let typeFull = hydrate(typeFlat, new Map(), typedefs);
+    const typeFlat = parse(idlInstructionBlobType);
+    const typeFull = hydrate(typeFlat, new Map(), typedefs);
     return this.arg({
       path,
       typeFull,
@@ -181,8 +181,8 @@ export class ToolboxIdlInstructionBlob {
         typeFull: undefined,
       });
     }
-    let typeFlat = parse(idlInstructionBlobType);
-    let typeFull = hydrate(typeFlat, new Map(), typedefs);
+    const typeFlat = parse(idlInstructionBlobType);
+    const typeFull = hydrate(typeFlat, new Map(), typedefs);
     return this.account({
       path,
       typeFull,

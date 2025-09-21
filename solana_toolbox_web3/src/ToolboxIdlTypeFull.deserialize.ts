@@ -78,8 +78,8 @@ const deserializeVisitor = {
     if ((dataPrefix & 1n) == 0n) {
       return [dataSize, null];
     }
-    let dataContentOffset = dataOffset + dataSize;
-    let [dataContentSize, dataContent] = deserialize(
+    const dataContentOffset = dataOffset + dataSize;
+    const [dataContentSize, dataContent] = deserialize(
       self.content,
       data,
       dataContentOffset,
@@ -97,11 +97,11 @@ const deserializeVisitor = {
       data,
       dataOffset,
     );
-    let dataLength = Number(dataPrefix);
-    let dataItems = [];
+    const dataLength = Number(dataPrefix);
+    const dataItems = [];
     for (let i = 0; i < dataLength; i++) {
-      let dataItemOffset = dataOffset + dataSize;
-      let [dataItemSize, dataItem] = deserialize(
+      const dataItemOffset = dataOffset + dataSize;
+      const [dataItemSize, dataItem] = deserialize(
         self.items,
         data,
         dataItemOffset,
@@ -117,10 +117,10 @@ const deserializeVisitor = {
     dataOffset: number,
   ): [number, any] => {
     let dataSize = 0;
-    let dataItems = [];
+    const dataItems = [];
     for (let i = 0; i < self.length; i++) {
-      let dataItemOffset = dataOffset + dataSize;
-      let [dataItemSize, dataItem] = deserialize(
+      const dataItemOffset = dataOffset + dataSize;
+      const [dataItemSize, dataItem] = deserialize(
         self.items,
         data,
         dataItemOffset,
@@ -140,9 +140,9 @@ const deserializeVisitor = {
       data,
       dataOffset,
     );
-    let dataLength = Number(dataPrefix);
-    let dataCharsOffset = dataOffset + dataSize;
-    let dataString = data.toString(
+    const dataLength = Number(dataPrefix);
+    const dataCharsOffset = dataOffset + dataSize;
+    const dataString = data.toString(
       'utf8',
       dataCharsOffset,
       dataCharsOffset + dataLength,
@@ -166,7 +166,7 @@ const deserializeVisitor = {
       return [0, null];
     }
     let enumMask = 0n;
-    for (let variant of self.variants) {
+    for (const variant of self.variants) {
       enumMask |= variant.code;
     }
     let [dataSize, dataPrefix] = deserializePrefix(
@@ -174,13 +174,13 @@ const deserializeVisitor = {
       data,
       dataOffset,
     );
-    let dataVariantOffset = dataOffset + dataSize;
-    for (let variant of self.variants) {
+    const dataVariantOffset = dataOffset + dataSize;
+    for (const variant of self.variants) {
       if (variant.code === (dataPrefix & enumMask)) {
         if (variant.fields.isNothing()) {
           return [dataSize, variant.name];
         }
-        let [dataVariantSize, dataVariant] = ToolboxUtils.withContext(() => {
+        const [dataVariantSize, dataVariant] = ToolboxUtils.withContext(() => {
           return deserializeFields(variant.fields, data, dataVariantOffset);
         }, `Deserialize: Enum Variant: ${variant.name} (offset: ${dataVariantOffset})`);
         dataSize += dataVariantSize;
@@ -197,8 +197,8 @@ const deserializeVisitor = {
     dataOffset: number,
   ): [number, any] => {
     let dataSize = self.before;
-    let dataContentOffset = dataOffset + dataSize;
-    let [dataContentSize, dataContent] = deserialize(
+    const dataContentOffset = dataOffset + dataSize;
+    const [dataContentSize, dataContent] = deserialize(
       self.content,
       data,
       dataContentOffset,
@@ -226,10 +226,10 @@ const deserializeFieldsVisitor = {
     dataOffset: number,
   ): [number, any] => {
     let dataSize = 0;
-    let dataFields: Record<string, any> = {};
-    for (let field of self) {
-      let dataFieldOffset = dataOffset + dataSize;
-      let [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
+    const dataFields: Record<string, any> = {};
+    for (const field of self) {
+      const dataFieldOffset = dataOffset + dataSize;
+      const [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
         return deserialize(field.content, data, dataFieldOffset);
       }, `Deserialize: Field: ${field.name} (offset: ${dataFieldOffset})`);
       dataSize += dataFieldSize;
@@ -243,10 +243,10 @@ const deserializeFieldsVisitor = {
     dataOffset: number,
   ): [number, any] => {
     let dataSize = 0;
-    let dataFields = [];
-    for (let field of self) {
-      let dataFieldOffset = dataOffset + dataSize;
-      let [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
+    const dataFields = [];
+    for (const field of self) {
+      const dataFieldOffset = dataOffset + dataSize;
+      const [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
         return deserialize(field.content, data, dataFieldOffset);
       }, `Deserialize: Field: ${field.position} (offset: ${dataFieldOffset})`);
       dataSize += dataFieldSize;
@@ -270,8 +270,8 @@ const deserializePrefixVisitor = {
     return data.readBigUInt64LE(dataOffset);
   },
   u128: (data: Buffer, dataOffset: number): bigint => {
-    let high = data.readBigUInt64LE(dataOffset);
-    let low = data.readBigUInt64LE(dataOffset + 8);
+    const low = data.readBigUInt64LE(dataOffset);
+    const high = data.readBigUInt64LE(dataOffset + 8);
     return low | (high << 64n);
   },
 };
@@ -290,8 +290,8 @@ const deserializePrimitiveVisitor = {
     return data.readBigUInt64LE(dataOffset).toString();
   },
   u128: (data: Buffer, dataOffset: number): any => {
-    let low = data.readBigUInt64LE(dataOffset);
-    let high = data.readBigUInt64LE(dataOffset + 8);
+    const low = data.readBigUInt64LE(dataOffset);
+    const high = data.readBigUInt64LE(dataOffset + 8);
     return (low | (high << 64n)).toString();
   },
   i8: (data: Buffer, dataOffset: number): any => {
@@ -307,8 +307,8 @@ const deserializePrimitiveVisitor = {
     return data.readBigInt64LE(dataOffset).toString();
   },
   i128: (data: Buffer, dataOffset: number): any => {
-    let low = data.readBigUInt64LE(dataOffset);
-    let high = data.readBigInt64LE(dataOffset + 8);
+    const low = data.readBigUInt64LE(dataOffset);
+    const high = data.readBigInt64LE(dataOffset + 8);
     return (low | (high << 64n)).toString();
   },
   f32: (data: Buffer, dataOffset: number): any => {

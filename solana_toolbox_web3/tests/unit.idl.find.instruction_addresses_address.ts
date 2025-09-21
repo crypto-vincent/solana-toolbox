@@ -4,9 +4,9 @@ import { findInstructionAddresses } from '../src/ToolboxIdlInstruction.find';
 
 it('run', () => {
   // Keys used during the test
-  let dummyAddress = PublicKey.unique();
+  const dummyAddress = PublicKey.unique();
   // Create an IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     instructions: {
       my_ix: {
         discriminator: [77, 78],
@@ -20,7 +20,7 @@ it('run', () => {
     },
   });
   // Assert that the accounts can be properly resolved
-  let instruction_addresses = findInstructionAddresses(
+  const instruction_addresses = findInstructionAddresses(
     idlProgram.instructions.get('my_ix')!,
     PublicKey.unique(),
     null,

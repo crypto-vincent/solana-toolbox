@@ -4,27 +4,27 @@ import { ToolboxIdlService } from '../src/ToolboxIdlService';
 
 it('run', async () => {
   // Create the endpoint
-  let endpoint = new ToolboxEndpoint('devnet', 'confirmed');
+  const endpoint = new ToolboxEndpoint('devnet', 'confirmed');
   // The devnet program we'll lookup
-  let programId = new PublicKey('Ee5CDFHQmdUQMEnM3dJZMiLaBuP2Wr8WBVYM7UZPPb6E');
+  const programId = new PublicKey(
+    'Ee5CDFHQmdUQMEnM3dJZMiLaBuP2Wr8WBVYM7UZPPb6E',
+  );
   // Important account addresses
-  let realmPda = PublicKey.findProgramAddressSync(
+  const realmPda = PublicKey.findProgramAddressSync(
     [Buffer.from('realm')],
     programId,
   );
-  let realm = realmPda[0];
-  let realmBump = realmPda[1];
-  let uctMintPda = PublicKey.findProgramAddressSync(
+  const realm = realmPda[0];
+  const realmBump = realmPda[1];
+  const uctMintPda = PublicKey.findProgramAddressSync(
     [Buffer.from('uct_mint'), realm.toBuffer()],
     programId,
   );
-  let uctMint = uctMintPda[0];
-  let uctMintBump = uctMintPda[1];
+  const uctMint = uctMintPda[0];
+  const uctMintBump = uctMintPda[1];
   // Actually fetch our account using the auto-resolved IDL on-chain
-  let realmDecoded = await new ToolboxIdlService().getAndInferAndDecodeAccount(
-    endpoint,
-    realm,
-  );
+  const realmDecoded =
+    await new ToolboxIdlService().getAndInferAndDecodeAccount(endpoint, realm);
   // Check that the account was parsed properly and values matches
   expect(realmDecoded.program.metadata.name).toStrictEqual('redemption');
   expect(realmDecoded.account.name).toStrictEqual('Realm');

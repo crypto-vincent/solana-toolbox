@@ -48,7 +48,6 @@ pub async fn run() {
     .unwrap();
     // MyAccount info
     let idl_account = idl_program.accounts.get("MyAccount").unwrap();
-    eprintln!("{:#?}", idl_account.content_type_full);
     let account_state = json!([
         "Empty",
         {"Named": {"field1": 42}},

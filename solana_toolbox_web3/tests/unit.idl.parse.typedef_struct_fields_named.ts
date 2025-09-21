@@ -9,7 +9,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     types: {
       MyStruct: {
         fields: [

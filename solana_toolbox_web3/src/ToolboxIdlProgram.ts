@@ -19,7 +19,7 @@ import libSplNameService from '../../solana_toolbox_idl/src/lib/spl_name_service
 import libSplAssociatedToken from '../../solana_toolbox_idl/src/lib/spl_associated_token.json';
 import libMiscLighthouse from '../../solana_toolbox_idl/src/lib/misc_lighthouse.json';
 
-let knownIdls = new Map<string, any>([
+const knownIdls = new Map<string, any>([
   ['11111111111111111111111111111111', libNativeSystem],
   ['AddressLookupTab1e1111111111111111111111111', libNativeAddressLookupTable],
   ['ComputeBudget111111111111111111111111111111', libNativeComputeBudget],
@@ -84,12 +84,12 @@ export class ToolboxIdlProgram {
   public static async findAnchorAddress(
     programId: PublicKey,
   ): Promise<PublicKey> {
-    let base = PublicKey.findProgramAddressSync([], programId)[0];
+    const base = PublicKey.findProgramAddressSync([], programId)[0];
     return await PublicKey.createWithSeed(base, 'anchor:idl', programId);
   }
 
   public static fromLib(programId: PublicKey): ToolboxIdlProgram | undefined {
-    let knownIdl = knownIdls.get(programId.toBase58());
+    const knownIdl = knownIdls.get(programId.toBase58());
     if (knownIdl === undefined) {
       return undefined;
     }
@@ -99,56 +99,56 @@ export class ToolboxIdlProgram {
   public static tryParseFromAccountData(
     accountData: Buffer,
   ): ToolboxIdlProgram {
-    let discriminator = accountData.subarray(0, 8);
+    const discriminator = accountData.subarray(0, 8);
     if (!discriminator.equals(ToolboxIdlProgram.DISCRIMINATOR)) {
       throw new Error('Invalid IDL program discriminator');
     }
-    let contentLength = accountData.readUInt32LE(40);
-    let contentRaw = accountData.subarray(44, 44 + contentLength);
-    let contentEncoded = inflate(contentRaw);
-    let contentDecoded = new TextDecoder('utf8').decode(contentEncoded);
+    const contentLength = accountData.readUInt32LE(40);
+    const contentRaw = accountData.subarray(44, 44 + contentLength);
+    const contentEncoded = inflate(contentRaw);
+    const contentDecoded = new TextDecoder('utf8').decode(contentEncoded);
     return ToolboxIdlProgram.tryParseFromString(contentDecoded);
   }
 
   public static tryParseFromString(idlString: string): ToolboxIdlProgram {
-    let idlRoot = JSON.parse(idlString);
+    const idlRoot = JSON.parse(idlString);
     return ToolboxIdlProgram.tryParse(idlRoot);
   }
 
   public static tryParse(idlRoot: any): ToolboxIdlProgram {
-    let metadata = {
+    const metadata = {
       ...ToolboxIdlProgram.tryParseMetadata(idlRoot),
       ...ToolboxIdlProgram.tryParseMetadata(idlRoot['metadata']),
     };
-    let typedefs = ToolboxIdlProgram.tryParseScopedNamedValues(
+    const typedefs = ToolboxIdlProgram.tryParseScopedNamedValues(
       idlRoot,
       'types',
       false,
       undefined,
       ToolboxIdlTypedef.tryParse,
     );
-    let accounts = ToolboxIdlProgram.tryParseScopedNamedValues(
+    const accounts = ToolboxIdlProgram.tryParseScopedNamedValues(
       idlRoot,
       'accounts',
       false,
       typedefs,
       ToolboxIdlAccount.tryParse,
     );
-    let instructions = ToolboxIdlProgram.tryParseScopedNamedValues(
+    const instructions = ToolboxIdlProgram.tryParseScopedNamedValues(
       idlRoot,
       'instructions',
       true,
       typedefs,
       ToolboxIdlInstruction.tryParse,
     );
-    let events = ToolboxIdlProgram.tryParseScopedNamedValues(
+    const events = ToolboxIdlProgram.tryParseScopedNamedValues(
       idlRoot,
       'events',
       false,
       typedefs,
       ToolboxIdlEvent.tryParse,
     );
-    let errors = ToolboxIdlProgram.tryParseScopedNamedValues(
+    const errors = ToolboxIdlProgram.tryParseScopedNamedValues(
       idlRoot,
       'errors',
       false,
@@ -169,12 +169,12 @@ export class ToolboxIdlProgram {
     if (!idlMetadata) {
       return {};
     }
-    let rawName = idlMetadata['name'];
-    let rawDocs = idlMetadata['docs'];
-    let rawDescription = idlMetadata['description'];
-    let rawAddress = idlMetadata['address'];
-    let rawVersion = idlMetadata['version'];
-    let rawSpec = idlMetadata['spec'];
+    const rawName = idlMetadata['name'];
+    const rawDocs = idlMetadata['docs'];
+    const rawDescription = idlMetadata['description'];
+    const rawAddress = idlMetadata['address'];
+    const rawVersion = idlMetadata['version'];
+    const rawSpec = idlMetadata['spec'];
     return {
       name: rawName ? ToolboxUtils.expectString(rawName) : undefined,
       docs: rawDocs,
@@ -196,10 +196,10 @@ export class ToolboxIdlProgram {
     param: P,
     parsingFunction: (name: string, value: any, param: P) => T,
   ): Map<string, T> {
-    let values = new Map();
-    let collection = idlRoot[collectionKey];
+    const values = new Map();
+    const collection = idlRoot[collectionKey];
     if (ToolboxUtils.isArray(collection)) {
-      for (let item of collection) {
+      for (const item of collection) {
         let name = ToolboxUtils.expectString(item['name']);
         if (convertNameToSnakeCase) {
           name = ToolboxUtils.convertToSnakeCase(name);
@@ -219,7 +219,7 @@ export class ToolboxIdlProgram {
   }
 
   public guessAccount(accountData: Buffer): ToolboxIdlAccount | undefined {
-    for (let account of this.accounts.values()) {
+    for (const account of this.accounts.values()) {
       try {
         account.check(accountData);
         return account;
@@ -231,7 +231,7 @@ export class ToolboxIdlProgram {
   public guessInstruction(
     instructionData: Buffer,
   ): ToolboxIdlInstruction | undefined {
-    for (let instruction of this.instructions.values()) {
+    for (const instruction of this.instructions.values()) {
       try {
         instruction.checkPayload(instructionData);
         return instruction;
@@ -241,7 +241,7 @@ export class ToolboxIdlProgram {
   }
 
   public guessEvent(eventData: Buffer): ToolboxIdlEvent | undefined {
-    for (let event of this.events.values()) {
+    for (const event of this.events.values()) {
       try {
         event.check(eventData);
         return event;
@@ -251,7 +251,7 @@ export class ToolboxIdlProgram {
   }
 
   public guessError(errorCode: number): ToolboxIdlError | undefined {
-    for (let error of this.errors.values()) {
+    for (const error of this.errors.values()) {
       if (error.code === errorCode) {
         return error;
       }

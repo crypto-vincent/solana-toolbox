@@ -82,9 +82,9 @@ const bytemuckCVisitor = {
     return bytemuck(self);
   },
   option: (self: ToolboxIdlTypeFullOption): ToolboxIdlTypeFullPod => {
-    let contentPod = bytemuckC(self.content);
-    let alignment = Math.max(self.prefix.size, contentPod.alignment);
-    let size = alignment + contentPod.size;
+    const contentPod = bytemuckC(self.content);
+    const alignment = Math.max(self.prefix.size, contentPod.alignment);
+    const size = alignment + contentPod.size;
     return {
       alignment,
       size,
@@ -103,9 +103,9 @@ const bytemuckCVisitor = {
     throw new Error('Bytemuck: Repr(C): Vec is not supported');
   },
   array: (self: ToolboxIdlTypeFullArray): ToolboxIdlTypeFullPod => {
-    let itemsPod = bytemuckC(self.items);
-    let alignment = itemsPod.alignment;
-    let size = itemsPod.size * self.length;
+    const itemsPod = bytemuckC(self.items);
+    const alignment = itemsPod.alignment;
+    const size = itemsPod.size * self.length;
     return {
       alignment,
       size,
@@ -119,7 +119,7 @@ const bytemuckCVisitor = {
     throw new Error('Bytemuck: Repr(C): String is not supported');
   },
   struct: (self: ToolboxIdlTypeFullStruct): ToolboxIdlTypeFullPod => {
-    let fieldsPod = bytemuckFields(self.fields, 0, false);
+    const fieldsPod = bytemuckFields(self.fields, 0, false);
     return {
       alignment: fieldsPod.alignment,
       size: fieldsPod.size,
@@ -138,9 +138,9 @@ const bytemuckCVisitor = {
     }
     let alignment = Math.max(4, self.prefix.size);
     let size = 0;
-    let variantsReprC = [];
-    for (let variant of self.variants) {
-      let variantFieldsPod = ToolboxUtils.withContext(() => {
+    const variantsReprC = [];
+    for (const variant of self.variants) {
+      const variantFieldsPod = ToolboxUtils.withContext(() => {
         return bytemuckFields(variant.fields, 0, false);
       }, `Bytemuck: Repr(C): Enum Variant: ${variant.name}`);
       alignment = Math.max(alignment, variantFieldsPod.alignment);
@@ -183,9 +183,9 @@ const bytemuckRustVisitor = {
     return bytemuck(self);
   },
   option: (self: ToolboxIdlTypeFullOption): ToolboxIdlTypeFullPod => {
-    let contentPod = bytemuckRust(self.content);
-    let alignment = Math.max(self.prefix.size, contentPod.alignment);
-    let size = alignment + contentPod.size;
+    const contentPod = bytemuckRust(self.content);
+    const alignment = Math.max(self.prefix.size, contentPod.alignment);
+    const size = alignment + contentPod.size;
     return {
       alignment,
       size,
@@ -204,9 +204,9 @@ const bytemuckRustVisitor = {
     throw new Error('Bytemuck: Repr(Rust): Vec is not supported');
   },
   array: (self: ToolboxIdlTypeFullArray): ToolboxIdlTypeFullPod => {
-    let itemsPod = bytemuckRust(self.items);
-    let alignment = itemsPod.alignment;
-    let size = itemsPod.size * self.length;
+    const itemsPod = bytemuckRust(self.items);
+    const alignment = itemsPod.alignment;
+    const size = itemsPod.size * self.length;
     return {
       alignment,
       size,
@@ -220,7 +220,7 @@ const bytemuckRustVisitor = {
     throw new Error('Bytemuck: Repr(Rust): String is not supported');
   },
   struct: (self: ToolboxIdlTypeFullStruct): ToolboxIdlTypeFullPod => {
-    let fieldsPod = bytemuckFields(self.fields, 0, true);
+    const fieldsPod = bytemuckFields(self.fields, 0, true);
     return {
       alignment: fieldsPod.alignment,
       size: fieldsPod.size,
@@ -239,9 +239,9 @@ const bytemuckRustVisitor = {
     }
     let alignment = self.prefix.size;
     let size = self.prefix.size;
-    let variantsReprRust = [];
-    for (let variant of self.variants) {
-      let variantFieldsPod = ToolboxUtils.withContext(() => {
+    const variantsReprRust = [];
+    for (const variant of self.variants) {
+      const variantFieldsPod = ToolboxUtils.withContext(() => {
         return bytemuckFields(variant.fields, self.prefix.size, true);
       }, `Bytemuck: Repr(Rust): Enum Variant: ${variant.name}`);
       alignment = Math.max(alignment, variantFieldsPod.alignment);
@@ -296,8 +296,8 @@ const bytemuckFieldsVisitor = {
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
-    let fieldsInfosPods = self.map((field, index) => {
-      let contentPod = ToolboxUtils.withContext(() => {
+    const fieldsInfosPods = self.map((field, index) => {
+      const contentPod = ToolboxUtils.withContext(() => {
         return bytemuckRust(field.content);
       }, `Bytemuck: Field: ${field.name}`);
       return {
@@ -311,7 +311,7 @@ const bytemuckFieldsVisitor = {
     if (rustReorder) {
       internalVerifyUnstableOrder(prefixSize, fieldsInfosPods);
     }
-    let fieldsInfosPadded = internalFieldsInfoAligned(
+    const fieldsInfosPadded = internalFieldsInfoAligned(
       prefixSize,
       fieldsInfosPods,
     );
@@ -333,8 +333,8 @@ const bytemuckFieldsVisitor = {
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
-    let fieldsInfosPods = self.map((field, index) => {
-      let contentPod = ToolboxUtils.withContext(() => {
+    const fieldsInfosPods = self.map((field, index) => {
+      const contentPod = ToolboxUtils.withContext(() => {
         return bytemuckRust(field.content);
       }, `Bytemuck: Field: ${field.position}`);
       return {
@@ -348,7 +348,7 @@ const bytemuckFieldsVisitor = {
     if (rustReorder) {
       internalVerifyUnstableOrder(prefixSize, fieldsInfosPods);
     }
-    let fieldsInfosPadded = internalFieldsInfoAligned(
+    const fieldsInfosPadded = internalFieldsInfoAligned(
       prefixSize,
       fieldsInfosPods,
     );
@@ -379,10 +379,10 @@ function internalFieldsInfoAligned<T>(
 ) {
   let alignment = prefixSize;
   let size = prefixSize;
-  let lastFieldIndex = fieldsInfo.length - 1;
-  let fieldsInfoPadded = [];
+  const lastFieldIndex = fieldsInfo.length - 1;
+  const fieldsInfoPadded = [];
   for (const fieldInfo of fieldsInfo) {
-    let {
+    const {
       index: fieldIndex,
       alignment: fieldAlignment,
       size: fieldSize,
@@ -390,7 +390,7 @@ function internalFieldsInfoAligned<T>(
       type: fieldType,
     } = fieldInfo;
     alignment = Math.max(alignment, fieldAlignment);
-    let paddingBefore = internalAlignmentPaddingNeeded(size, fieldAlignment);
+    const paddingBefore = internalAlignmentPaddingNeeded(size, fieldAlignment);
     size += paddingBefore + fieldSize;
     let paddingAfter = 0;
     if (fieldIndex == lastFieldIndex) {
@@ -422,7 +422,7 @@ function internalAlignmentPaddingNeeded(
   offset: number,
   alignment: number,
 ): number {
-  let missalignment = offset % alignment;
+  const missalignment = offset % alignment;
   if (missalignment == 0) {
     return 0;
   }
@@ -442,7 +442,7 @@ function internalVerifyUnstableOrder(prefixSize: number, fieldsInfo: any[]) {
 }
 
 function internalPrefixFromAlignment(alignment: number): ToolboxIdlTypePrefix {
-  let prefix = ToolboxIdlTypePrefix.prefixesBySize.get(alignment);
+  const prefix = ToolboxIdlTypePrefix.prefixesBySize.get(alignment);
   if (prefix === undefined) {
     throw new Error(`Bytemuck: Unknown alignment: ${alignment}`);
   }

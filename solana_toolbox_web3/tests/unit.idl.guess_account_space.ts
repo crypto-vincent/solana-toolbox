@@ -5,7 +5,7 @@ import { ToolboxIdlTypeFull } from '../src/ToolboxIdlTypeFull';
 
 it('run', () => {
   // Create IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     accounts: {
       MyAccount1_x3: {
         space: 3,

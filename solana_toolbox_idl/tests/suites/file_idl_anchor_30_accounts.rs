@@ -105,10 +105,6 @@ pub async fn run() {
                 ),
             )]),
         );
-    eprintln!(
-        "campaign_extract_addresses: {:#?}",
-        campaign_extract_addresses
-    );
     // Check outcome
     assert_eq!(
         campaign_collateral,

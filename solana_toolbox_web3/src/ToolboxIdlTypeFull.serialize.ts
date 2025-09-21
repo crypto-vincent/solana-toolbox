@@ -41,7 +41,7 @@ export function serializePrefix(
   value: bigint,
   data: Buffer[],
 ) {
-  let buffer = Buffer.alloc(prefix.size);
+  const buffer = Buffer.alloc(prefix.size);
   prefix.traverse(serializePrefixVisitor, buffer, value);
   data.push(buffer);
 }
@@ -51,7 +51,7 @@ export function serializePrimitive(
   value: any,
   data: Buffer[],
 ) {
-  let buffer = Buffer.alloc(primitive.size);
+  const buffer = Buffer.alloc(primitive.size);
   primitive.traverse(serializePrimitiveVisitor, buffer, value);
   data.push(buffer);
 }
@@ -86,12 +86,12 @@ const serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
-    let array = ToolboxUtils.expectArray(value);
+    const array = ToolboxUtils.expectArray(value);
     if (prefixed) {
       serializePrefix(self.prefix, BigInt(array.length), data);
     }
     // TODO - handle special case of "bytes" fancy serializer
-    for (let item of array) {
+    for (const item of array) {
       serialize(self.items, item, data, prefixed);
     }
   },
@@ -101,12 +101,12 @@ const serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
-    let array = ToolboxUtils.expectArray(value);
+    const array = ToolboxUtils.expectArray(value);
     if (array.length != self.length) {
       throw new Error(`Expected an array of size: ${self.length}`);
     }
     // TODO - handle special case of "bytes" fancy serializer
-    for (let item of array) {
+    for (const item of array) {
       serialize(self.items, item, data, prefixed);
     }
   },
@@ -116,7 +116,7 @@ const serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
-    let string = ToolboxUtils.expectString(value);
+    const string = ToolboxUtils.expectString(value);
     if (prefixed) {
       serializePrefix(self.prefix, BigInt(string.length), data);
     }
@@ -152,7 +152,7 @@ const serializeVisitor = {
       }, `Serialize: Enum Variant: ${variant.name}`);
     }
     if (ToolboxUtils.isNumber(value)) {
-      for (let variant of self.variants) {
+      for (const variant of self.variants) {
         if (variant.code == value) {
           return serializeEnumVariant(variant, undefined);
         }
@@ -160,7 +160,7 @@ const serializeVisitor = {
       throw new Error(`Could not find enum variant with code: ${value}`);
     }
     if (ToolboxUtils.isString(value)) {
-      for (let variant of self.variants) {
+      for (const variant of self.variants) {
         if (variant.name == value) {
           return serializeEnumVariant(variant, undefined);
         }
@@ -168,7 +168,7 @@ const serializeVisitor = {
       throw new Error(`Could not find enum variant with name: ${value}`);
     }
     if (ToolboxUtils.isObject(value)) {
-      for (let variant of self.variants) {
+      for (const variant of self.variants) {
         if (value.hasOwnProperty(variant.name)) {
           return serializeEnumVariant(variant, value[variant.name]);
         }
@@ -186,12 +186,12 @@ const serializeVisitor = {
     if (self.before) {
       data.push(Buffer.alloc(self.before));
     }
-    let contentData: Buffer[] = [];
+    const contentData: Buffer[] = [];
     serialize(self.content, value, contentData, prefixed);
-    for (let contentBuffer of contentData) {
+    for (const contentBuffer of contentData) {
       data.push(contentBuffer);
     }
-    let contentSize = contentData.reduce((size, contentBuffer) => {
+    const contentSize = contentData.reduce((size, contentBuffer) => {
       return size + contentBuffer.length;
     }, 0);
     if (self.minSize > contentSize) {
@@ -225,7 +225,7 @@ const serializeFieldsVisitor = {
       return;
     }
     ToolboxUtils.expectObject(value);
-    for (let field of self) {
+    for (const field of self) {
       ToolboxUtils.withContext(() => {
         serialize(field.content, value[field.name], data, prefixed);
       }, `Serialize: Field: ${field.name}`);
@@ -241,7 +241,7 @@ const serializeFieldsVisitor = {
       return;
     }
     ToolboxUtils.expectArray(value);
-    for (let field of self) {
+    for (const field of self) {
       ToolboxUtils.withContext(() => {
         serialize(field.content, value[field.position], data, prefixed);
       }, `Serialize: Field: ${field.position}`);
@@ -263,8 +263,10 @@ const serializePrefixVisitor = {
     buffer.writeBigUInt64LE(value);
   },
   u128: (buffer: Buffer, value: bigint) => {
-    buffer.writeBigUInt64LE(value & 0xffffffffffffffffn, 0);
-    buffer.writeBigUInt64LE((value >> 64n) & 0xffffffffffffffffn, 8);
+    const low = value & 0xffffffffffffffffn;
+    const high = (value >> 64n) & 0xffffffffffffffffn;
+    buffer.writeBigUInt64LE(low, 0);
+    buffer.writeBigUInt64LE(high, 8);
   },
 };
 
@@ -282,9 +284,9 @@ const serializePrimitiveVisitor = {
     buffer.writeBigUInt64LE(expectInteger(value));
   },
   u128: (buffer: Buffer, value: any) => {
-    let num = expectInteger(value);
-    let low = num & 0xffffffffffffffffn;
-    let high = (num >> 64n) & 0xffffffffffffffffn;
+    const num = expectInteger(value);
+    const low = num & 0xffffffffffffffffn;
+    const high = (num >> 64n) & 0xffffffffffffffffn;
     buffer.writeBigUInt64LE(low, 0);
     buffer.writeBigUInt64LE(high, 8);
   },
@@ -301,9 +303,9 @@ const serializePrimitiveVisitor = {
     buffer.writeBigInt64LE(expectInteger(value));
   },
   i128: (buffer: Buffer, value: any) => {
-    let num = expectInteger(value);
-    let low = BigInt.asIntN(64, num);
-    let high = BigInt.asIntN(64, num >> 64n);
+    const num = expectInteger(value);
+    const low = BigInt.asIntN(64, num);
+    const high = BigInt.asIntN(64, num >> 64n);
     buffer.writeBigInt64LE(low, 0);
     buffer.writeBigInt64LE(high, 8);
   },

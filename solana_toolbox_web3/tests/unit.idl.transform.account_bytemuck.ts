@@ -3,7 +3,7 @@ import { ToolboxIdlProgram } from '../src/ToolboxIdlProgram';
 
 it('run', () => {
   // Create an IDL on the fly
-  let idlProgram = ToolboxIdlProgram.tryParse({
+  const idlProgram = ToolboxIdlProgram.tryParse({
     accounts: {
       BytemuckAccount: {
         discriminator: [],
@@ -75,20 +75,20 @@ it('run', () => {
     },
   });
   // Choose the instruction
-  let idlAccount = idlProgram.accounts.get('BytemuckAccount')!;
+  const idlAccount = idlProgram.accounts.get('BytemuckAccount')!;
   // Bytemuck constants
-  let keyF2 = new PublicKey([
+  const keyF2 = new PublicKey([
     0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2,
     0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2,
     0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2, 0xf2,
   ]);
-  let keyC2 = new PublicKey([
+  const keyC2 = new PublicKey([
     0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2,
     0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2,
     0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2, 0xc2,
   ]);
   // Define dummy JSON data
-  let bytemuckStructC = {
+  const bytemuckStructC = {
     field1: 0xf1f1,
     field2: keyF2.toBase58(),
     field3: 0xf3f3f3f3f3f3f3f3n.toString(),
@@ -96,7 +96,7 @@ it('run', () => {
     field5: [0xf5, 0xf5f5f5f5],
   };
   // Generate cases datas
-  let cases = [
+  const cases = [
     {
       name: 'Case0',
       data: Buffer.from([
@@ -261,8 +261,8 @@ it('run', () => {
     },
   ];
   // Actually assert the correctness of the results
-  for (let testCase of cases) {
-    let computedData = idlAccount.encode(testCase.state);
+  for (const testCase of cases) {
+    const computedData = idlAccount.encode(testCase.state);
     // dumpData(testCase.name + ':computedData', computedData);
     // dumpData(testCase.name + ':expectedData', testCase.data);
     expect(idlAccount.decode(testCase.data)).toStrictEqual(testCase.state);
@@ -272,16 +272,16 @@ it('run', () => {
 
 /*
 function dumpData(title: string, buffer: Buffer) {
-  let lines = [];
-  let lineCount = (buffer.length + 1) / 16;
-  for (let line = 0; line < lineCount; line++) {
-    let words = [];
-    for (let word = 0; word < 4; word++) {
-      let bytes = [];
-      for (let byte = 0; byte < 4; byte++) {
-        let offset = line * 16 + word * 4 + byte;
+  const lines = [];
+  const lineCount = (buffer.length + 1) / 16;
+  for (const line = 0; line < lineCount; line++) {
+    const words = [];
+    for (const word = 0; word < 4; word++) {
+      const bytes = [];
+      for (const byte = 0; byte < 4; byte++) {
+        const offset = line * 16 + word * 4 + byte;
         if (offset < buffer.length) {
-          let value = buffer.readUint8(offset);
+          const value = buffer.readUint8(offset);
           bytes.push('0x' + value.toString(16).padStart(2, '0'));
         }
       }
