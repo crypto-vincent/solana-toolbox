@@ -266,7 +266,6 @@ pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
                 .context("Serialize Value")?;
             return Ok(data);
         }
-        // TODO - support 0xff padding ?
     }
     Err(anyhow!(
         "Could not read bytes, expected an string/array/object"
