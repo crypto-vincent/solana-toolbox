@@ -30,14 +30,14 @@ const computeVisitor = {
     self: ToolboxIdlInstructionBlobConst,
     _context: ToolboxIdlInstructionBlobComputeContext,
   ) => {
-    return self.value;
+    return self.bytes;
   },
   arg: (
     self: ToolboxIdlInstructionBlobArg,
     context: ToolboxIdlInstructionBlobComputeContext,
   ) => {
     const value = pathGetJsonValue(self.path, context.instructionPayload);
-    const data = new Array<Buffer>();
+    const data: Array<Buffer> = [];
     serialize(self.typeFull, value, data, false);
     return Buffer.concat(data);
   },
@@ -50,14 +50,17 @@ const computeVisitor = {
         'PDA Blob account path is empty (should have at least the account name)',
       );
     }
-    const { first: current, rest: next } = self.path.splitFirst()!;
-    const instructionAccountName = current.key();
+    const split = self.path.splitFirst();
+    if (split === undefined) {
+      throw new Error('PDA Blob account path is empty (should not happen)');
+    }
+    const instructionAccountName = split.first.key();
     if (!instructionAccountName) {
       throw new Error(
         'PDA Blob account path first part should be an account name',
       );
     }
-    const instructionAccountContentPath = next;
+    const instructionAccountContentPath = split.rest;
     if (instructionAccountContentPath.isEmpty()) {
       const instructionAddress = context.instructionAddresses.get(
         instructionAccountName,
@@ -80,7 +83,7 @@ const computeVisitor = {
       instructionAccountContentPath,
       instructionAccountContentState,
     );
-    const data = new Array<Buffer>();
+    const data: Array<Buffer> = [];
     if (self.typeFull !== undefined) {
       serialize(self.typeFull, value, data, false);
       return Buffer.concat(data);

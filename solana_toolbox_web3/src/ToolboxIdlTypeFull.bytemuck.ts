@@ -292,7 +292,7 @@ const bytemuckFieldsVisitor = {
     };
   },
   named: (
-    self: ToolboxIdlTypeFullFieldNamed[],
+    self: Array<ToolboxIdlTypeFullFieldNamed>,
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
@@ -329,7 +329,7 @@ const bytemuckFieldsVisitor = {
     };
   },
   unnamed: (
-    self: ToolboxIdlTypeFullFieldUnnamed[],
+    self: Array<ToolboxIdlTypeFullFieldUnnamed>,
     prefixSize: number,
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
@@ -369,13 +369,13 @@ const bytemuckFieldsVisitor = {
 
 function internalFieldsInfoAligned<T>(
   prefixSize: number,
-  fieldsInfo: {
+  fieldsInfo: Array<{
     index: number;
     alignment: number;
     size: number;
     meta: T;
     type: ToolboxIdlTypeFull;
-  }[],
+  }>,
 ) {
   let alignment = prefixSize;
   let size = prefixSize;
@@ -429,7 +429,10 @@ function internalAlignmentPaddingNeeded(
   return alignment - missalignment;
 }
 
-function internalVerifyUnstableOrder(prefixSize: number, fieldsInfo: any[]) {
+function internalVerifyUnstableOrder(
+  prefixSize: number,
+  fieldsInfo: Array<any>,
+) {
   if (prefixSize == 0 && fieldsInfo.length <= 2) {
     return;
   }

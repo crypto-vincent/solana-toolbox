@@ -21,7 +21,7 @@ import { ToolboxIdlTypePrefix } from './ToolboxIdlTypePrefix';
 export function serialize(
   typeFull: ToolboxIdlTypeFull,
   value: any,
-  data: Buffer[],
+  data: Array<Buffer>,
   prefixed: boolean,
 ) {
   typeFull.traverse(serializeVisitor, value, data, prefixed);
@@ -30,7 +30,7 @@ export function serialize(
 export function serializeFields(
   typeFullFields: ToolboxIdlTypeFullFields,
   value: any,
-  data: Buffer[],
+  data: Array<Buffer>,
   prefixed: boolean,
 ) {
   typeFullFields.traverse(serializeFieldsVisitor, value, data, prefixed);
@@ -39,7 +39,7 @@ export function serializeFields(
 export function serializePrefix(
   prefix: ToolboxIdlTypePrefix,
   value: bigint,
-  data: Buffer[],
+  data: Array<Buffer>,
 ) {
   const buffer = Buffer.alloc(prefix.size);
   prefix.traverse(serializePrefixVisitor, buffer, value);
@@ -49,7 +49,7 @@ export function serializePrefix(
 export function serializePrimitive(
   primitive: ToolboxIdlTypePrimitive,
   value: any,
-  data: Buffer[],
+  data: Array<Buffer>,
 ) {
   const buffer = Buffer.alloc(primitive.size);
   primitive.traverse(serializePrimitiveVisitor, buffer, value);
@@ -60,7 +60,7 @@ const serializeVisitor = {
   typedef: (
     self: ToolboxIdlTypeFullTypedef,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     ToolboxUtils.withContext(() => {
@@ -70,7 +70,7 @@ const serializeVisitor = {
   option: (
     self: ToolboxIdlTypeFullOption,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (value === null) {
@@ -83,7 +83,7 @@ const serializeVisitor = {
   vec: (
     self: ToolboxIdlTypeFullVec,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.items.isPrimitive(ToolboxIdlTypePrimitive.U8)) {
@@ -105,16 +105,24 @@ const serializeVisitor = {
   array: (
     self: ToolboxIdlTypeFullArray,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.items.isPrimitive(ToolboxIdlTypePrimitive.U8)) {
-      data.push(ToolboxUtils.expectBytes(value));
+      const bytes = ToolboxUtils.expectBytes(value);
+      if (bytes.length != self.length) {
+        throw new Error(
+          `Expected an array of size: ${self.length}, found: ${bytes.length}`,
+        );
+      }
+      data.push(bytes);
       return;
     }
     const array = ToolboxUtils.expectArray(value);
     if (array.length != self.length) {
-      throw new Error(`Expected an array of size: ${self.length}`);
+      throw new Error(
+        `Expected an array of size: ${self.length}, found: ${array.length}`,
+      );
     }
     for (const item of array) {
       serialize(self.items, item, data, prefixed);
@@ -123,19 +131,20 @@ const serializeVisitor = {
   string: (
     self: ToolboxIdlTypeFullString,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     const string = ToolboxUtils.expectString(value);
+    const bytes = Buffer.from(string, 'utf8');
     if (prefixed) {
-      serializePrefix(self.prefix, BigInt(string.length), data);
+      serializePrefix(self.prefix, BigInt(bytes.length), data);
     }
-    data.push(Buffer.from(string, 'utf8'));
+    data.push(bytes);
   },
   struct: (
     self: ToolboxIdlTypeFullStruct,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     serializeFields(self.fields, value, data, prefixed);
@@ -143,7 +152,7 @@ const serializeVisitor = {
   enum: (
     self: ToolboxIdlTypeFullEnum,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.variants.length == 0) {
@@ -190,13 +199,13 @@ const serializeVisitor = {
   padded: (
     self: ToolboxIdlTypeFullPadded,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.before) {
       data.push(Buffer.alloc(self.before));
     }
-    const contentData: Buffer[] = [];
+    const contentData: Array<Buffer> = [];
     serialize(self.content, value, contentData, prefixed);
     for (const contentBuffer of contentData) {
       data.push(contentBuffer);
@@ -214,7 +223,7 @@ const serializeVisitor = {
   primitive: (
     self: ToolboxIdlTypePrimitive,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     _prefixed: boolean,
   ) => {
     serializePrimitive(self, value, data);
@@ -222,13 +231,18 @@ const serializeVisitor = {
 };
 
 const serializeFieldsVisitor = {
-  nothing: (_self: {}, _value: any, _data: Buffer[], _prefixed: boolean) => {
+  nothing: (
+    _self: {},
+    _value: any,
+    _data: Array<Buffer>,
+    _prefixed: boolean,
+  ) => {
     return;
   },
   named: (
-    self: ToolboxIdlTypeFullFieldNamed[],
+    self: Array<ToolboxIdlTypeFullFieldNamed>,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.length <= 0) {
@@ -242,9 +256,9 @@ const serializeFieldsVisitor = {
     }
   },
   unnamed: (
-    self: ToolboxIdlTypeFullFieldUnnamed[],
+    self: Array<ToolboxIdlTypeFullFieldUnnamed>,
     value: any,
-    data: Buffer[],
+    data: Array<Buffer>,
     prefixed: boolean,
   ) => {
     if (self.length <= 0) {

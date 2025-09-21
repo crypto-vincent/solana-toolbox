@@ -11,7 +11,7 @@ import { ToolboxIdlPath } from './ToolboxIdlPath';
 import { pathGetTypeFullFields } from './ToolboxIdlPath.type';
 
 export type ToolboxIdlInstructionBlobConst = {
-  value: Buffer;
+  bytes: Buffer;
 };
 export type ToolboxIdlInstructionBlobArg = {
   path: ToolboxIdlPath;
@@ -137,10 +137,10 @@ export class ToolboxIdlInstructionBlob {
   ): ToolboxIdlInstructionBlob {
     const typeFlat = parse(idlInstructionBlobType);
     const typeFull = hydrate(typeFlat, new Map(), typedefs);
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     serialize(typeFull, idlInstructionBlobValue, data, false);
     return ToolboxIdlInstructionBlob.const({
-      value: Buffer.concat(data),
+      bytes: Buffer.concat(data),
     });
   }
 
@@ -156,17 +156,11 @@ export class ToolboxIdlInstructionBlob {
         path,
         instructionArgsTypeFullFields,
       );
-      return this.arg({
-        path,
-        typeFull,
-      });
+      return this.arg({ path, typeFull });
     }
     const typeFlat = parse(idlInstructionBlobType);
     const typeFull = hydrate(typeFlat, new Map(), typedefs);
-    return this.arg({
-      path,
-      typeFull,
-    });
+    return this.arg({ path, typeFull });
   }
 
   static tryParseAccount(
@@ -176,16 +170,10 @@ export class ToolboxIdlInstructionBlob {
   ): ToolboxIdlInstructionBlob {
     const path = ToolboxIdlPath.tryParse(idlInstructionBlobPath);
     if (idlInstructionBlobType === undefined) {
-      return this.account({
-        path,
-        typeFull: undefined,
-      });
+      return this.account({ path, typeFull: undefined });
     }
     const typeFlat = parse(idlInstructionBlobType);
     const typeFull = hydrate(typeFlat, new Map(), typedefs);
-    return this.account({
-      path,
-      typeFull,
-    });
+    return this.account({ path, typeFull });
   }
 }

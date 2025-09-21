@@ -1,6 +1,8 @@
 import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 
-export function decompileTransactionPayerAddress(staticAddresses: PublicKey[]) {
+export function decompileTransactionPayerAddress(
+  staticAddresses: Array<PublicKey>,
+) {
   const payerAddress = staticAddresses[0];
   if (payerAddress === undefined) {
     throw new Error('No static addresses provided');
@@ -12,12 +14,12 @@ export function decompileTransactionInstructions(
   headerNumRequiredSignatures: number,
   headerNumReadonlySignedAccounts: number,
   headerNumReadonlyUnsignedAccounts: number,
-  staticAddresses: PublicKey[],
-  loadedWritableAddresses: PublicKey[],
-  loadedReadonlyAddresses: PublicKey[],
+  staticAddresses: Array<PublicKey>,
+  loadedWritableAddresses: Array<PublicKey>,
+  loadedReadonlyAddresses: Array<PublicKey>,
   compiledInstructions: {
     programIdIndex: number;
-    accountsIndexes: number[];
+    accountsIndexes: Array<number>;
     data: Buffer;
   }[],
 ) {
@@ -74,7 +76,7 @@ export function decompileTransactionInstructions(
 
 function decompileTransactionSignerAddresses(
   headerNumRequiredSignatures: number,
-  staticAddresses: PublicKey[],
+  staticAddresses: Array<PublicKey>,
 ): Set<PublicKey> {
   const signerAddresses = new Set<PublicKey>();
   for (let index = 0; index < headerNumRequiredSignatures; index++) {
@@ -87,7 +89,7 @@ function decompiledTransactionStaticReadonlyAddresses(
   headerNumRequiredSignatures: number,
   headerNumReadonlySignedAccounts: number,
   headerNumReadonlyUnsignedAccounts: number,
-  staticAddresses: PublicKey[],
+  staticAddresses: Array<PublicKey>,
 ): Set<PublicKey> {
   const readonlyAddresses = new Set<PublicKey>();
   for (

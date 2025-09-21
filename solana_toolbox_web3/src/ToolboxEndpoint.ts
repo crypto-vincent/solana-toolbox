@@ -219,7 +219,7 @@ export class ToolboxEndpoint {
   public async searchAddresses(
     programId: PublicKey,
     dataLength?: number,
-    dataChunks?: { offset: number; bytes: Buffer }[],
+    dataChunks?: Array<{ offset: number; bytes: Buffer }>,
   ): Promise<Set<PublicKey>> {
     const filters = [];
     if (dataLength !== undefined) {
@@ -258,7 +258,7 @@ export class ToolboxEndpoint {
     limit: number,
     startBefore?: TransactionSignature,
     rewindUntil?: TransactionSignature,
-  ): Promise<TransactionSignature[]> {
+  ): Promise<Array<TransactionSignature>> {
     const orderedSignatures = [];
     let oldestKnownSignature = startBefore;
     let retries = 0;

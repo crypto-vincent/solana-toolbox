@@ -136,7 +136,7 @@ function parseObject(idlTypeObject: Record<string, any>): ToolboxIdlTypeFlat {
   throw new Error('Could not parse type object');
 }
 
-function parseArray(idlTypeArray: any[]): ToolboxIdlTypeFlat {
+function parseArray(idlTypeArray: Array<any>): ToolboxIdlTypeFlat {
   if (idlTypeArray.length === 1) {
     return ToolboxIdlTypeFlat.vec({
       prefix: ToolboxIdlTypePrefix.U32,
@@ -351,7 +351,7 @@ export function parseFields(idlFields: any): ToolboxIdlTypeFlatFields {
     return ToolboxIdlTypeFlatFields.nothing();
   }
   let named = false;
-  const fieldsInfos: ToolboxIdlTypeFlatFieldNamed[] = [];
+  const fieldsInfos: Array<ToolboxIdlTypeFlatFieldNamed> = [];
   for (let i = 0; i < idlFields.length; i++) {
     const idlField = idlFields[i];
     if (idlField.hasOwnProperty('name')) {

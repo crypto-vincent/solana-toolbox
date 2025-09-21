@@ -143,7 +143,7 @@ export class ToolboxIdlInstruction {
 
   public encodeAddresses(
     instructionAddresses: Map<string, PublicKey>,
-  ): AccountMeta[] {
+  ): Array<AccountMeta> {
     const instructionMetas = [];
     for (const account of this.accounts) {
       if (account.optional && !instructionAddresses.has(account.name)) {
@@ -198,7 +198,7 @@ export class ToolboxIdlInstruction {
   }
 
   public encodePayload(instructionPayload: any): Buffer {
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     data.push(this.discriminator);
     serializeFields(this.argsTypeFullFields, instructionPayload, data, true);
     return Buffer.concat(data);

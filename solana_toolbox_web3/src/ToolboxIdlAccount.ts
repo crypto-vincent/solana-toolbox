@@ -84,7 +84,7 @@ export class ToolboxIdlAccount {
   }
 
   public encode(accountState: any): Buffer {
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     data.push(this.discriminator);
     serialize(this.contentTypeFull, accountState, data, true);
     return Buffer.concat(data);

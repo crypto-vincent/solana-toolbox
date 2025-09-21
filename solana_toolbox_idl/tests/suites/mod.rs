@@ -56,6 +56,7 @@ pub mod unit_transform_account_integers;
 pub mod unit_transform_account_nested;
 pub mod unit_transform_account_padded;
 pub mod unit_transform_account_prefixes;
+pub mod unit_transform_account_strings;
 pub mod unit_transform_account_structs_fields;
 pub mod unit_transform_instruction_optionals;
 pub mod unit_transform_instruction_struct;

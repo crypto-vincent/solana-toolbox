@@ -13,17 +13,16 @@ it('run', () => {
       },
     },
   });
-  // Choose the instruction
-  const idlAccount = idlProgram.accounts.get('MyAccount')!;
   // Check that we can use the manual IDL to encode/decode our account in different ways
-  const blobCoordinatorJoinRun = [
+  const idlAccount = idlProgram.accounts.get('MyAccount')!;
+  const bytesCoordinatorJoinRun = [
     67, 111, 111, 114, 100, 105, 110, 97, 116, 111, 114, 74, 111, 105, 110, 82,
     117, 110,
   ];
   const case1 = idlAccount.encode({
-    bytes: blobCoordinatorJoinRun,
-    vec_u8: blobCoordinatorJoinRun,
-    arr_u8: blobCoordinatorJoinRun,
+    bytes: bytesCoordinatorJoinRun,
+    vec_u8: bytesCoordinatorJoinRun,
+    arr_u8: bytesCoordinatorJoinRun,
   });
   const case2 = idlAccount.encode({
     bytes: 'CoordinatorJoinRun',

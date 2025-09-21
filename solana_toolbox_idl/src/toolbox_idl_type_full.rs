@@ -80,6 +80,14 @@ impl From<ToolboxIdlTypePrimitive> for ToolboxIdlTypeFull {
 }
 
 impl ToolboxIdlTypeFull {
+    pub fn struct_nothing() -> ToolboxIdlTypeFull {
+        ToolboxIdlTypeFull::Struct {
+            fields: ToolboxIdlTypeFullFields::Nothing,
+        }
+    }
+}
+
+impl ToolboxIdlTypeFull {
     pub fn is_vec32_u8(&self) -> bool {
         match self {
             ToolboxIdlTypeFull::Vec { prefix, items, .. } => {
@@ -103,12 +111,6 @@ impl ToolboxIdlTypeFull {
         match self {
             ToolboxIdlTypeFull::Primitive { primitive } => primitive == value,
             _ => false,
-        }
-    }
-
-    pub fn struct_nothing() -> ToolboxIdlTypeFull {
-        ToolboxIdlTypeFull::Struct {
-            fields: ToolboxIdlTypeFullFields::Nothing,
         }
     }
 }

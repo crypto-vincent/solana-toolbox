@@ -39,7 +39,7 @@ export class ToolboxUtils {
     }
     return value;
   }
-  public static expectArray(value: any): any[] {
+  public static expectArray(value: any): Array<any> {
     if (!ToolboxUtils.isArray(value)) {
       throw new Error(`Expected an array (found: ${typeof value})`);
     }

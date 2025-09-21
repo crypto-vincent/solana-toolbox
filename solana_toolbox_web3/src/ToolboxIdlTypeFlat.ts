@@ -3,7 +3,7 @@ import { ToolboxIdlTypePrimitive } from './ToolboxIdlTypePrimitive';
 
 export type ToolboxIdlTypeFlatDefined = {
   name: string;
-  generics: ToolboxIdlTypeFlat[];
+  generics: Array<ToolboxIdlTypeFlat>;
 };
 export type ToolboxIdlTypeFlatGeneric = {
   symbol: string;
@@ -28,7 +28,7 @@ export type ToolboxIdlTypeFlatStruct = {
 };
 export type ToolboxIdlTypeFlatEnum = {
   prefix: ToolboxIdlTypePrefix;
-  variants: ToolboxIdlTypeFlatEnumVariant[];
+  variants: Array<ToolboxIdlTypeFlatEnumVariant>;
 };
 export type ToolboxIdlTypeFlatPadded = {
   before: number;
@@ -151,8 +151,8 @@ export type ToolboxIdlTypeFlatFieldUnnamed = {
 type ToolboxIdlTypeFlatFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
 type ToolboxIdlTypeFlatFieldsContent =
   | {}
-  | ToolboxIdlTypeFlatFieldNamed[]
-  | ToolboxIdlTypeFlatFieldUnnamed[];
+  | Array<ToolboxIdlTypeFlatFieldNamed>
+  | Array<ToolboxIdlTypeFlatFieldUnnamed>;
 
 export class ToolboxIdlTypeFlatFields {
   private readonly discriminant: ToolboxIdlTypeFlatFieldsDiscriminant;
@@ -170,12 +170,12 @@ export class ToolboxIdlTypeFlatFields {
     return new ToolboxIdlTypeFlatFields('nothing', {});
   }
   public static named(
-    value: ToolboxIdlTypeFlatFieldNamed[],
+    value: Array<ToolboxIdlTypeFlatFieldNamed>,
   ): ToolboxIdlTypeFlatFields {
     return new ToolboxIdlTypeFlatFields('named', value);
   }
   public static unnamed(
-    value: ToolboxIdlTypeFlatFieldUnnamed[],
+    value: Array<ToolboxIdlTypeFlatFieldUnnamed>,
   ): ToolboxIdlTypeFlatFields {
     return new ToolboxIdlTypeFlatFields('unnamed', value);
   }
@@ -187,8 +187,12 @@ export class ToolboxIdlTypeFlatFields {
   public traverse<P1, P2, T>(
     visitor: {
       nothing: (value: {}, p1: P1, p2: P2) => T;
-      named: (value: ToolboxIdlTypeFlatFieldNamed[], p1: P1, p2: P2) => T;
-      unnamed: (value: ToolboxIdlTypeFlatFieldUnnamed[], p1: P1, p2: P2) => T;
+      named: (value: Array<ToolboxIdlTypeFlatFieldNamed>, p1: P1, p2: P2) => T;
+      unnamed: (
+        value: Array<ToolboxIdlTypeFlatFieldUnnamed>,
+        p1: P1,
+        p2: P2,
+      ) => T;
     },
     p1: P1,
     p2: P2,

@@ -7,7 +7,7 @@ export class ToolboxIdlTypedef {
   public readonly docs: any;
   public readonly serialization: string | undefined;
   public readonly repr: string | undefined;
-  public readonly generics: string[];
+  public readonly generics: Array<string>;
   public readonly typeFlat: ToolboxIdlTypeFlat;
 
   constructor(value: {
@@ -15,7 +15,7 @@ export class ToolboxIdlTypedef {
     docs: any;
     serialization: string | undefined;
     repr: string | undefined;
-    generics: string[];
+    generics: Array<string>;
     typeFlat: ToolboxIdlTypeFlat;
   }) {
     this.name = value.name;

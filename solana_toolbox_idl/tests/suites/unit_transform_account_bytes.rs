@@ -16,18 +16,17 @@ pub async fn run() {
         },
     }))
     .unwrap();
-    // Choose the instruction
-    let idl_account = idl_program.accounts.get("MyAccount").unwrap();
     // Check that we can use the manual IDL to encode/decode our account in different ways
-    let blob_coordinator_join_run = [
+    let idl_account = idl_program.accounts.get("MyAccount").unwrap();
+    let bytes_coordinator_join_run = [
         67, 111, 111, 114, 100, 105, 110, 97, 116, 111, 114, 74, 111, 105, 110,
         82, 117, 110,
     ];
     let case1 = idl_account
         .encode(&json!({
-            "bytes": blob_coordinator_join_run,
-            "vec_u8": blob_coordinator_join_run,
-            "arr_u8": blob_coordinator_join_run,
+            "bytes": bytes_coordinator_join_run,
+            "vec_u8": bytes_coordinator_join_run,
+            "arr_u8": bytes_coordinator_join_run,
         }))
         .unwrap();
     let case2 = idl_account

@@ -52,7 +52,7 @@ export class ToolboxIdlEvent {
   }
 
   public encode(eventState: any): Buffer {
-    let data: Buffer[] = [];
+    let data: Array<Buffer> = [];
     data.push(this.discriminator);
     serialize(this.infoTypeFull, eventState, data, true);
     return Buffer.concat(data);

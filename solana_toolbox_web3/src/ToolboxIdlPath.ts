@@ -78,7 +78,7 @@ export class ToolboxIdlPath {
   }
 
   public static tryParse(path: string): ToolboxIdlPath {
-    const parts = new Array<ToolboxIdlPathPart>();
+    const parts: Array<ToolboxIdlPathPart> = [];
     for (const part of path.split('.')) {
       if (part === '') {
         parts.push(ToolboxIdlPathPart.empty());

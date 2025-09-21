@@ -221,7 +221,7 @@ const deserializeFieldsVisitor = {
     return [0, null];
   },
   named: (
-    self: ToolboxIdlTypeFullFieldNamed[],
+    self: Array<ToolboxIdlTypeFullFieldNamed>,
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {
@@ -238,7 +238,7 @@ const deserializeFieldsVisitor = {
     return [dataSize, dataFields];
   },
   unnamed: (
-    self: ToolboxIdlTypeFullFieldUnnamed[],
+    self: Array<ToolboxIdlTypeFullFieldUnnamed>,
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {

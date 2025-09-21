@@ -8,8 +8,8 @@ export class ToolboxEndpointExecution {
   public readonly processedTime: Date | null; // TODO - should this be undefined instead of null?
   public readonly slot: number;
   public readonly payer: PublicKey;
-  public readonly instructions: TransactionInstruction[];
-  public readonly logs: string[] | null;
+  public readonly instructions: Array<TransactionInstruction>;
+  public readonly logs: Array<string> | null;
   public readonly error: TransactionError | null;
   public readonly unitsConsumed: number | null;
 
@@ -17,8 +17,8 @@ export class ToolboxEndpointExecution {
     processedTime: Date | null;
     slot: number;
     payer: PublicKey;
-    instructions: TransactionInstruction[];
-    logs: string[] | null;
+    instructions: Array<TransactionInstruction>;
+    logs: Array<string> | null;
     error: TransactionError | null;
     unitsConsumed: number | null;
   }) {

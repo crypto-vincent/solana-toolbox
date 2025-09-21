@@ -218,7 +218,7 @@ const hydrateFieldsVisitor = {
     return ToolboxIdlTypeFullFields.nothing();
   },
   named: (
-    self: ToolboxIdlTypeFlatFieldNamed[],
+    self: Array<ToolboxIdlTypeFlatFieldNamed>,
     genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlTypeFullFields => {
@@ -232,7 +232,7 @@ const hydrateFieldsVisitor = {
     );
   },
   unnamed: (
-    self: ToolboxIdlTypeFlatFieldUnnamed[],
+    self: Array<ToolboxIdlTypeFlatFieldUnnamed>,
     genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlTypeFullFields => {
