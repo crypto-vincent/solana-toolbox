@@ -48,9 +48,9 @@ impl ToolboxIdlPath {
                 self.try_get_type_full_fields(fields)
             },
             ToolboxIdlTypeFull::Enum { variants, .. } => match current {
-                ToolboxIdlPathPart::Empty => {
-                    Err(anyhow!("Invalid Enum Variant: Empty String"))
-                },
+                ToolboxIdlPathPart::Empty => Err(anyhow!(
+                    "Expected enum variant key or index (found empty)"
+                )),
                 ToolboxIdlPathPart::Index(index) => {
                     for variant in variants {
                         if variant.code == u128::try_from(index)? {

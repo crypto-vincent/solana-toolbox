@@ -9,8 +9,8 @@ pub async fn run() {
             "MyAccount": {
                 "fields": [
                     { "name": "bytes", "type": "bytes" },
-                    { "name": "vec_u8_1", "type": {"vec": "u8"} },
-                    { "name": "vec_u8_1", "type": ["u8"] },
+                    { "name": "vec_u8", "type": {"vec": "u8"} },
+                    { "name": "arr_u8", "type": ["u8", 18] },
                 ]
             }
         },
@@ -26,48 +26,46 @@ pub async fn run() {
     let case1 = idl_account
         .encode(&json!({
             "bytes": blob_coordinator_join_run,
-            "vec_u8_1": blob_coordinator_join_run,
-            "vec_u8_2": blob_coordinator_join_run,
+            "vec_u8": blob_coordinator_join_run,
+            "arr_u8": blob_coordinator_join_run,
         }))
         .unwrap();
     let case2 = idl_account
         .encode(&json!({
-            "bytes": b"CoordinatorJoinRun",
-            "vec_u8_1": b"CoordinatorJoinRun",
-            "vec_u8_2": b"CoordinatorJoinRun",
+            "bytes": "CoordinatorJoinRun",
+            "vec_u8": "CoordinatorJoinRun",
+            "arr_u8": "CoordinatorJoinRun",
         }))
         .unwrap();
     let case3 = idl_account
         .encode(&json!({
             "bytes": {"utf8": "CoordinatorJoinRun"},
-            "vec_u8_1": {"utf8": "CoordinatorJoinRun"},
-            "vec_u8_2": {"utf8": "CoordinatorJoinRun"},
+            "vec_u8": {"utf8": "CoordinatorJoinRun"},
+            "arr_u8": {"utf8": "CoordinatorJoinRun"},
         }))
         .unwrap();
-    let case4 = idl_account.encode(&json!({
-        "bytes": {"base16": "43 6F 6F 72 64 69 6E 61 74 6F 72 4A 6F 69 6E 52 75 6E"},
-        "vec_u8_1": {"base16": "436F6F7264696E61746F724A6F696E52756E"},
-        "vec_u8_2": {"base16": "\"436F6F7264696E61746F724A6F696E52756E\""},
-    })).unwrap();
+    let case4 = idl_account
+        .encode(&json!({
+            "bytes": {"base16": "436F6F7264696E61746F724A6F696E52756E"},
+            "vec_u8": {"base58": "3oEADzTpGyQHQioFsuM8mzvXf"},
+            "arr_u8": {"base64": "Q29vcmRpbmF0b3JKb2luUnVu"},
+        }))
+        .unwrap();
     let case5 = idl_account
         .encode(&json!({
-            "bytes": {"base58": "3oE - ADz TpG yQHQ ioFs uM8m zv Xf"},
-            "vec_u8_1": {"base58": "3oEADzTpGyQHQioFsuM8mzvXf"},
-            "vec_u8_2": {"base58": "\"3oEADzTpGyQHQioFsuM8mzvXf\""},
-        }))
-        .unwrap();
-    let case6 = idl_account
-        .encode(&json!({
-            "bytes": {"base64": "Q29 v cm RpbmF0b3JKb2luUnVu"},
-            "vec_u8_1": {"base64": "Q29vcmRpbmF0b3JKb2luUnVu"},
-            "vec_u8_2": {"base64": "\"Q29vcmRpbmF0b3JKb2luUnVu\""},
-        }))
-        .unwrap();
-    let case7 = idl_account
-        .encode(&json!({
-            "bytes": {"value": ["Coordinator", "Join", "Run"], "type": ["string"]},
-            "vec_u8_1": {"value": ["Coordinator", "Join", [82, 117, 110]], "type": ["bytes", 3]},
-            "vec_u8_2": {"value": ["Coordinator", "Join", "Run"], "type": {"vec": "string"}, "prefixed": false},
+            "bytes": {
+                "value": ["Coordinator", "Join", "Run"],
+                "type": ["string"],
+            },
+            "vec_u8": {
+                "value": ["Coordinator", "Join", [82, 117, 110]],
+                "type": ["bytes", 3],
+            },
+            "arr_u8": {
+                "value": ["Coordinator", "Join", "Run"],
+                "type": {"vec": "string"},
+                "prefixed": false,
+            },
         }))
         .unwrap();
     // Check that we got the correct results
@@ -77,13 +75,10 @@ pub async fn run() {
     expected.extend_from_slice(b"CoordinatorJoinRun");
     expected.extend_from_slice(&18u32.to_le_bytes());
     expected.extend_from_slice(b"CoordinatorJoinRun");
-    expected.extend_from_slice(&18u32.to_le_bytes());
     expected.extend_from_slice(b"CoordinatorJoinRun");
     assert_eq!(case1, expected);
     assert_eq!(case2, expected);
     assert_eq!(case3, expected);
     assert_eq!(case4, expected);
     assert_eq!(case5, expected);
-    assert_eq!(case6, expected);
-    assert_eq!(case7, expected);
 }

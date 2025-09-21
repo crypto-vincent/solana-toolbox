@@ -104,13 +104,36 @@ const pathGetTypeFullVisitor = {
     return pathGetTypeFullFields(path, self.fields);
   },
   enum: (
-    _self: ToolboxIdlTypeFullEnum,
-    path: ToolboxIdlPath,
-    _current: ToolboxIdlPathPart,
-    _next: ToolboxIdlPath,
+    self: ToolboxIdlTypeFullEnum,
+    _path: ToolboxIdlPath,
+    current: ToolboxIdlPathPart,
+    next: ToolboxIdlPath,
   ) => {
-    // TODO - support enum variants with fields
-    throw new Error(`Cannot traverse into enum variant: '${path.value()}'`);
+    return current.traverse(
+      {
+        empty: () => {
+          throw new Error(`Expected enum variant key or index (found empty)`);
+        },
+        key: (key: string) => {
+          for (const variant of self.variants) {
+            if (variant.name === key) {
+              return pathGetTypeFullFields(next, variant.fields);
+            }
+          }
+          throw new Error(`Could not find enum variant: '${key}'`);
+        },
+        index: (index: bigint) => {
+          for (const variant of self.variants) {
+            if (variant.code === index) {
+              return pathGetTypeFullFields(next, variant.fields);
+            }
+          }
+          throw new Error(`Could not find enum variant with code: '${index}'`);
+        },
+      },
+      undefined,
+      undefined,
+    );
   },
   padded: (
     self: ToolboxIdlTypeFullPadded,
@@ -156,16 +179,17 @@ const pathGetTypeFullFieldsVisitor = {
     current: ToolboxIdlPathPart,
     next: ToolboxIdlPath,
   ) => {
+    const length = self.length;
     const index = current.index();
     if (index === undefined) {
       throw new Error(`Expected index but got '${current.value()}'`);
     }
-    const length = self.length;
-    if (index < 0 || index >= length) {
+    const indexNumber = Number(index);
+    if (indexNumber < 0 || indexNumber >= length) {
       throw new Error(
-        `Index ${index} out of bounds for fields of length ${length}`,
+        `Index ${indexNumber} out of bounds for fields of length ${length}`,
       );
     }
-    return pathGetTypeFull(next, self[index]!.content);
+    return pathGetTypeFull(next, self[indexNumber]!.content);
   },
 };

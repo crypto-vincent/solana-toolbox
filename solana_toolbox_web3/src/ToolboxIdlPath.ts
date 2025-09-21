@@ -1,5 +1,5 @@
 type ToolboxIdlPathPartDiscriminant = 'empty' | 'index' | 'key';
-type ToolboxIdlPathPartContent = {} | number | string;
+type ToolboxIdlPathPartContent = {} | bigint | string;
 
 export class ToolboxIdlPathPart {
   private discriminant: ToolboxIdlPathPartDiscriminant;
@@ -15,7 +15,7 @@ export class ToolboxIdlPathPart {
   public static empty(): ToolboxIdlPathPart {
     return new ToolboxIdlPathPart('empty', {});
   }
-  public static index(value: number): ToolboxIdlPathPart {
+  public static index(value: bigint): ToolboxIdlPathPart {
     return new ToolboxIdlPathPart('index', value);
   }
   public static key(value: string): ToolboxIdlPathPart {
@@ -32,9 +32,9 @@ export class ToolboxIdlPathPart {
     }
     return undefined;
   }
-  public index(): number | undefined {
+  public index(): bigint | undefined {
     if (this.discriminant === 'index') {
-      return this.content as number;
+      return this.content as bigint;
     }
     return undefined;
   }
@@ -44,7 +44,7 @@ export class ToolboxIdlPathPart {
       case 'empty':
         return '';
       case 'index':
-        return (this.content as number).toString();
+        return (this.content as bigint).toString();
       case 'key':
         return this.content as string;
     }
@@ -53,7 +53,7 @@ export class ToolboxIdlPathPart {
   public traverse<P1, P2, T>(
     visitor: {
       empty: (value: {}, p1: P1, p2: P2) => T;
-      index: (value: number, p1: P1, p2: P2) => T;
+      index: (value: bigint, p1: P1, p2: P2) => T;
       key: (value: string, p1: P1, p2: P2) => T;
     },
     p1: P1,
@@ -63,7 +63,7 @@ export class ToolboxIdlPathPart {
       case 'empty':
         return visitor.empty(this.content as {}, p1, p2);
       case 'index':
-        return visitor.index(this.content as number, p1, p2);
+        return visitor.index(this.content as bigint, p1, p2);
       case 'key':
         return visitor.key(this.content as string, p1, p2);
     }
@@ -83,7 +83,7 @@ export class ToolboxIdlPath {
       if (part === '') {
         parts.push(ToolboxIdlPathPart.empty());
       } else if (/^\d+$/.test(part)) {
-        parts.push(ToolboxIdlPathPart.index(parseInt(part, 10)));
+        parts.push(ToolboxIdlPathPart.index(BigInt(part)));
       } else {
         parts.push(ToolboxIdlPathPart.key(part));
       }

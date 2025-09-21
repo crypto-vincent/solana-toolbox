@@ -86,11 +86,18 @@ const serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
+    if (self.items.isPrimitive(ToolboxIdlTypePrimitive.U8)) {
+      const bytes = ToolboxUtils.expectBytes(value);
+      if (prefixed) {
+        serializePrefix(self.prefix, BigInt(bytes.length), data);
+      }
+      data.push(bytes);
+      return;
+    }
     const array = ToolboxUtils.expectArray(value);
     if (prefixed) {
       serializePrefix(self.prefix, BigInt(array.length), data);
     }
-    // TODO - handle special case of "bytes" fancy serializer
     for (const item of array) {
       serialize(self.items, item, data, prefixed);
     }
@@ -101,11 +108,14 @@ const serializeVisitor = {
     data: Buffer[],
     prefixed: boolean,
   ) => {
+    if (self.items.isPrimitive(ToolboxIdlTypePrimitive.U8)) {
+      data.push(ToolboxUtils.expectBytes(value));
+      return;
+    }
     const array = ToolboxUtils.expectArray(value);
     if (array.length != self.length) {
       throw new Error(`Expected an array of size: ${self.length}`);
     }
-    // TODO - handle special case of "bytes" fancy serializer
     for (const item of array) {
       serialize(self.items, item, data, prefixed);
     }

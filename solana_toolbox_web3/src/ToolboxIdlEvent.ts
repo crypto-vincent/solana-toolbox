@@ -35,12 +35,9 @@ export class ToolboxIdlEvent {
   ): ToolboxIdlEvent {
     ToolboxUtils.expectObject(idlEvent);
     const docs = idlEvent['docs'];
-    const discriminator = Buffer.from(
-      ToolboxUtils.expectArray(
-        idlEvent['discriminator'] ??
-          ToolboxUtils.discriminator(`event:${idlEventName}`),
-      ),
-    );
+    const discriminator = idlEvent['discriminator']
+      ? ToolboxUtils.expectBytes(idlEvent['discriminator'])
+      : ToolboxUtils.discriminator(`event:${idlEventName}`);
     const infoTypeFlat = parseObjectIsPossible(idlEvent)
       ? parse(idlEvent)
       : parse(idlEventName);

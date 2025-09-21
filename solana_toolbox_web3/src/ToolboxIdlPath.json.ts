@@ -10,16 +10,17 @@ export function pathGetJsonValue(path: ToolboxIdlPath, value: any): any {
   const next = split.rest;
   if (ToolboxUtils.isArray(value)) {
     const length = value.length;
-    const index = current.isEmpty() ? 0 : current.index();
+    const index = current.isEmpty() ? 0n : current.index();
     if (index === undefined) {
       throw new Error(`Expected array index but got '${current.value()}'`);
     }
-    if (index < 0 || index >= length) {
+    const indexNumber = Number(index);
+    if (indexNumber < 0 || indexNumber >= length) {
       throw new Error(
-        `Index ${index} out of bounds for array of length ${length}`,
+        `Index ${indexNumber} out of bounds for array of length ${length}`,
       );
     }
-    return pathGetJsonValue(next, value[index]);
+    return pathGetJsonValue(next, value[indexNumber]);
   }
   if (ToolboxUtils.isObject(value)) {
     const key = current.value();

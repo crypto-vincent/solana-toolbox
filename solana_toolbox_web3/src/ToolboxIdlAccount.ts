@@ -61,14 +61,13 @@ export class ToolboxIdlAccount {
         ToolboxUtils.expectObject(blob);
         blobs.push({
           offset: ToolboxUtils.expectNumber(blob['offset']),
-          value: Buffer.from(ToolboxUtils.expectArray(blob['value'])),
+          value: ToolboxUtils.expectBytes(blob['value']),
         });
       }
     }
-    const discriminator = Buffer.from(
-      idlAccount['discriminator'] ??
-        ToolboxUtils.discriminator(`account:${idlAccountName}`),
-    );
+    const discriminator = idlAccount['discriminator']
+      ? ToolboxUtils.expectBytes(idlAccount['discriminator'])
+      : ToolboxUtils.discriminator(`account:${idlAccountName}`);
     const contentTypeFlat = parseObjectIsPossible(idlAccount)
       ? parse(idlAccount)
       : parse(idlAccountName);

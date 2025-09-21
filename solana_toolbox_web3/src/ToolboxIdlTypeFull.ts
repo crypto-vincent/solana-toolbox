@@ -102,6 +102,10 @@ export class ToolboxIdlTypeFull {
     });
   }
 
+  public isPrimitive(primitive: ToolboxIdlTypePrimitive): boolean {
+    return this.discriminant === 'primitive' && this.content === primitive;
+  }
+
   public traverse<P1, P2, P3, T>(
     visitor: {
       typedef: (value: ToolboxIdlTypeFullTypedef, p1: P1, p2: P2, p3: P3) => T;

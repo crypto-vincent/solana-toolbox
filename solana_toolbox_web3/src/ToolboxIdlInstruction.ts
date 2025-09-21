@@ -65,24 +65,22 @@ export class ToolboxIdlInstruction {
     idlInstruction: any,
     typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlInstruction {
-    let docs = idlInstruction['docs'];
-    let discriminator = Buffer.from(
-      // TODO - utils to parse as "bytes"
-      idlInstruction['discriminator'] ??
-        ToolboxUtils.discriminator(`global:${idlInstructionName}`),
-    );
-    let argsTypeFlatFields = parseFields(idlInstruction['args'] ?? []);
-    let argsTypeFullFields = hydrateFields(
+    const docs = idlInstruction['docs'];
+    const discriminator = idlInstruction['discriminator']
+      ? ToolboxUtils.expectBytes(idlInstruction['discriminator'])
+      : ToolboxUtils.discriminator(`global:${idlInstructionName}`);
+    const argsTypeFlatFields = parseFields(idlInstruction['args'] ?? []);
+    const argsTypeFullFields = hydrateFields(
       argsTypeFlatFields,
       new Map(),
       typedefs,
     );
-    let returnTypeFlat = parse(idlInstruction['returns'] ?? { fields: [] });
-    let returnTypeFull = hydrate(returnTypeFlat, new Map(), typedefs);
-    let idlInstructionAccounts = ToolboxUtils.expectArray(
+    const returnTypeFlat = parse(idlInstruction['returns'] ?? { fields: [] });
+    const returnTypeFull = hydrate(returnTypeFlat, new Map(), typedefs);
+    const idlInstructionAccounts = ToolboxUtils.expectArray(
       idlInstruction['accounts'] ?? [],
     );
-    let instructionAccounts = idlInstructionAccounts.map(
+    const instructionAccounts = idlInstructionAccounts.map(
       (idlInstructionAccount: any) => {
         return ToolboxIdlInstructionAccount.tryParse(
           idlInstructionAccount,
@@ -119,8 +117,8 @@ export class ToolboxIdlInstruction {
     instructionPayload: any,
     instructionAddresses: Map<string, PublicKey>,
   ): TransactionInstruction {
-    let instructionMetas = this.encodeAddresses(instructionAddresses);
-    let instructionData = this.encodePayload(instructionPayload);
+    const instructionMetas = this.encodeAddresses(instructionAddresses);
+    const instructionData = this.encodePayload(instructionPayload);
     return {
       programId: instructionProgramId,
       keys: instructionMetas,
@@ -134,8 +132,8 @@ export class ToolboxIdlInstruction {
     instructionAddresses: Map<string, PublicKey>;
   } {
     this.checkPayload(instruction.data);
-    let instructionAddresses = this.decodeAddresses(instruction.keys);
-    let instructionPayload = this.decodePayload(instruction.data);
+    const instructionAddresses = this.decodeAddresses(instruction.keys);
+    const instructionPayload = this.decodePayload(instruction.data);
     return {
       instructionProgramId: instruction.programId,
       instructionAddresses,
@@ -146,12 +144,12 @@ export class ToolboxIdlInstruction {
   public encodeAddresses(
     instructionAddresses: Map<string, PublicKey>,
   ): AccountMeta[] {
-    let instructionMetas = [];
-    for (let account of this.accounts) {
+    const instructionMetas = [];
+    for (const account of this.accounts) {
       if (account.optional && !instructionAddresses.has(account.name)) {
         continue;
       }
-      let instructionAddress = instructionAddresses.get(account.name);
+      const instructionAddress = instructionAddresses.get(account.name);
       if (!instructionAddress) {
         throw new Error(`Missing address for account: ${account.name}`);
       }
@@ -168,19 +166,19 @@ export class ToolboxIdlInstruction {
     instructionMetas: Array<AccountMeta>,
   ): Map<string, PublicKey> {
     let instructionOptionalsPossible = 0;
-    for (let account of this.accounts) {
+    for (const account of this.accounts) {
       if (account.optional) {
         instructionOptionalsPossible++;
       }
     }
-    let instructionOptionalsUnuseds =
+    const instructionOptionalsUnuseds =
       this.accounts.length - instructionMetas.length;
-    let instructionOptionalsUsed =
+    const instructionOptionalsUsed =
       instructionOptionalsPossible - instructionOptionalsUnuseds;
-    let instructionAddresses = new Map<string, PublicKey>();
+    const instructionAddresses = new Map<string, PublicKey>();
     let instructionMetaIndex = 0;
     let instructionOptionalsCurrent = 0;
-    for (let account of this.accounts) {
+    for (const account of this.accounts) {
       if (account.optional) {
         instructionOptionalsCurrent += 1;
         if (instructionOptionalsCurrent > instructionOptionalsUsed) {
@@ -200,7 +198,7 @@ export class ToolboxIdlInstruction {
   }
 
   public encodePayload(instructionPayload: any): Buffer {
-    let data: Buffer[] = [];
+    const data: Buffer[] = [];
     data.push(this.discriminator);
     serializeFields(this.argsTypeFullFields, instructionPayload, data, true);
     return Buffer.concat(data);
@@ -208,7 +206,7 @@ export class ToolboxIdlInstruction {
 
   public decodePayload(instructionData: Buffer): any {
     this.checkPayload(instructionData);
-    let [, instructionPayload] = deserializeFields(
+    const [, instructionPayload] = deserializeFields(
       this.argsTypeFullFields,
       instructionData,
       this.discriminator.length,

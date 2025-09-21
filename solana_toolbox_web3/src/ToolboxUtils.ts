@@ -1,4 +1,8 @@
 import { sha256 } from 'sha.js';
+import { parse } from './ToolboxIdlTypeFlat.parse';
+import { hydrate } from './ToolboxIdlTypeFlat.hydrate';
+import { serialize } from './ToolboxIdlTypeFull.serialize';
+import bs58 from 'bs58';
 
 export class ToolboxUtils {
   public static isBoolean(value: any): boolean {
@@ -67,5 +71,52 @@ export class ToolboxUtils {
         `${message}\n > ${err instanceof Error ? err.message : String(err)}`,
       );
     }
+  }
+
+  public static expectBytes(value: any): Buffer {
+    if (ToolboxUtils.isString(value)) {
+      return Buffer.from(value, 'utf8');
+    }
+    if (ToolboxUtils.isArray(value)) {
+      const bytes = Buffer.alloc(value.length);
+      for (let i = 0; i < value.length; i++) {
+        const byte = ToolboxUtils.expectNumber(value[i]);
+        if (byte < 0 || byte > 255) {
+          throw new Error(
+            `Expected byte to be in range 0-255 (found: ${byte})`,
+          );
+        }
+        bytes[i] = byte;
+      }
+      return bytes;
+    }
+    if (ToolboxUtils.isObject(value)) {
+      if (value.hasOwnProperty('base16')) {
+        const base16 = ToolboxUtils.expectString(value['base16']);
+        return Buffer.from(base16, 'hex');
+      }
+      if (value.hasOwnProperty('base58')) {
+        const base58 = ToolboxUtils.expectString(value['base58']);
+        return bs58.decode(base58);
+      }
+      if (value.hasOwnProperty('base64')) {
+        const base64 = ToolboxUtils.expectString(value['base64']);
+        return Buffer.from(base64, 'base64');
+      }
+      if (value.hasOwnProperty('utf8')) {
+        const utf8 = ToolboxUtils.expectString(value['utf8']);
+        return Buffer.from(utf8, 'utf8');
+      }
+      if (value.hasOwnProperty('value')) {
+        const typeFlat = parse(value['type']);
+        const typeFull = hydrate(typeFlat, new Map(), new Map());
+        const data: Array<Buffer> = [];
+        serialize(typeFull, value['value'], data, !!value['prefixed']);
+        return Buffer.concat(data);
+      }
+    }
+    throw new Error(
+      `Expected value to be a string, array, or object (found: ${typeof value})`,
+    );
   }
 }
