@@ -137,7 +137,7 @@ export type ToolboxIdlTypeFullFieldUnnamed = {
 
 type ToolboxIdlTypeFullFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
 type ToolboxIdlTypeFullFieldsContent =
-  | {}
+  | null
   | Array<ToolboxIdlTypeFullFieldNamed>
   | Array<ToolboxIdlTypeFullFieldUnnamed>;
 
@@ -154,7 +154,7 @@ export class ToolboxIdlTypeFullFields {
   }
 
   public static nothing(): ToolboxIdlTypeFullFields {
-    return new ToolboxIdlTypeFullFields('nothing', {});
+    return new ToolboxIdlTypeFullFields('nothing', null);
   }
   public static named(
     value: Array<ToolboxIdlTypeFullFieldNamed>,
@@ -173,7 +173,7 @@ export class ToolboxIdlTypeFullFields {
 
   public traverse<P1, P2, P3, T>(
     visitor: {
-      nothing: (value: {}, p1: P1, p2: P2, p3: P3) => T;
+      nothing: (value: null, p1: P1, p2: P2, p3: P3) => T;
       named: (
         value: Array<ToolboxIdlTypeFullFieldNamed>,
         p1: P1,
@@ -191,7 +191,24 @@ export class ToolboxIdlTypeFullFields {
     p2: P2,
     p3: P3,
   ) {
-    return visitor[this.discriminant](this.content as any, p1, p2, p3);
+    switch (this.discriminant) {
+      case 'nothing':
+        return visitor.nothing(this.content as null, p1, p2, p3);
+      case 'named':
+        return visitor.named(
+          this.content as Array<ToolboxIdlTypeFullFieldNamed>,
+          p1,
+          p2,
+          p3,
+        );
+      case 'unnamed':
+        return visitor.unnamed(
+          this.content as Array<ToolboxIdlTypeFullFieldUnnamed>,
+          p1,
+          p2,
+          p3,
+        );
+    }
   }
 }
 

@@ -217,7 +217,7 @@ const deserializeVisitor = {
 };
 
 const deserializeFieldsVisitor = {
-  nothing: (_self: {}, _data: Buffer, _dataOffset: number): [number, any] => {
+  nothing: (_self: null, _data: Buffer, _dataOffset: number): [number, any] => {
     return [0, null];
   },
   named: (

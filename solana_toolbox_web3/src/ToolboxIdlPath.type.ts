@@ -156,7 +156,7 @@ const pathGetTypeFullVisitor = {
 };
 
 const pathGetTypeFullFieldsVisitor = {
-  nothing: (_self: {}, path: ToolboxIdlPath) => {
+  nothing: (_self: null, path: ToolboxIdlPath) => {
     throw new Error(`Type has no fields: '${path.value()}'`);
   },
   named: (

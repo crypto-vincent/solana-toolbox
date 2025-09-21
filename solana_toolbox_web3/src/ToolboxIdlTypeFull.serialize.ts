@@ -232,7 +232,7 @@ const serializeVisitor = {
 
 const serializeFieldsVisitor = {
   nothing: (
-    _self: {},
+    _self: null,
     _value: any,
     _data: Array<Buffer>,
     _prefixed: boolean,
@@ -296,16 +296,20 @@ const serializePrefixVisitor = {
 
 const serializePrimitiveVisitor = {
   u8: (buffer: Buffer, value: any) => {
-    buffer.writeUInt8(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeUInt8(Number(num));
   },
   u16: (buffer: Buffer, value: any) => {
-    buffer.writeUInt16LE(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeUInt16LE(Number(num));
   },
   u32: (buffer: Buffer, value: any) => {
-    buffer.writeUInt32LE(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeUInt32LE(Number(num));
   },
   u64: (buffer: Buffer, value: any) => {
-    buffer.writeBigUInt64LE(expectInteger(value));
+    const num = expectInteger(value);
+    buffer.writeBigUInt64LE(num);
   },
   u128: (buffer: Buffer, value: any) => {
     const num = expectInteger(value);
@@ -315,16 +319,20 @@ const serializePrimitiveVisitor = {
     buffer.writeBigUInt64LE(high, 8);
   },
   i8: (buffer: Buffer, value: any) => {
-    buffer.writeInt8(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeInt8(Number(num));
   },
   i16: (buffer: Buffer, value: any) => {
-    buffer.writeInt16LE(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeInt16LE(Number(num));
   },
   i32: (buffer: Buffer, value: any) => {
-    buffer.writeInt32LE(ToolboxUtils.expectNumber(value));
+    const num = expectInteger(value);
+    buffer.writeInt32LE(Number(num));
   },
   i64: (buffer: Buffer, value: any) => {
-    buffer.writeBigInt64LE(expectInteger(value));
+    const num = expectInteger(value);
+    buffer.writeBigInt64LE(num);
   },
   i128: (buffer: Buffer, value: any) => {
     const num = expectInteger(value);
@@ -334,10 +342,12 @@ const serializePrimitiveVisitor = {
     buffer.writeBigInt64LE(high, 8);
   },
   f32: (buffer: Buffer, value: any) => {
-    buffer.writeFloatLE(ToolboxUtils.expectNumber(value));
+    const num = expectFloating(value);
+    buffer.writeFloatLE(num);
   },
   f64: (buffer: Buffer, value: any) => {
-    buffer.writeDoubleLE(ToolboxUtils.expectNumber(value));
+    const num = expectFloating(value);
+    buffer.writeDoubleLE(num);
   },
   bool: (buffer: Buffer, value: any) => {
     if (ToolboxUtils.expectBoolean(value)) {
@@ -347,7 +357,8 @@ const serializePrimitiveVisitor = {
     }
   },
   pubkey: (buffer: Buffer, value: any) => {
-    buffer.set(new PublicKey(ToolboxUtils.expectString(value)).toBuffer());
+    const address = ToolboxUtils.expectString(value);
+    buffer.set(new PublicKey(address).toBuffer());
   },
 };
 
@@ -356,4 +367,11 @@ function expectInteger(value: any): bigint {
     return BigInt(value);
   }
   throw new Error(`Expected an integer (found: ${typeof value})`);
+}
+
+function expectFloating(value: any): number {
+  if (ToolboxUtils.isNumber(value) || ToolboxUtils.isString(value)) {
+    return Number(value);
+  }
+  throw new Error(`Expected a floating-point number (found: ${typeof value})`);
 }

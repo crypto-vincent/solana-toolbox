@@ -211,7 +211,7 @@ const hydrateOrConstLiteralVisitor = {
 
 const hydrateFieldsVisitor = {
   nothing: (
-    _self: {},
+    _self: null,
     _genericsBySymbol: Map<string, ToolboxIdlTypeFull | number>,
     _typedefs: Map<string, ToolboxIdlTypedef>,
   ): ToolboxIdlTypeFullFields => {

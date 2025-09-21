@@ -281,7 +281,7 @@ const bytemuckRustVisitor = {
 
 const bytemuckFieldsVisitor = {
   nothing: (
-    _self: {},
+    _self: null,
     _prefixSize: number,
     _rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {

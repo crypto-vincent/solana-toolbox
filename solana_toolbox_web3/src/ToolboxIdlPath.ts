@@ -1,5 +1,5 @@
 type ToolboxIdlPathPartDiscriminant = 'empty' | 'index' | 'key';
-type ToolboxIdlPathPartContent = {} | bigint | string;
+type ToolboxIdlPathPartContent = null | bigint | string;
 
 export class ToolboxIdlPathPart {
   private discriminant: ToolboxIdlPathPartDiscriminant;
@@ -13,7 +13,7 @@ export class ToolboxIdlPathPart {
     this.content = content;
   }
   public static empty(): ToolboxIdlPathPart {
-    return new ToolboxIdlPathPart('empty', {});
+    return new ToolboxIdlPathPart('empty', null);
   }
   public static index(value: bigint): ToolboxIdlPathPart {
     return new ToolboxIdlPathPart('index', value);
@@ -52,7 +52,7 @@ export class ToolboxIdlPathPart {
 
   public traverse<P1, P2, T>(
     visitor: {
-      empty: (value: {}, p1: P1, p2: P2) => T;
+      empty: (value: null, p1: P1, p2: P2) => T;
       index: (value: bigint, p1: P1, p2: P2) => T;
       key: (value: string, p1: P1, p2: P2) => T;
     },
@@ -61,7 +61,7 @@ export class ToolboxIdlPathPart {
   ): T {
     switch (this.discriminant) {
       case 'empty':
-        return visitor.empty(this.content as {}, p1, p2);
+        return visitor.empty(this.content as null, p1, p2);
       case 'index':
         return visitor.index(this.content as bigint, p1, p2);
       case 'key':

@@ -66,9 +66,9 @@ export function findInstructionAccountPda(
     }
     pdaProgramId = new PublicKey(programBuffer);
   }
-  const [pda, _] = PublicKey.findProgramAddressSync(
+  const pdaAndBump = PublicKey.findProgramAddressSync(
     pdaSeedsBytes,
     pdaProgramId,
   );
-  return pda;
+  return pdaAndBump[0];
 }

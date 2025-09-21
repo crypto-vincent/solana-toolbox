@@ -150,7 +150,7 @@ export type ToolboxIdlTypeFlatFieldUnnamed = {
 
 type ToolboxIdlTypeFlatFieldsDiscriminant = 'nothing' | 'named' | 'unnamed';
 type ToolboxIdlTypeFlatFieldsContent =
-  | {}
+  | null
   | Array<ToolboxIdlTypeFlatFieldNamed>
   | Array<ToolboxIdlTypeFlatFieldUnnamed>;
 
@@ -167,7 +167,7 @@ export class ToolboxIdlTypeFlatFields {
   }
 
   public static nothing(): ToolboxIdlTypeFlatFields {
-    return new ToolboxIdlTypeFlatFields('nothing', {});
+    return new ToolboxIdlTypeFlatFields('nothing', null);
   }
   public static named(
     value: Array<ToolboxIdlTypeFlatFieldNamed>,
@@ -186,7 +186,7 @@ export class ToolboxIdlTypeFlatFields {
 
   public traverse<P1, P2, T>(
     visitor: {
-      nothing: (value: {}, p1: P1, p2: P2) => T;
+      nothing: (value: null, p1: P1, p2: P2) => T;
       named: (value: Array<ToolboxIdlTypeFlatFieldNamed>, p1: P1, p2: P2) => T;
       unnamed: (
         value: Array<ToolboxIdlTypeFlatFieldUnnamed>,
@@ -197,7 +197,22 @@ export class ToolboxIdlTypeFlatFields {
     p1: P1,
     p2: P2,
   ) {
-    return visitor[this.discriminant](this.content as any, p1, p2);
+    switch (this.discriminant) {
+      case 'nothing':
+        return visitor.nothing(this.content as null, p1, p2);
+      case 'named':
+        return visitor.named(
+          this.content as Array<ToolboxIdlTypeFlatFieldNamed>,
+          p1,
+          p2,
+        );
+      case 'unnamed':
+        return visitor.unnamed(
+          this.content as Array<ToolboxIdlTypeFlatFieldUnnamed>,
+          p1,
+          p2,
+        );
+    }
   }
 }
 

@@ -164,18 +164,6 @@ pub(crate) fn idl_value_as_str_or_else(value: &Value) -> Result<&str> {
     value.as_str().context("Expected an string")
 }
 
-pub(crate) fn idl_value_as_u64_or_else(value: &Value) -> Result<u64> {
-    value.as_u64().context("Expected an unsigned number")
-}
-
-pub(crate) fn idl_value_as_i64_or_else(value: &Value) -> Result<i64> {
-    value.as_i64().context("Expected a signed number")
-}
-
-pub(crate) fn idl_value_as_f64_or_else(value: &Value) -> Result<f64> {
-    value.as_f64().context("Expected a floating number")
-}
-
 pub(crate) fn idl_value_as_bool_or_else(value: &Value) -> Result<bool> {
     value.as_bool().context("Expected a boolean")
 }
@@ -214,6 +202,20 @@ where
     }
 }
 
+pub(crate) fn idl_value_as_floating_or_else(value: &Value) -> Result<f64> {
+    match value {
+        Value::Number(number) => Ok(number
+            .as_f64()
+            .context("Number is not representable as f64")?),
+        Value::String(string) => string.parse::<f64>().map_err(|error| {
+            anyhow!("Failed to parse f64 from: {}: {:?}", string, error)
+        }),
+        _ => Err(anyhow!(
+            "Expected a floating point in the form of number or a string"
+        )),
+    }
+}
+
 pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
     if let Some(value_str) = value.as_str() {
         return Ok(value_str.as_bytes().to_vec());
@@ -221,7 +223,9 @@ pub(crate) fn idl_value_as_bytes_or_else(value: &Value) -> Result<Vec<u8>> {
     if let Some(value_array) = value.as_array() {
         let mut bytes = vec![];
         for item in value_array {
-            bytes.push(u8::try_from(idl_value_as_u64_or_else(item)?)?);
+            bytes.push(u8::try_from(
+                item.as_u64().context("Expected an unsigned number")?,
+            )?);
         }
         return Ok(bytes);
     }

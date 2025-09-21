@@ -16,12 +16,10 @@ use crate::toolbox_idl_utils::idl_object_get_key_or_else;
 use crate::toolbox_idl_utils::idl_value_as_array_or_else;
 use crate::toolbox_idl_utils::idl_value_as_bool_or_else;
 use crate::toolbox_idl_utils::idl_value_as_bytes_or_else;
-use crate::toolbox_idl_utils::idl_value_as_f64_or_else;
-use crate::toolbox_idl_utils::idl_value_as_i64_or_else;
+use crate::toolbox_idl_utils::idl_value_as_floating_or_else;
 use crate::toolbox_idl_utils::idl_value_as_integer_or_else;
 use crate::toolbox_idl_utils::idl_value_as_object_or_else;
 use crate::toolbox_idl_utils::idl_value_as_str_or_else;
-use crate::toolbox_idl_utils::idl_value_as_u64_or_else;
 
 impl ToolboxIdlTypeFull {
     pub fn try_serialize(
@@ -364,18 +362,15 @@ impl ToolboxIdlTypePrimitive {
     ) -> Result<()> {
         match self {
             ToolboxIdlTypePrimitive::U8 => {
-                let value_integer = idl_value_as_u64_or_else(value)?;
-                let value_typed = u8::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<u8>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::U16 => {
-                let value_integer = idl_value_as_u64_or_else(value)?;
-                let value_typed = u16::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<u16>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::U32 => {
-                let value_integer = idl_value_as_u64_or_else(value)?;
-                let value_typed = u32::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<u32>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::U64 => {
@@ -387,18 +382,15 @@ impl ToolboxIdlTypePrimitive {
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I8 => {
-                let value_integer = idl_value_as_i64_or_else(value)?;
-                let value_typed = i8::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<i8>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I16 => {
-                let value_integer = idl_value_as_i64_or_else(value)?;
-                let value_typed = i16::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<i16>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I32 => {
-                let value_integer = idl_value_as_i64_or_else(value)?;
-                let value_typed = i32::try_from(value_integer)?;
+                let value_typed = idl_value_as_integer_or_else::<i32>(value)?;
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::I64 => {
@@ -410,12 +402,12 @@ impl ToolboxIdlTypePrimitive {
                 data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::F32 => {
-                let value_floating = idl_value_as_f64_or_else(value)? as f32;
-                data.extend_from_slice(&value_floating.to_le_bytes());
+                let value_typed = idl_value_as_floating_or_else(value)? as f32;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::F64 => {
-                let value_floating = idl_value_as_f64_or_else(value)?;
-                data.extend_from_slice(&value_floating.to_le_bytes());
+                let value_typed = idl_value_as_floating_or_else(value)?;
+                data.extend_from_slice(&value_typed.to_le_bytes());
             },
             ToolboxIdlTypePrimitive::Bool => {
                 let value_boolean = idl_value_as_bool_or_else(value)?;

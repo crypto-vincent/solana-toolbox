@@ -41,14 +41,14 @@ it('run', async () => {
   // Prepare the IDL service
   const idlService = new ToolboxIdlService();
   // Check that we can resolve ATA with just the IDL
-  const idlProgramAta = await idlService.getOrResolveProgram(
+  const idlProgramAta = (await idlService.getOrResolveProgram(
     endpoint,
     ataProgramId,
-  );
+  ))!;
   const createAtaInstructionAddresses =
     await idlService.resolveInstructionAddresses(
       endpoint,
-      idlProgramAta?.instructions.get('create')!,
+      idlProgramAta.instructions.get('create')!,
       ataProgramId, // TODO - that's interesting it's error prone, should be from the param?
       null,
       new Map([
