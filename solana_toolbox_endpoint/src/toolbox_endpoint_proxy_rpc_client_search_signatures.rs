@@ -43,9 +43,6 @@ impl ToolboxEndpointProxyRpcClient {
                     },
                 )
                 .await?;
-            if signatures.is_empty() {
-                return Ok(ordered_signatures);
-            }
             for signature in &signatures {
                 let found_signature =
                     ToolboxEndpoint::sanitize_and_decode_signature(
@@ -61,6 +58,9 @@ impl ToolboxEndpointProxyRpcClient {
                     }
                 }
                 oldest_known_signature = Some(found_signature);
+            }
+            if signatures.len() < batch_size {
+                return Ok(ordered_signatures);
             }
         }
     }

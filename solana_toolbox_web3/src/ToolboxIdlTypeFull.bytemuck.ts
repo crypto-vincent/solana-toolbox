@@ -31,7 +31,7 @@ type ToolboxIdlTypeFullPodFields = {
 export function bytemuck(
   typedef: ToolboxIdlTypeFullTypedef,
 ): ToolboxIdlTypeFullPod {
-  return ToolboxUtils.withContext(() => {
+  return ToolboxUtils.withContext(`Bytemuck: Typedef: ${typedef.name}`, () => {
     let contentPod;
     if (typedef.repr === undefined) {
       contentPod = bytemuckRust(typedef.content);
@@ -53,7 +53,7 @@ export function bytemuck(
         content: contentPod.value,
       }),
     };
-  }, `Bytemuck: Typedef: ${typedef.name}`);
+  });
 }
 
 function bytemuckC(value: ToolboxIdlTypeFull): ToolboxIdlTypeFullPod {
@@ -140,9 +140,10 @@ const bytemuckCVisitor = {
     let size = 0;
     const variantsReprC = [];
     for (const variant of self.variants) {
-      const variantFieldsPod = ToolboxUtils.withContext(() => {
-        return bytemuckFields(variant.fields, 0, false);
-      }, `Bytemuck: Repr(C): Enum Variant: ${variant.name}`);
+      const variantFieldsPod = ToolboxUtils.withContext(
+        `Bytemuck: Repr(C): Enum Variant: ${variant.name}`,
+        () => bytemuckFields(variant.fields, 0, false),
+      );
       alignment = Math.max(alignment, variantFieldsPod.alignment);
       size = Math.max(size, variantFieldsPod.size);
       variantsReprC.push({
@@ -241,9 +242,10 @@ const bytemuckRustVisitor = {
     let size = self.prefix.size;
     const variantsReprRust = [];
     for (const variant of self.variants) {
-      const variantFieldsPod = ToolboxUtils.withContext(() => {
-        return bytemuckFields(variant.fields, self.prefix.size, true);
-      }, `Bytemuck: Repr(Rust): Enum Variant: ${variant.name}`);
+      const variantFieldsPod = ToolboxUtils.withContext(
+        `Bytemuck: Repr(Rust): Enum Variant: ${variant.name}`,
+        () => bytemuckFields(variant.fields, self.prefix.size, true),
+      );
       alignment = Math.max(alignment, variantFieldsPod.alignment);
       size = Math.max(size, variantFieldsPod.size);
       variantsReprRust.push({
@@ -297,9 +299,10 @@ const bytemuckFieldsVisitor = {
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
     const fieldsInfosPods = self.map((field, index) => {
-      const contentPod = ToolboxUtils.withContext(() => {
-        return bytemuckRust(field.content);
-      }, `Bytemuck: Field: ${field.name}`);
+      const contentPod = ToolboxUtils.withContext(
+        `Bytemuck: Field: ${field.name}`,
+        () => bytemuckRust(field.content),
+      );
       return {
         index: index,
         alignment: contentPod.alignment,
@@ -334,9 +337,10 @@ const bytemuckFieldsVisitor = {
     rustReorder: boolean,
   ): ToolboxIdlTypeFullPodFields => {
     const fieldsInfosPods = self.map((field, index) => {
-      const contentPod = ToolboxUtils.withContext(() => {
-        return bytemuckRust(field.content);
-      }, `Bytemuck: Field: ${field.position}`);
+      const contentPod = ToolboxUtils.withContext(
+        `Bytemuck: Field: ${field.position}`,
+        () => bytemuckRust(field.content),
+      );
       return {
         index: index,
         alignment: contentPod.alignment,

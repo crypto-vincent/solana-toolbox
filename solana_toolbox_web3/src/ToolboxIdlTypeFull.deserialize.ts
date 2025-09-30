@@ -61,9 +61,10 @@ const deserializeVisitor = {
     data: Buffer,
     dataOffset: number,
   ): [number, any] => {
-    return ToolboxUtils.withContext(() => {
-      return deserialize(self.content, data, dataOffset);
-    }, `Deserialize: Typedef: ${self.name} (offset: ${dataOffset})`);
+    return ToolboxUtils.withContext(
+      `Deserialize: Typedef: ${self.name} (offset: ${dataOffset})`,
+      () => deserialize(self.content, data, dataOffset),
+    );
   },
   option: (
     self: ToolboxIdlTypeFullOption,
@@ -180,9 +181,10 @@ const deserializeVisitor = {
         if (variant.fields.isNothing()) {
           return [dataSize, variant.name];
         }
-        const [dataVariantSize, dataVariant] = ToolboxUtils.withContext(() => {
-          return deserializeFields(variant.fields, data, dataVariantOffset);
-        }, `Deserialize: Enum Variant: ${variant.name} (offset: ${dataVariantOffset})`);
+        const [dataVariantSize, dataVariant] = ToolboxUtils.withContext(
+          `Deserialize: Enum Variant: ${variant.name} (offset: ${dataVariantOffset})`,
+          () => deserializeFields(variant.fields, data, dataVariantOffset),
+        );
         dataSize += dataVariantSize;
         return [dataSize, { [variant.name]: dataVariant }];
       }
@@ -229,9 +231,10 @@ const deserializeFieldsVisitor = {
     const dataFields: Record<string, any> = {};
     for (const field of self) {
       const dataFieldOffset = dataOffset + dataSize;
-      const [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
-        return deserialize(field.content, data, dataFieldOffset);
-      }, `Deserialize: Field: ${field.name} (offset: ${dataFieldOffset})`);
+      const [dataFieldSize, dataField] = ToolboxUtils.withContext(
+        `Deserialize: Field: ${field.name} (offset: ${dataFieldOffset})`,
+        () => deserialize(field.content, data, dataFieldOffset),
+      );
       dataSize += dataFieldSize;
       dataFields[field.name] = dataField;
     }
@@ -246,9 +249,10 @@ const deserializeFieldsVisitor = {
     const dataFields = [];
     for (const field of self) {
       const dataFieldOffset = dataOffset + dataSize;
-      const [dataFieldSize, dataField] = ToolboxUtils.withContext(() => {
-        return deserialize(field.content, data, dataFieldOffset);
-      }, `Deserialize: Field: ${field.position} (offset: ${dataFieldOffset})`);
+      const [dataFieldSize, dataField] = ToolboxUtils.withContext(
+        `Deserialize: Field: ${field.position} (offset: ${dataFieldOffset})`,
+        () => deserialize(field.content, data, dataFieldOffset),
+      );
       dataSize += dataFieldSize;
       dataFields.push(dataField);
     }

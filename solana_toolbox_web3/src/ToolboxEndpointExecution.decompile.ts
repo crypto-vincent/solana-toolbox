@@ -36,11 +36,11 @@ export function decompileTransactionInstructions(
   for (const loadedReadonlyAddress of loadedReadonlyAddresses) {
     readonlyAddresses.add(loadedReadonlyAddress);
   }
-  const usedAddresses = [];
+  const usedAddresses: Array<PublicKey> = [];
   usedAddresses.push(...staticAddresses);
   usedAddresses.push(...loadedWritableAddresses);
   usedAddresses.push(...loadedReadonlyAddresses);
-  const instructions = [];
+  const instructions: Array<TransactionInstruction> = [];
   for (const compiledInstruction of compiledInstructions) {
     const instructionProgramId =
       usedAddresses[compiledInstruction.programIdIndex];

@@ -1,6 +1,8 @@
 import { ToolboxIdlTypePrefix } from './ToolboxIdlTypePrefix';
 import { ToolboxIdlTypePrimitive } from './ToolboxIdlTypePrimitive';
 
+// TODO - should there ve a validation tool for the type ?
+
 export type ToolboxIdlTypeFullTypedef = {
   name: string;
   repr: string | undefined;

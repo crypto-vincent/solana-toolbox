@@ -63,12 +63,12 @@ export class ToolboxUtils {
     return new sha256().update(value).digest().subarray(0, 8);
   }
 
-  public static withContext<T>(fn: () => T, message: string): T {
+  public static withContext<T>(message: string, fn: () => T): T {
     try {
       return fn();
-    } catch (err) {
+    } catch (error) {
       throw new Error(
-        `${message}\n > ${err instanceof Error ? err.message : String(err)}`,
+        `${message}\n > ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }

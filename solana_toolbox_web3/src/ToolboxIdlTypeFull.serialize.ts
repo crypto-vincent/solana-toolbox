@@ -63,9 +63,9 @@ const serializeVisitor = {
     data: Array<Buffer>,
     prefixed: boolean,
   ) => {
-    ToolboxUtils.withContext(() => {
-      return serialize(self.content, value, data, prefixed);
-    }, `Serialize: Typedef: ${self.name}`);
+    ToolboxUtils.withContext(`Serialize: Typedef: ${self.name}`, () =>
+      serialize(self.content, value, data, prefixed),
+    );
   },
   option: (
     self: ToolboxIdlTypeFullOption,
@@ -165,10 +165,13 @@ const serializeVisitor = {
       variant: ToolboxIdlTypeFullEnumVariant,
       value: any,
     ) {
-      ToolboxUtils.withContext(() => {
-        serializePrefix(self.prefix, variant.code, data);
-        serializeFields(variant.fields, value, data, prefixed);
-      }, `Serialize: Enum Variant: ${variant.name}`);
+      ToolboxUtils.withContext(
+        `Serialize: Enum Variant: ${variant.name}`,
+        () => {
+          serializePrefix(self.prefix, variant.code, data);
+          serializeFields(variant.fields, value, data, prefixed);
+        },
+      );
     }
     if (ToolboxUtils.isNumber(value)) {
       for (const variant of self.variants) {
@@ -250,9 +253,9 @@ const serializeFieldsVisitor = {
     }
     ToolboxUtils.expectObject(value);
     for (const field of self) {
-      ToolboxUtils.withContext(() => {
-        serialize(field.content, value[field.name], data, prefixed);
-      }, `Serialize: Field: ${field.name}`);
+      ToolboxUtils.withContext(`Serialize: Field: ${field.name}`, () =>
+        serialize(field.content, value[field.name], data, prefixed),
+      );
     }
   },
   unnamed: (
@@ -266,9 +269,9 @@ const serializeFieldsVisitor = {
     }
     ToolboxUtils.expectArray(value);
     for (const field of self) {
-      ToolboxUtils.withContext(() => {
-        serialize(field.content, value[field.position], data, prefixed);
-      }, `Serialize: Field: ${field.position}`);
+      ToolboxUtils.withContext(`Serialize: Field: ${field.position}`, () =>
+        serialize(field.content, value[field.position], data, prefixed),
+      );
     }
   },
 };
