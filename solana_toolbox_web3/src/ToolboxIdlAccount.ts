@@ -21,7 +21,7 @@ export class ToolboxIdlAccount {
   public readonly name: string;
   public readonly docs: any;
   public readonly space: number | undefined;
-  public readonly blobs: Array<{ offset: number; value: Buffer }>;
+  public readonly blobs: Array<{ offset: number; bytes: Buffer }>;
   public readonly discriminator: Buffer;
   public readonly contentTypeFlat: ToolboxIdlTypeFlat;
   public readonly contentTypeFull: ToolboxIdlTypeFull;
@@ -30,7 +30,7 @@ export class ToolboxIdlAccount {
     name: string;
     docs: any;
     space: number | undefined;
-    blobs: Array<{ offset: number; value: Buffer }>;
+    blobs: Array<{ offset: number; bytes: Buffer }>;
     discriminator: Buffer;
     contentTypeFlat: ToolboxIdlTypeFlat;
     contentTypeFull: ToolboxIdlTypeFull;
@@ -61,7 +61,7 @@ export class ToolboxIdlAccount {
         ToolboxUtils.expectObject(blob);
         blobs.push({
           offset: ToolboxUtils.expectNumber(blob['offset']),
-          value: ToolboxUtils.expectBytes(blob['value']),
+          bytes: ToolboxUtils.expectBytes(blob['bytes']),
         });
       }
     }
@@ -111,14 +111,14 @@ export class ToolboxIdlAccount {
     for (const blob of this.blobs) {
       if (
         blob.offset < 0 ||
-        blob.offset + blob.value.length > accountData.length
+        blob.offset + blob.bytes.length > accountData.length
       ) {
         throw new Error(
-          `Invalid blob offset ${blob.offset} with length ${blob.value.length} in account data of length ${accountData.length}`,
+          `Invalid blob offset ${blob.offset} with length ${blob.bytes.length} in account data of length ${accountData.length}`,
         );
       }
-      for (let i = 0; i < blob.value.length; i++) {
-        if (accountData[blob.offset + i] !== blob.value[i]) {
+      for (let i = 0; i < blob.bytes.length; i++) {
+        if (accountData[blob.offset + i] !== blob.bytes[i]) {
           throw new Error(
             `Invalid blob value at offset ${blob.offset + i} in account data`,
           );

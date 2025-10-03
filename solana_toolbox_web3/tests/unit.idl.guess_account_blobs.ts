@@ -11,7 +11,7 @@ it('run', () => {
         blobs: [
           {
             offset: 1,
-            value: [2, 3],
+            bytes: [2, 3],
           },
         ],
         discriminator: [1],
@@ -21,7 +21,7 @@ it('run', () => {
         blobs: [
           {
             offset: 5,
-            value: [6],
+            bytes: [6],
           },
         ],
         discriminator: [1],
@@ -31,11 +31,11 @@ it('run', () => {
         blobs: [
           {
             offset: 1,
-            value: [2, 2, 2],
+            bytes: [2, 2, 2],
           },
           {
             offset: 5,
-            value: [2],
+            bytes: [2],
           },
         ],
         discriminator: [2],
@@ -53,7 +53,7 @@ it('run', () => {
       name: 'MyAccount1_x3',
       docs: undefined,
       space: undefined,
-      blobs: [{ offset: 1, value: Buffer.from([2, 3]) }],
+      blobs: [{ offset: 1, bytes: Buffer.from([2, 3]) }],
       discriminator: Buffer.from([1]),
       contentTypeFlat: ToolboxIdlTypeFlat.structNothing(),
       contentTypeFull: ToolboxIdlTypeFull.structNothing(),
@@ -64,7 +64,7 @@ it('run', () => {
       name: 'MyAccount1_x6',
       docs: undefined,
       space: undefined,
-      blobs: [{ offset: 5, value: Buffer.from([6]) }],
+      blobs: [{ offset: 5, bytes: Buffer.from([6]) }],
       discriminator: Buffer.from([1]),
       contentTypeFlat: ToolboxIdlTypeFlat.structNothing(),
       contentTypeFull: ToolboxIdlTypeFull.structNothing(),
@@ -76,8 +76,8 @@ it('run', () => {
       docs: undefined,
       space: undefined,
       blobs: [
-        { offset: 1, value: Buffer.from([2, 2, 2]) },
-        { offset: 5, value: Buffer.from([2]) },
+        { offset: 1, bytes: Buffer.from([2, 2, 2]) },
+        { offset: 5, bytes: Buffer.from([2]) },
       ],
       discriminator: Buffer.from([2]),
       contentTypeFlat: ToolboxIdlTypeFlat.defined({

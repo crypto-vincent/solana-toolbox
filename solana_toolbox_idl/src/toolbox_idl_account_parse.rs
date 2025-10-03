@@ -85,7 +85,7 @@ impl ToolboxIdlAccount {
                             "offset",
                         )?)?;
                     let bytes = idl_value_as_bytes_or_else(
-                        idl_object_get_key_or_else(idl_account_blob, "value")?,
+                        idl_object_get_key_or_else(idl_account_blob, "bytes")?,
                     )?;
                     blobs.push((offset, bytes));
                 }

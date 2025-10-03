@@ -22,7 +22,7 @@ impl ToolboxIdlAccount {
             for blob in &self.blobs {
                 json_blobs.push(json!({
                     "offset": blob.0,
-                    "value": blob.1,
+                    "bytes": blob.1,
                 }));
             }
             json_object.insert("blobs".to_string(), json!(json_blobs));
