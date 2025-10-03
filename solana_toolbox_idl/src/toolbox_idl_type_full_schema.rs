@@ -32,8 +32,6 @@ impl ToolboxIdlTypeFull {
                 json!({
                     "type": "array",
                     "items": items.schema(None),
-                    "minItems": length,
-                    "maxItems": length
                 })
             },
             ToolboxIdlTypeFull::String { .. } => json!({ "type": "string" }),
@@ -101,10 +99,7 @@ impl ToolboxIdlTypeFull {
                 | ToolboxIdlTypePrimitive::I8
                 | ToolboxIdlTypePrimitive::I16
                 | ToolboxIdlTypePrimitive::I32 => {
-                    json!({
-                        "description": primitive.as_str(),
-                        "type": "integer",
-                    })
+                    json!({ "type": "integer" })
                 },
                 ToolboxIdlTypePrimitive::U64
                 | ToolboxIdlTypePrimitive::U128
@@ -116,10 +111,7 @@ impl ToolboxIdlTypeFull {
                     })
                 },
                 ToolboxIdlTypePrimitive::F32 | ToolboxIdlTypePrimitive::F64 => {
-                    json!({
-                        "description": primitive.as_str(),
-                        "type": "number",
-                    })
+                    json!({ "type": "number" })
                 },
                 ToolboxIdlTypePrimitive::Bool => {
                     json!({ "type": "boolean" })
