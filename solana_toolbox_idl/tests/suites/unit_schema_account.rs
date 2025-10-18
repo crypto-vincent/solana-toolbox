@@ -58,11 +58,9 @@ pub async fn run() {
                             "properties": {
                                 "Variant1": {
                                     "items": [
-                                        { "description": "u32", "type": "integer" },
-                                        { "description": "u16", "type": "integer" },
+                                        { "type": "integer" },
+                                        { "type": "integer" },
                                     ],
-                                    "maxItems": 2,
-                                    "minItems": 2,
                                     "type": "array"
                                 }
                             },
@@ -78,29 +76,27 @@ pub async fn run() {
                     "description": "MyStruct",
                     "properties": {
                         "array_u32_4": {
-                            "items": { "description": "u32", "type": "integer" },
-                            "maxItems": 4,
-                            "minItems": 4,
+                            "items": { "type": "integer" },
                             "type": "array"
                         },
                         "enum": { "type": "null" },
                         "option_f32": {
                             "anyOf": [
-                                { "description": "f32", "type": "number" },
+                                { "type": "number" },
                                 { "type": "null" }
                             ]
                         },
                         "string": { "type": "string" },
                         "struct": { "type": "null" },
-                        "u64": { "description": "u64", "type": ["string", "integer"] },
-                        "u8": { "description": "u8", "type": "integer" },
+                        "u64": { "description": "u64", "type": "string" },
+                        "u8": { "type": "integer" },
                         "vec_u8": {
-                            "items": { "description": "u8", "type": "integer" },
+                            "items": { "type": "integer" },
                             "type": "array"
                         },
                         "vec_vec_u8": {
                             "items": {
-                                "items": { "description": "u8", "type": "integer" },
+                                "items": { "type": "integer" },
                                 "type": "array"
                             },
                             "type": "array"

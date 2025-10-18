@@ -13,7 +13,7 @@ pub async fn run() {
                 "blobs": [
                     {
                         "offset": 1,
-                        "value": [2, 3],
+                        "bytes": [2, 3],
                     },
                 ],
                 "discriminator": [1],
@@ -23,7 +23,7 @@ pub async fn run() {
                 "blobs": [
                     {
                         "offset": 5,
-                        "value": [6],
+                        "bytes": [6],
                     },
                 ],
                 "discriminator": [1],
@@ -33,11 +33,11 @@ pub async fn run() {
                 "blobs": [
                     {
                         "offset": 1,
-                        "value": [2, 2, 2],
+                        "bytes": [2, 2, 2],
                     },
                     {
                         "offset": 5,
-                        "value": [2],
+                        "bytes": [2],
                     },
                 ],
                 "discriminator": [2],

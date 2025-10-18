@@ -28,7 +28,7 @@ impl ToolboxIdlTypeFull {
                     "items": items.schema(None)
                 })
             },
-            ToolboxIdlTypeFull::Array { items, length } => {
+            ToolboxIdlTypeFull::Array { items, .. } => {
                 json!({
                     "type": "array",
                     "items": items.schema(None),
@@ -118,7 +118,7 @@ impl ToolboxIdlTypeFull {
                 },
                 ToolboxIdlTypePrimitive::Pubkey => {
                     json!({
-                        "description": "Pubkey (base58)",
+                        "description": "Pubkey",
                         "type": "string",
                     })
                 },
@@ -175,8 +175,6 @@ impl ToolboxIdlTypeFullFields {
                 }
                 json_object.insert("type".to_string(), json!("array"));
                 json_object.insert("items".to_string(), json!(json_fields));
-                json_object.insert("minItems".to_string(), json!(fields.len()));
-                json_object.insert("maxItems".to_string(), json!(fields.len()));
                 json!(json_object)
             },
         }
