@@ -13,7 +13,6 @@ tasks:
     cmds:
       - task fmt_endpoint
       - task fmt_idl
-      - task fmt_anchor
       - task fmt_cli
 
   # Testing
@@ -21,7 +20,6 @@ tasks:
     cmds:
       - task test_endpoint
       - task test_idl
-      - task test_anchor
       - task test_cli
 
   # Linting (clippy)
@@ -29,7 +27,6 @@ tasks:
     cmds:
       - task lint_endpoint
       - task lint_idl
-      - task lint_anchor
       - task lint_cli
 
   # Publish to cargo
@@ -37,7 +34,6 @@ tasks:
     cmds:
       - task publish_endpoint
       - task publish_idl
-      - task publish_anchor
       - task publish_cli
 
   # Sub-crate Endpoint
@@ -87,25 +83,6 @@ tasks:
         -- -D warnings
         --allow=clippy::bool_assert_comparison
       - cp Cargo-solana-2.1.4.toml Cargo.toml
-      - cargo +nightly clippy
-        --all-targets
-        -- -D warnings
-        --allow=clippy::bool_assert_comparison
-
-  # Sub-crate Anchor
-  fmt_anchor:
-    dir: "{{ .TASKFILE_DIR }}/solana_toolbox_anchor"
-    cmds:
-      - cargo +nightly fmt
-  test_anchor:
-    dir: "{{ .TASKFILE_DIR }}/solana_toolbox_anchor"
-    cmds:
-      - cp Cargo-solana-1.18.26-anchor-0.30.1.toml Cargo.toml
-      - cargo test {{ .CLI_ARGS }}
-  lint_anchor:
-    dir: "{{ .TASKFILE_DIR }}/solana_toolbox_anchor"
-    cmds:
-      - cp Cargo-solana-1.18.26-anchor-0.30.1.toml Cargo.toml
       - cargo +nightly clippy
         --all-targets
         -- -D warnings
@@ -174,19 +151,6 @@ tasks:
       - git add Cargo.toml
       - git add Cargo.lock
       - git commit -m "publish-0.4.5-idl-2.1.4" --allow-empty
-      - cargo publish
-  publish_anchor:
-    dir: "{{ .TASKFILE_DIR }}/solana_toolbox_anchor"
-    cmds:
-      - cp Cargo-solana-1.18.26-anchor-0.30.1.toml Cargo.toml
-      - cargo test
-      - cargo +nightly clippy
-        --all-targets
-        -- -D warnings
-        --allow=clippy::bool_assert_comparison
-      - git add Cargo.toml
-      - git add Cargo.lock
-      - git commit -m "publish-0.4.5-anchor" --allow-empty
       - cargo publish
   publish_cli:
     dir: "{{ .TASKFILE_DIR }}/solana_toolbox_cli"
