@@ -203,6 +203,7 @@ where
 }
 
 pub(crate) fn idl_value_as_floating_or_else(value: &Value) -> Result<f64> {
+    // TODO - handle NaN and Infinity properly
     match value {
         Value::Number(number) => Ok(number
             .as_f64()

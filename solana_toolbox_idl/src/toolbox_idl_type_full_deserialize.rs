@@ -492,6 +492,7 @@ impl ToolboxIdlTypePrimitive {
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = f32::from_le_bytes(data_slice.try_into()?);
+                // TODO - handle NaN and Infinity properly
                 (data_size, json!(data_num))
             },
             ToolboxIdlTypePrimitive::F64 => {
@@ -499,6 +500,7 @@ impl ToolboxIdlTypePrimitive {
                 let data_slice =
                     idl_slice_from_bytes(data, data_offset, data_size)?;
                 let data_num = f64::from_le_bytes(data_slice.try_into()?);
+                // TODO - handle NaN and Infinity properly
                 (data_size, json!(data_num))
             },
             ToolboxIdlTypePrimitive::Bool => {
